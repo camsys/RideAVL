@@ -1,15 +1,34 @@
 <ion-menu [content]="content">
   <ion-header>
     <ion-toolbar>
-      <ion-title>Menu</ion-title>
+      <ion-title>RidePilot Driver</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-content>
     <ion-list>
-      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
-        {{p.title}}
-      </button>
+      <!-- If signed in... -->
+      <div *ngIf="auth.isSignedIn(); else notSignedIn">
+          <!-- Build a button for each page listed in the signedInPages attribute -->
+          <button ion-item menuClose
+                  class="item-heading"
+                  *ngFor="let p of signedInPages"
+                  (click)="openPage(p)">
+            {{ p.title }}
+          </button>
+      </div>
+
+      <!-- If not signed in... -->
+      <ng-template #notSignedIn>
+        <!-- Build a button for each page listed in the signedOutPages attribute -->
+        <button ion-item menuClose
+                class="item-heading"
+                *ngFor="let p of signedOutPages"
+                (click)="openPage(p)">
+          {{ p.title }}
+        </button>
+      </ng-template>
+      
     </ion-list>
   </ion-content>
 

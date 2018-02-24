@@ -1,0 +1,56 @@
+<ion-header no-border>
+
+  <ion-navbar transparent>
+    <ion-title text-center>Sign In</ion-title>
+    <button ion-button end menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding>
+
+  <ion-grid>
+    <form (ngSubmit)="signIn()" #signInForm="ngForm">
+
+      <ion-row>
+        <ion-col no-padding col-sm-10 offset-sm-1 col-md-8 offset-md-2>
+          <ion-input  class="app-input"
+                      type="text"
+                      placeholder="Username"
+                      name="username"
+                      [(ngModel)]="user.username"
+                      required>
+          </ion-input>
+          <ion-input  class="app-input"
+                      type="password"
+                      placeholder="Password"
+                      name="password"
+                      [(ngModel)]="user.password"
+                      required>
+          </ion-input>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col text-center>
+          <button ion-button round class="app-button-dark center" type="submit" [disabled]="!signInForm.form.valid">
+            SIGN IN
+          </button>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col text-center>
+          <button type="button" class="app-button-link link-black" (click)="resetPassword()">
+            Forgot your Password?
+          </button>
+        </ion-col>
+      </ion-row>
+
+    </form>
+  </ion-grid>
+
+</ion-content>
+
