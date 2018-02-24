@@ -1,0 +1,64 @@
+/* HELPER FUNCTIONS, CLASSES, and MIXINS */
+
+// Power function from https://css-tricks.com/snippets/sass/power-function/, used as a helper for scale function below.
+@function pow($number, $exponent) {
+  $value: 1;
+
+  @if $exponent > 0 {
+    @for $i from 1 through $exponent {
+      $value: $value * $number;
+    }
+  } @else if $exponent < 0 {
+    @for $i from 1 through -$exponent {
+      $value: $value / $number;
+    }
+  }
+
+  @return $value;
+}
+
+// Scaling Helper Function
+$scale-base: 1rem;
+$scale-increment: 1.333;
+
+// Pass in an integer (positive or negative) to get the base value scaled up from the base
+// line by that many times, by a fixed ratio. Base and ratio values defined in variables.scss.
+@function size($n) {
+  @return $scale-base * pow($scale-increment, $n);
+}
+
+
+
+// Centers a div (or img, button, etc.) in its container
+.center {
+  display: block;
+  margin: 0 auto;
+}
+
+// Padded 
+.padded {
+  padding: 5px;
+}
+
+// Styles text to look clickable
+.clickable {
+  color: $appDarkOrange;
+  cursor: pointer;
+}
+
+// Mimics offset-md-2 gutters
+@mixin offset-md-2 {
+  @media (min-width: #{map-get($grid-breakpoints, md)}) {
+    padding-left: 16.7%;
+    padding-right: 16.7%;
+  }
+}
+
+// Mimics offset-sm-1 gutters
+@mixin offset-sm-1 {
+  @media (min-width: #{map-get($grid-breakpoints, sm)}) and
+         (max-width: #{map-get($grid-breakpoints, md)}) {
+    padding-left: 8.3%;
+    padding-right: 8.3%;
+  }  
+}

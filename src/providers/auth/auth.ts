@@ -111,7 +111,7 @@ export class AuthProvider {
 
   // Resets the password of the provided user (only username required)
   resetPassword(username: string): Observable<Response>{
-    let uri: string = encodeURI(this.baseUrl + 'users/reset_password');
+    let uri: string = encodeURI(this.baseUrl + 'reset_password');
     let body = JSON.stringify({user: { username: username }});
     let options: RequestOptions = new RequestOptions({
       headers: this.defaultHeaders

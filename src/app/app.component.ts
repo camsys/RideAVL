@@ -124,7 +124,6 @@ export class MyApp {
         // we wouldn't want the back button to show in this scenario
         this.nav.push(page.component, page.params);
     }
-
   }
 
   // Check if we're already at the home page; if not, go there.

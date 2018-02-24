@@ -1,0 +1,110 @@
+/* BUTTONS */
+
+// App Button Primary (bright orange, black on click)
+// EXAMPLE: <button ion-button round class="app-button-primary"> BUTTON TEXT </button>
+button.app-button-primary {
+  background-color: $appOrange;
+  color: $appWhite;
+  
+  ion-icon.icon.icon-ios,
+  ion-icon.icon.icon-md,
+  ion-icon.icon.icon-wp {
+    color: inherit;
+  }
+  
+  &:active, &:hover {
+    background-color: $appBlack;
+    color: $appWhite;
+  }
+}
+
+// App Button Outline (white, dark orange outline, dark orange on click)
+// EXAMPLE: <button ion-button round outline class="app-button-outline"> BUTTON TEXT </button>
+button.app-button-outline {
+  background-color: $appWhite;
+  border: size(-5) solid $appDarkOrange;
+  color: $appDarkOrange;
+  
+  &:active, &:hover {
+    background-color: $appDarkOrange;
+    color: $appWhite;
+  }
+}
+
+// App Button Dark (dark orange, white on click)
+// EXAMPLE: <button ion-button round class="app-button-dark"> BUTTON TEXT </button>
+button.app-button-dark {
+  background-color: $appDarkOrange;
+  border: size(-5) solid $appDarkOrange;
+  color: $appWhite;
+  
+  &:active, &:hover {
+    background-color: $appWhite !important;
+    border-color: $appLtGray;
+    color: $appDarkOrange;
+  }
+}
+
+// App Button White (white, no outline, dark orange on click)
+// EXAMPLE: <button ion-button round class="app-button-white"> BUTTON TEXT </button>
+button.app-button-white {
+  background-color: $appWhite;
+  color: $appDarkOrange;
+  
+  &:active, &:hover {
+    background-color: $appDarkOrange;
+    color: $appWhite;
+  }
+}
+
+// Circular Buttons
+button.app-button-circle {
+  border-radius: 50%;
+  font-size: $font-size-md;
+  font-weight: 900;
+  height: size(5);
+  width: size(5);
+}
+button.app-button-circle-lg {
+  border-radius: 50%;
+  font-size: $font-size-lg;
+  font-weight: 900;
+  height: size(7);
+  width: size(7);
+}
+
+// Link-style Buttons
+div.app-button-link,
+button.app-button-link,
+a.app-button-link {
+  background-color: transparent;
+  cursor: pointer;
+  font-size: $font-size-md;
+  font-weight: 500;
+  margin: size(1);
+  text-decoration: none;
+  
+  &:active, &:hover {
+    opacity: 1.0;
+  }
+  
+  // Link colorings
+  &.link-orange {
+    color: $appDarkOrange;
+    &:active, &:hover {
+      color: $appOrange;
+    }
+  }
+  &.link-black {
+    color: $appBlack;
+    &:active, &:hover {
+      color: $appWhite;
+    }
+  }
+  &.link-white {
+    color: $appWhite;
+    &:active, &:hover {
+      color: $appOrange;
+    }
+  }
+}
