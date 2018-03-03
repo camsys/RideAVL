@@ -7,6 +7,7 @@ import {  IonicPage,
 
 // Pages
 import { RunsPage } from '../runs/runs';
+import { ManifestPage } from '../manifest/manifest';
 import { ResetPasswordPage } from '../reset-password/reset-password';
 
 // Providers
@@ -41,9 +42,9 @@ export class SignInPage {
         .subscribe(
           data => {
             // Get the user's profile data and store it in the session
-            this.ridepilotProvider.unpackSignInResponse(data);
+            this.authProvider.unpackSignInResponse(data);
             // Then, redirect the user to the home page
-            this.navCtrl.setRoot(RunsPage);
+            this.navCtrl.setRoot(ManifestPage);
           },
           error => {
             // On failed response, display a pop-up error message and remain on page.

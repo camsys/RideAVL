@@ -86,6 +86,12 @@ export class AuthProvider {
         });
   }
 
+  // Unpacks a session response and stores the user in the session
+  unpackSignInResponse(response): User {
+    let user = response.json().data.session as User;
+    return this.updateSessionUser(user); // store user info in session storage
+  }
+
   // Removes session from local storage and tells backend to reset the user's token
   signOut(): Observable<Response> {
 

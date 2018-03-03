@@ -17,6 +17,7 @@ import { MyApp } from './app.component';
 import { SignInPage } from '../pages/sign-in/sign-in';
 import { ResetPasswordPage } from '../pages/reset-password/reset-password';
 import { RunsPage } from '../pages/runs/runs';
+import { ManifestPage } from '../pages/manifest/manifest';
 import { AboutPage } from '../pages/about/about';
 
 // Providers
@@ -28,6 +29,7 @@ import { RidepilotProvider } from '../providers/ridepilot/ridepilot';
     MyApp,
     SignInPage,
     RunsPage,
+    ManifestPage,
     ResetPasswordPage,
     AboutPage
   ],
@@ -41,6 +43,7 @@ import { RidepilotProvider } from '../providers/ridepilot/ridepilot';
     MyApp,
     SignInPage,
     RunsPage,
+    ManifestPage,
     ResetPasswordPage,
     AboutPage
   ],

@@ -6,6 +6,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 // PAGES
 import { SignInPage } from '../pages/sign-in/sign-in';
 import { RunsPage } from '../pages/runs/runs';
+import { ManifestPage } from '../pages/manifest/manifest';
 import { AboutPage } from '../pages/about/about';
 
 // MODELS
@@ -101,6 +102,7 @@ export class MyApp {
     // Pages to display if user is signed in
     this.signedInPages = [
       { title: 'Sign Out', component: "sign_out"},
+      { title: "Manifest", component: ManifestPage },
       { title: "Today's Runs", component: RunsPage },
       { title: 'About This App', component: AboutPage }
     ] as PageModel[];

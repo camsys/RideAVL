@@ -7,7 +7,13 @@ import { Observable } from "rxjs/Rx";
 import 'rxjs/add/operator/map';
 
 import { environment } from '../../app/environment'
+
+// Models
 import { User } from '../../models/user';
+import { Run } from '../../models/run';
+import { Itinerary } from '../../models/itinerary';
+
+// Providers
 import { AuthProvider } from '../../providers/auth/auth';
 
 // RidePilot Provider handles API Calls to the RidePilot Core back-end.
@@ -15,6 +21,7 @@ import { AuthProvider } from '../../providers/auth/auth';
 export class RidepilotProvider {
 
   public baseUrl = environment.BASE_RIDEPILOT_URL;
+  public baseAvlUrl = environment.BASE_RIDEPILOT_AVL_URL;
 
   constructor(public http: Http,
               private auth: AuthProvider,
@@ -25,11 +32,58 @@ export class RidepilotProvider {
     return new RequestOptions({ headers: this.auth.authHeaders() });
   }
 
-  // Unpacks a session response and stores the user in the session
-  unpackSignInResponse(response): User {
-    let user = JSON.parse(response.text()).data.session as User;
-    return this.auth.updateSessionUser(user); // store user info in session storage
+  // Get list of today's run
+  getRuns(): Observable<Run[]> {
+
+    return this.http
+               .get(this.baseAvlUrl + 'runs', this.requestOptions())
+               .map( response => this.unpackRunsResponse(response))
+               .catch(error => this.handleError(error));
   }
+
+  // Get run manifest
+  getItineraries(runId?: number): Observable<Itinerary[]> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'manifest');
+    if(runId && runId != 0) {
+      uri += "?run_id=" + runId;
+    }
+    return this.http
+               .get(uri, this.requestOptions())
+               .map( response => this.unpackItinerariesResponse(response))
+               .catch(error => this.handleError(error));
+  }
+
+  // Parse Runs response
+  private unpackRunsResponse(response: any): Run[] {
+    let runs: any = response.json().data || [];
+    let runModels: Run[] = runs.map(run => this.parseRun(run));
+    console.log(runModels);
+    return  runModels;
+  }
+
+  // Parse individual run
+  private parseRun(response: {}): Run {
+    let run: Run = response.attributes as Run;
+    run.id = response.id;
+
+    return run;
+  }
+
+  // Parse itineraries response
+  private unpackItinerariesResponse(response: any): Run[] {
+    let itineraries: any = response.json().data || [];
+    let itinModels: Itinerary[] = itineraries.map(itin => this.parseItinerary(itin));
+    return  itinModels;
+  }
+
+  // Parse individual itinerary
+  private parseItinerary(response: {}): Run {
+    let itin: Itinerary = response.attributes as Itinerary;
+    itin.id = response.id;
+
+    return itin;
+  }
+
 
   // Handle errors by console logging the error, and publishing an error event
   // for consumption by the app's home page.

@@ -2,36 +2,37 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 /**
- * Generated class for the RunsPage page.
+ * Generated class for the ManifestPage page.
  *
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
  */
 
 // Models
-import { Run } from '../../models/run';
+import { Itinerary } from '../../models/itinerary';
 
 // Providers
 import { RidepilotProvider } from '../../providers/ridepilot/ridepilot';
 
 @IonicPage()
 @Component({
-  selector: 'page-runs',
-  templateUrl: 'runs.html',
+  selector: 'page-manifest',
+  templateUrl: 'manifest.html',
 })
-export class RunsPage {
+export class ManifestPage {
+  itineraries: Itinerary[] = [];
+  runId: number;
   
-  runs: Run[] = [];
-
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               private ridepilotProvider: RidepilotProvider) {
+    this.runId = null;
   }
 
   ionViewDidLoad() {
-    this.ridepilotProvider.getRuns()
-                          .subscribe((runs) => 
-                            this.runs = runs
+    this.ridepilotProvider.getItineraries(this.runId)
+                          .subscribe((itins) => 
+                            this.itineraries = itins
                           );
   }
 
