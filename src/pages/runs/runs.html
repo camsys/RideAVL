@@ -7,8 +7,8 @@
 <ion-header no-border>
 
   <ion-navbar transparent>
-    <ion-title text-center>Today's Runs</ion-title>
-    <button ion-button end menuToggle>
+    <ion-title text-center>Select Run</ion-title>
+    <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
   </ion-navbar>
@@ -18,4 +18,35 @@
 
 <ion-content padding>
 
+  <ion-grid no-padding>
+    <ion-row>
+      <ion-col col-sm-10 offset-sm-1 col-md-8 offset-md-2>
+
+        <ion-list class="app-list">
+
+          <!-- RUN DETAILS -->
+          <ion-item class="run-list" text-wrap *ngFor="let r of runs">
+
+            <!-- Run info -->
+            <run-info [run]="r" [ngClass]="{'run-info-active': checkIfActiveRun(r)}" (click)="setActiveRun(r)"></run-info>
+
+          </ion-item>
+        </ion-list>
+        <h2 *ngIf="runs.length == 0">
+          No Run for Today
+        </h2>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <button ion-button icon-end round [disabled]="!hasActiveRun()" (click)="loadManifest()" id="select-run-button">
+      Select
+      <ion-icon name="arrow-forward"></ion-icon>
+    </button>
+  </ion-toolbar>
+</ion-footer>

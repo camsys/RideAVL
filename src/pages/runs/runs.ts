@@ -11,6 +11,9 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 // Models
 import { Run } from '../../models/run';
 
+// Pages
+import { ManifestPage } from '../manifest/manifest';
+
 // Providers
 import { RidepilotProvider } from '../../providers/ridepilot/ridepilot';
 
@@ -23,9 +26,12 @@ export class RunsPage {
   
   runs: Run[] = [];
 
+  activeRun: Run = {} as Run;
+
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               private ridepilotProvider: RidepilotProvider) {
+              this.activeRun = this.navParams.data.activeRun || {};
   }
 
   ionViewDidLoad() {
@@ -33,6 +39,22 @@ export class RunsPage {
                           .subscribe((runs) => 
                             this.runs = runs
                           );
+  }
+
+  setActiveRun(run: Run) {
+    this.activeRun = run;
+  }
+
+  checkIfActiveRun(run: Run) {
+    return run === this.activeRun || run.id == this.activeRun.id;
+  }
+
+  hasActiveRun() {
+    return this.activeRun.id;
+  }
+
+  loadManifest() {
+    this.navCtrl.setRoot(ManifestPage, {run: this.activeRun});
   }
 
 }

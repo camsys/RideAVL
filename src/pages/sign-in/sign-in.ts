@@ -44,7 +44,7 @@ export class SignInPage {
             // Get the user's profile data and store it in the session
             this.authProvider.unpackSignInResponse(data);
             // Then, redirect the user to the home page
-            this.navCtrl.setRoot(ManifestPage);
+            this.navCtrl.setRoot(RunsPage);
           },
           error => {
             // On failed response, display a pop-up error message and remain on page.

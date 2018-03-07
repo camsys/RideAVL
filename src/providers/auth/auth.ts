@@ -10,6 +10,9 @@ import { Events } from 'ionic-angular';
 import { Session } from '../../models/session';
 import { User } from '../../models/user';
 
+// Providers
+import { GlobalProvider } from '../../providers/global/global';
+
 @Injectable()
 export class AuthProvider {
 
@@ -20,7 +23,8 @@ export class AuthProvider {
   })
 
   constructor(public http: Http,
-              public events: Events) { }
+              public events: Events,
+              public global: GlobalProvider) { }
 
   // Pulls the current session from local storage
   session(): Session {
@@ -42,8 +46,10 @@ export class AuthProvider {
   isSignedIn(user?: User): Boolean {
     let session = this.session();
     if(user) {
+      this.global.user = user;
       return !!(session && session.username && session.username === user.username);
     } else {
+      this.global.user = session.user;
       return !!(session && session.username);
     }
   }
@@ -104,6 +110,7 @@ export class AuthProvider {
 
       localStorage.removeItem('session');
       this.events.publish("user:signed_out");
+      this.global.user = {} as User;
 
       return this.http
           .delete(uri, options)
@@ -136,6 +143,7 @@ export class AuthProvider {
     session.username = user.username;
     session.user = user;
     this.setSession(session);
+    this.global.user = user;
     this.events.publish('user:updated', user);  // Publish user updated event for pages to listen to
     return this.user();
   }

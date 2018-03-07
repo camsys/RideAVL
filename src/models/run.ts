@@ -8,6 +8,5 @@ export class Run {
   scheduled_start_time_string: string;
   scheduled_end_time_string: string;
   vehicle: Vehicle;
-  driver: Driver;
-  itineraries: Itinerary[];
+  complete: boolean;
 }

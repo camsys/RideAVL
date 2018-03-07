@@ -1,7 +1,7 @@
 <ion-menu [content]="content">
   <ion-header>
     <ion-toolbar>
-      <ion-title>RidePilot</ion-title>
+      <ion-title>{{this.global && this.global.user ? this.global.user.name : 'RidePilot'}}</ion-title>
     </ion-toolbar>
   </ion-header>
 

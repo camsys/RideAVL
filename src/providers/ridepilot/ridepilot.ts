@@ -12,6 +12,7 @@ import { environment } from '../../app/environment'
 import { User } from '../../models/user';
 import { Run } from '../../models/run';
 import { Itinerary } from '../../models/itinerary';
+import { Vehicle } from '../../models/vehicle';
 
 // Providers
 import { AuthProvider } from '../../providers/auth/auth';
@@ -54,15 +55,20 @@ export class RidepilotProvider {
 
   // Parse Runs response
   private unpackRunsResponse(response): Run[] {
-    let runs = response.json().data || [];
-    let runModels: Run[] = runs.map(run => this.parseRun(run));
+    let json_rep = response.json();
+    let runs = json_rep.data || [];
+    let vehicles = json_rep.included || [];
+    let runModels: Run[] = runs.map(run => this.parseRun(run, vehicles));
     return  runModels;
   }
 
   // Parse individual run
-  private parseRun(response): Run {
-    let run: Run = response.attributes as Run;
-    run.id = response.id;
+  private parseRun(run_data, vehicles_data): Run {
+    let run: Run = run_data.attributes as Run;
+    let vehicle_id = run_data.relationships.vehicle.data.id;
+    let vehicle: Vehicle = vehicles_data.find(x => x.id === vehicle_id).attributes as Vehicle;
+    run.vehicle = vehicle;
+    run.id = run_data.id;
 
     return run;
   }

@@ -23,6 +23,11 @@ import { AboutPage } from '../pages/about/about';
 // Providers
 import { AuthProvider } from '../providers/auth/auth';
 import { RidepilotProvider } from '../providers/ridepilot/ridepilot';
+import { GlobalProvider } from '../providers/global/global';
+
+// Components
+import { RunInfoComponent } from '../components/run-info/run-info';
+import { ItineraryInfoComponent } from '../components/itinerary-info/itinerary-info';
 
 @NgModule({
   declarations: [
@@ -31,7 +36,9 @@ import { RidepilotProvider } from '../providers/ridepilot/ridepilot';
     RunsPage,
     ManifestPage,
     ResetPasswordPage,
-    AboutPage
+    AboutPage,
+    RunInfoComponent,
+    ItineraryInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -52,7 +59,8 @@ import { RidepilotProvider } from '../providers/ridepilot/ridepilot';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     AuthProvider,
-    RidepilotProvider
+    RidepilotProvider,
+    GlobalProvider
   ]
 })
 export class AppModule {}

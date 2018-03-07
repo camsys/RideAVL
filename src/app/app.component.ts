@@ -15,6 +15,7 @@ import { PageModel } from '../models/page';
 
 // PROVIDERS
 //import { RidepilotProvider } from '../providers/ridepilot/ridepilot';
+import {  GlobalProvider} from '../providers/global/global';
 import { AuthProvider } from '../providers/auth/auth';
 
 @Component({
@@ -28,7 +29,6 @@ export class MyApp {
   showSpinner: Boolean = false;
 
   signedInPages: PageModel[];
-  signedOutPages: PageModel[];
   universalPages: PageModel[]; //Pages for both signed in and signed out users
   signInPage: PageModel;
   user: User;
@@ -36,6 +36,7 @@ export class MyApp {
   constructor(public platform: Platform,
               public statusBar: StatusBar,
               public splashScreen: SplashScreen,
+              public global: GlobalProvider,
               private auth: AuthProvider,
               private changeDetector: ChangeDetectorRef,
               public events: Events,
@@ -102,13 +103,6 @@ export class MyApp {
     // Pages to display if user is signed in
     this.signedInPages = [
       { title: 'Sign Out', component: "sign_out"},
-      { title: "Manifest", component: ManifestPage },
-      { title: "Today's Runs", component: RunsPage },
-      { title: 'About This App', component: AboutPage }
-    ] as PageModel[];
-
-    // Pages to display if user is signed out
-    this.signedOutPages = [
       { title: 'About This App', component: AboutPage }
     ] as PageModel[];
 

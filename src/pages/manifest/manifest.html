@@ -1,13 +1,16 @@
 <!--
-  Generated template for the ManifestPage page.
+  Generated template for the RunsPage page.
 
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-header>
+<ion-header no-border>
 
-  <ion-navbar text-center>
-    <ion-title>Manifest</ion-title>
+  <ion-navbar>
+    <ion-title text-center>{{run.name || 'Empty Manifest'}}</ion-title>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
   </ion-navbar>
 
 </ion-header>
@@ -15,4 +18,39 @@
 
 <ion-content padding>
 
+  <ion-grid no-padding>
+    <ion-row>
+      <ion-col col-sm-10 offset-sm-1 col-md-8 offset-md-2>
+
+        <ion-list class="app-list">
+
+          <!-- ITIN DETAILS -->
+          <ion-item class="itin-list" text-wrap *ngFor="let itin of itineraries">
+
+            <!-- Itin info -->
+            <itinerary-info [itin]="itin" [ngClass]="{'itin-info-active': activeItinerary == itin}" (click)="setActiveItinerary(itin)"></itinerary-info>
+
+          </ion-item>
+        </ion-list>
+        <h2 *ngIf="itineraries.length == 0">
+          No Itinerary
+        </h2>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <button ion-button icon-start round (click)="loadRunList()" id="load-runs-button">
+      <ion-icon name="arrow-back"></ion-icon>
+      Exit
+    </button>
+    <button ion-button icon-end round (click)="loadItinerary()" id="select-itin-button">
+      Select
+      <ion-icon name="arrow-forward"></ion-icon>
+    </button>
+  </ion-toolbar>
+</ion-footer>

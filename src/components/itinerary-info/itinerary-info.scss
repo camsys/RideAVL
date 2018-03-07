@@ -1,0 +1,16 @@
+itinerary-info {
+  .itin-info-card {
+    border: 2px solid;
+    padding: 5px;
+    cursor: pointer;
+  }
+
+  .itin-info-title {
+    font-size: 1.6em;
+    font-weight: bold;
+  }
+  .itin-info-status {
+    float: right;
+    font-size: 1em;
+  }
+}

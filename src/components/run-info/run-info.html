@@ -1,0 +1,11 @@
+<!-- Generated template for the RunInfoComponent component -->
+<div class="run-info-card">
+  <p class="run-info-title"> 
+    {{run.name}} 
+    <span class="run-info-status" *ngIf="run.complete"> Completed </span>
+  </p>
+
+  <p> {{run.scheduled_start_time_string}}-{{run.scheduled_end_time_string}}</p>
+  <p *ngIf="run.vehicle"> {{run.vehicle.name}}</p>
+</div>
+

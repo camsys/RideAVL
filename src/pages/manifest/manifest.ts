@@ -9,9 +9,14 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
  */
 
 // Models
+import { Run } from '../../models/run';
 import { Itinerary } from '../../models/itinerary';
 
+// Pages
+import { RunsPage } from '../runs/runs';
+
 // Providers
+import { GlobalProvider } from '../../providers/global/global';
 import { RidepilotProvider } from '../../providers/ridepilot/ridepilot';
 
 @IonicPage()
@@ -21,19 +26,33 @@ import { RidepilotProvider } from '../../providers/ridepilot/ridepilot';
 })
 export class ManifestPage {
   itineraries: Itinerary[] = [];
-  runId: number;
+  activeItin: Itinerary = {} as Itinerary;
+  run: Run = {} as Run;
   
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
+              public global: GlobalProvider,
               private ridepilotProvider: RidepilotProvider) {
-    this.runId = null;
+              this.run = this.navParams.data.run || {};
   }
 
   ionViewDidLoad() {
-    this.ridepilotProvider.getItineraries(this.runId)
+    this.ridepilotProvider.getItineraries(this.run.id)
                           .subscribe((itins) => 
                             this.itineraries = itins
                           );
+  }
+
+  loadRunList() {
+    this.navCtrl.setRoot(RunsPage, { activeRun: this.run });
+  }
+
+  loadItinerary() {
+
+  }
+
+  setActiveItinerary(itin: Itinerary) {
+    this.activeItin = itin;
   }
 
 }
