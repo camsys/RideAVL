@@ -36,9 +36,14 @@ export class RunsPage {
 
   ionViewDidLoad() {
     this.ridepilotProvider.getRuns()
-                          .subscribe((runs) => 
-                            this.runs = runs
-                          );
+                          .subscribe((runs) => this.loadRuns(runs));
+  }
+
+  loadRuns(runs: Run[]) {
+    this.runs = runs || [];
+    if(!this.hasActiveRun()) {
+      this.activeRun = this.runs.find(r => !r.complete) || ({} as Run);
+    }
   }
 
   setActiveRun(run: Run) {
@@ -46,11 +51,11 @@ export class RunsPage {
   }
 
   checkIfActiveRun(run: Run) {
-    return run === this.activeRun || run.id == this.activeRun.id;
+    return this.hasActiveRun() && (run === this.activeRun || run.id == this.activeRun.id);
   }
 
   hasActiveRun() {
-    return this.activeRun.id;
+    return this.activeRun && this.activeRun.id;
   }
 
   loadManifest() {

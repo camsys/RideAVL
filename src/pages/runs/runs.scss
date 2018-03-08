@@ -1,13 +1,9 @@
 page-runs {
-  ion-header {
-    background-color: $appOrange;
-  }
-
   #select-run-button {
     float: right !important;
   }
 
   .run-info-active .run-info-card {
-    background: lightgray;
+    background: $appLtGray;
   }
 }

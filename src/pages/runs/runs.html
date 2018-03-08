@@ -6,7 +6,7 @@
 -->
 <ion-header no-border>
 
-  <ion-navbar transparent>
+  <ion-navbar>
     <ion-title text-center>Select Run</ion-title>
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
@@ -16,7 +16,7 @@
 </ion-header>
 
 
-<ion-content padding>
+<ion-content padding full-screen>
 
   <ion-grid no-padding>
     <ion-row>
@@ -43,7 +43,7 @@
 </ion-content>
 
 <ion-footer>
-  <ion-toolbar>
+  <ion-toolbar transparent>
     <button ion-button icon-end round [disabled]="!hasActiveRun()" (click)="loadManifest()" id="select-run-button">
       Select
       <ion-icon name="arrow-forward"></ion-icon>

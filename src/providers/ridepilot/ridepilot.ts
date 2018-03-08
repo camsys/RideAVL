@@ -13,6 +13,7 @@ import { User } from '../../models/user';
 import { Run } from '../../models/run';
 import { Itinerary } from '../../models/itinerary';
 import { Vehicle } from '../../models/vehicle';
+import { Address } from '../../models/address';
 
 // Providers
 import { AuthProvider } from '../../providers/auth/auth';
@@ -55,9 +56,9 @@ export class RidepilotProvider {
 
   // Parse Runs response
   private unpackRunsResponse(response): Run[] {
-    let json_rep = response.json();
-    let runs = json_rep.data || [];
-    let vehicles = json_rep.included || [];
+    let json_resp = response.json();
+    let runs = json_resp.data || [];
+    let vehicles = json_resp.included || [];
     let runModels: Run[] = runs.map(run => this.parseRun(run, vehicles));
     return  runModels;
   }
@@ -65,25 +66,35 @@ export class RidepilotProvider {
   // Parse individual run
   private parseRun(run_data, vehicles_data): Run {
     let run: Run = run_data.attributes as Run;
-    let vehicle_id = run_data.relationships.vehicle.data.id;
-    let vehicle: Vehicle = vehicles_data.find(x => x.id === vehicle_id).attributes as Vehicle;
-    run.vehicle = vehicle;
     run.id = run_data.id;
+    if(run_data.relationships && vehicles_data && vehicles_data.length > 0) {
+      let vehicle_id = run_data.relationships.vehicle.data.id;
+      let vehicle: Vehicle = vehicles_data.find(x => x.id === vehicle_id).attributes as Vehicle;
+      run.vehicle = vehicle;
+    }
 
     return run;
   }
 
   // Parse itineraries response
   private unpackItinerariesResponse(response): Itinerary[] {
-    let itineraries = response.json().data || [];
-    let itinModels: Itinerary[] = itineraries.map(itin => this.parseItinerary(itin));
+    let json_resp = response.json();
+    let itineraries = json_resp.data || [];
+    let addresses = json_resp.included || [];
+    let itinModels: Itinerary[] = itineraries.map(itin => this.parseItinerary(itin, addresses));
     return  itinModels;
   }
 
   // Parse individual itinerary
-  private parseItinerary(response): Itinerary {
-    let itin: Itinerary = response.attributes as Itinerary;
-    itin.id = response.id;
+  private parseItinerary(itin_data, addresses_data): Itinerary {
+    let itin: Itinerary = new Itinerary();
+    Object.assign(itin, itin_data.attributes);
+    itin.id = itin_data.id;
+    if(itin_data.relationships && addresses_data && addresses_data.length > 0) {
+      let addr_id = itin_data.relationships.address.data.id;
+      let addr: Address = addresses_data.find(x => x.id === addr_id).attributes as Address;
+      itin.address = addr;
+    }
 
     return itin;
   }

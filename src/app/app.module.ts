@@ -29,6 +29,9 @@ import { GlobalProvider } from '../providers/global/global';
 import { RunInfoComponent } from '../components/run-info/run-info';
 import { ItineraryInfoComponent } from '../components/itinerary-info/itinerary-info';
 
+// Pipes
+import { PrettyTimePipe } from '../pipes/pretty-time/pretty-time';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -38,7 +41,8 @@ import { ItineraryInfoComponent } from '../components/itinerary-info/itinerary-i
     ResetPasswordPage,
     AboutPage,
     RunInfoComponent,
-    ItineraryInfoComponent
+    ItineraryInfoComponent,
+    PrettyTimePipe
   ],
   imports: [
     BrowserModule,

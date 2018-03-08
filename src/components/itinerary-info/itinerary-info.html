@@ -1,5 +1,6 @@
 <div class="itin-info-card">
   <p class="itin-info-title"> 
-    {{itin.time}}: {{itin.address_name}} 
+    {{itin.time_seconds | prettyTime}}
+    <span> {{itin.label()}} </span>
   </p>
 </div>

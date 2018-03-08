@@ -7,7 +7,7 @@
 <ion-header no-border>
 
   <ion-navbar>
-    <ion-title text-center>{{run.name || 'Empty Manifest'}}</ion-title>
+    <ion-title text-center>{{run.name || 'Empty'}} Manifest{{run && run.complete ? ' (Completed)' : ''}}</ion-title>
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
@@ -16,7 +16,7 @@
 </ion-header>
 
 
-<ion-content padding>
+<ion-content padding fullscreen>
 
   <ion-grid no-padding>
     <ion-row>
@@ -43,7 +43,7 @@
 </ion-content>
 
 <ion-footer>
-  <ion-toolbar>
+  <ion-toolbar transparent>
     <button ion-button icon-start round (click)="loadRunList()" id="load-runs-button">
       <ion-icon name="arrow-back"></ion-icon>
       Exit
@@ -52,5 +52,8 @@
       Select
       <ion-icon name="arrow-forward"></ion-icon>
     </button>
+  </ion-toolbar>
+  <ion-toolbar *ngIf="!run.complete" transparent>
+
   </ion-toolbar>
 </ion-footer>

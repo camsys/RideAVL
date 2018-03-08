@@ -5,7 +5,7 @@
     <span class="run-info-status" *ngIf="run.complete"> Completed </span>
   </p>
 
-  <p> {{run.scheduled_start_time_string}}-{{run.scheduled_end_time_string}}</p>
+  <p> {{run.scheduled_start_time_seconds | prettyTime}}-{{run.scheduled_end_time_seconds | prettyTime}}</p>
   <p *ngIf="run.vehicle"> {{run.vehicle.name}}</p>
 </div>
 
