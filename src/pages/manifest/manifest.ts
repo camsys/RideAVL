@@ -17,7 +17,7 @@ import { RunsPage } from '../runs/runs';
 
 // Providers
 import { GlobalProvider } from '../../providers/global/global';
-import { RidepilotProvider } from '../../providers/ridepilot/ridepilot';
+import { ItineraryProvider } from '../../providers/itinerary/itinerary';
 
 @IonicPage()
 @Component({
@@ -34,13 +34,13 @@ export class ManifestPage {
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public global: GlobalProvider,
-              private ridepilotProvider: RidepilotProvider) {
+              private itinProvider: ItineraryProvider) {
               this.run = this.navParams.data.run || {};
               setInterval(() => this.currentTime = new Date(), 500);
   }
 
   ionViewDidLoad() {
-    this.ridepilotProvider.getItineraries(this.run.id)
+    this.itinProvider.getItineraries(this.run.id)
                           .subscribe((itins) => this.loadItins(itins));
   }
 

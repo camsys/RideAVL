@@ -25,8 +25,9 @@ import { AboutPage } from '../pages/about/about';
 
 // Providers
 import { AuthProvider } from '../providers/auth/auth';
-import { RidepilotProvider } from '../providers/ridepilot/ridepilot';
 import { GlobalProvider } from '../providers/global/global';
+import { RunProvider } from '../providers/run/run';
+import { ItineraryProvider } from '../providers/itinerary/itinerary';
 
 // Components
 import { RunInfoComponent } from '../components/run-info/run-info';
@@ -70,8 +71,9 @@ import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     AuthProvider,
-    RidepilotProvider,
-    GlobalProvider
+    GlobalProvider,
+    RunProvider,
+    ItineraryProvider
   ]
 })
 export class AppModule {}

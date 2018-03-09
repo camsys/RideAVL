@@ -15,7 +15,7 @@ import { Run } from '../../models/run';
 import { ManifestPage } from '../manifest/manifest';
 
 // Providers
-import { RidepilotProvider } from '../../providers/ridepilot/ridepilot';
+import { RunProvider } from '../../providers/run/run';
 
 @IonicPage()
 @Component({
@@ -30,12 +30,12 @@ export class RunsPage {
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
-              private ridepilotProvider: RidepilotProvider) {
+              private runProvider: RunProvider) {
               this.highlightedRun = this.navParams.data.highlightedRun || {};
   }
 
   ionViewDidLoad() {
-    this.ridepilotProvider.getRuns()
+    this.runProvider.getRuns()
                           .subscribe((runs) => this.loadRuns(runs));
   }
 

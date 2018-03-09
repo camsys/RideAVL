@@ -12,7 +12,6 @@ import { ResetPasswordPage } from '../reset-password/reset-password';
 
 // Providers
 import { AuthProvider } from '../../providers/auth/auth';
-import { RidepilotProvider } from '../../providers/ridepilot/ridepilot';
 
 // Models
 import { User } from '../../models/user';
@@ -31,7 +30,6 @@ export class SignInPage {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private authProvider: AuthProvider,
-              private ridepilotProvider: RidepilotProvider,
               private toastCtrl: ToastController) {
     this.errorToast = this.toastCtrl.create({});
   }

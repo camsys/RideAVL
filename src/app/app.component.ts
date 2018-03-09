@@ -14,8 +14,7 @@ import { User } from '../models/user';
 import { PageModel } from '../models/page';
 
 // PROVIDERS
-//import { RidepilotProvider } from '../providers/ridepilot/ridepilot';
-import {  GlobalProvider} from '../providers/global/global';
+import { GlobalProvider} from '../providers/global/global';
 import { AuthProvider } from '../providers/auth/auth';
 
 @Component({
