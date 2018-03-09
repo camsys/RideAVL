@@ -26,7 +26,9 @@ import { RidepilotProvider } from '../../providers/ridepilot/ridepilot';
 })
 export class ManifestPage {
   itineraries: Itinerary[] = [];
-  activeItin: Itinerary = {} as Itinerary;
+  activeItin: Itinerary = new Itinerary();
+  highlightedItin: Itinerary = new Itinerary();
+  currentTime: Date = new Date();
   run: Run = {} as Run;
   
   constructor(public navCtrl: NavController, 
@@ -34,25 +36,61 @@ export class ManifestPage {
               public global: GlobalProvider,
               private ridepilotProvider: RidepilotProvider) {
               this.run = this.navParams.data.run || {};
+              setInterval(() => this.currentTime = new Date(), 500);
   }
 
   ionViewDidLoad() {
     this.ridepilotProvider.getItineraries(this.run.id)
-                          .subscribe((itins) => 
-                            this.itineraries = itins
-                          );
+                          .subscribe((itins) => this.loadItins(itins));
+  }
+
+  loadItins(itins: Itinerary[]) {
+    this.itineraries = itins || [];
+    if(!this.hasHighlightedItin()) {
+      this.activeItin = this.itineraries.find(r => r.pending()) || (new Itinerary());
+      this.highlightedItin = this.highlightedItin;
+    }
   }
 
   loadRunList() {
-    this.navCtrl.setRoot(RunsPage, { activeRun: this.run });
+    this.navCtrl.setRoot(RunsPage, { highlightedRun: this.run });
   }
 
-  loadItinerary() {
-
+  checkIfActiveItin(itin: Itinerary) {
+    return this.hasActiveItin() && itin.sameAs(this.activeItin);
   }
 
-  setActiveItinerary(itin: Itinerary) {
+  hasActiveItin() {
+    return this.activeItin && this.activeItin.address;
+  }
+
+  setActiveItin(itin: Itinerary) {
     this.activeItin = itin;
+  }
+
+  checkIfHighlightedItin(itin: Itinerary) {
+    return this.hasHighlightedItin() && itin.sameAs(this.highlightedItin);
+  }
+
+  hasHighlightedItin() {
+    return this.highlightedItin && this.highlightedItin.address;
+  }
+
+  setHighlightedItin(itin: Itinerary) {
+    this.highlightedItin = itin;
+  }
+
+  loadItin(itin: Itinerary) {
+    this.setHighlightedItin(itin);
+  }
+
+  // Show the info of next/in_progress itin
+  getNextItinTitle() {
+    if(this.activeItin.in_progress()) {
+      return "In Progress: " + this.activeItin.label();
+    } else if(this.activeItin.pending()) {
+      return "Next: " + this.activeItin.label();
+    } 
   }
 
 }

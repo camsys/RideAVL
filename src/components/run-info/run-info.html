@@ -1,11 +1,24 @@
 <!-- Generated template for the RunInfoComponent component -->
 <div class="run-info-card">
-  <p class="run-info-title"> 
-    {{run.name}} 
-    <span class="run-info-status" *ngIf="run.complete"> Completed </span>
-  </p>
+  <ion-row class="run-info-title">
+    <ion-col col-sm-6 col-xs-12>
+      <span> {{run.name}}</span>
+    </ion-col>
+    <ion-col col-sm-6  col-xs-12 text-right>
+      {{run.scheduled_start_time_seconds | prettyTimeFromSeconds}}-{{run.scheduled_end_time_seconds | prettyTimeFromSeconds}}
+    </ion-col>
+  </ion-row>
 
-  <p> {{run.scheduled_start_time_seconds | prettyTime}}-{{run.scheduled_end_time_seconds | prettyTime}}</p>
-  <p *ngIf="run.vehicle"> {{run.vehicle.name}}</p>
+  <ion-row>
+    <ion-col col-xs-12 col-sm-6 col-md-4> 
+      Vehicle: {{run.vehicle ? run.vehicle.name : '(N/A)'}}
+    </ion-col>
+    <ion-col col-xs-12 col-sm-6 col-md-4 text-center>
+      Trips: {{ run.trips_count }}
+    </ion-col>
+    <ion-col col-xs-12 col-sm-6 col-md-4 text-right>
+      Status: {{ run.status }}
+    </ion-col>
+  </ion-row>
 </div>
 

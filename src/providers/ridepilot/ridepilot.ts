@@ -65,11 +65,14 @@ export class RidepilotProvider {
 
   // Parse individual run
   private parseRun(run_data, vehicles_data): Run {
-    let run: Run = run_data.attributes as Run;
+    let run: Run = new Run();
+    Object.assign(run, run_data.attributes);
     run.id = run_data.id;
     if(run_data.relationships && vehicles_data && vehicles_data.length > 0) {
       let vehicle_id = run_data.relationships.vehicle.data.id;
-      let vehicle: Vehicle = vehicles_data.find(x => x.id === vehicle_id).attributes as Vehicle;
+      let vehicle: Vehicle = new Vehicle();
+      Object.assign(vehicle, vehicles_data.find(x => x.id === vehicle_id).attributes);
+      vehicle.id = vehicle_id;
       run.vehicle = vehicle;
     }
 
@@ -92,7 +95,10 @@ export class RidepilotProvider {
     itin.id = itin_data.id;
     if(itin_data.relationships && addresses_data && addresses_data.length > 0) {
       let addr_id = itin_data.relationships.address.data.id;
-      let addr: Address = addresses_data.find(x => x.id === addr_id).attributes as Address;
+      let addr_data = addresses_data.find(x => x.id === addr_id).attributes;
+      let addr = new Address();
+      addr.id = addr_id;
+      Object.assign(addr, addr_data);
       itin.address = addr;
     }
 

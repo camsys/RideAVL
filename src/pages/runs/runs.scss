@@ -3,7 +3,7 @@ page-runs {
     float: right !important;
   }
 
-  .run-info-active .run-info-card {
-    background: $appLtGray;
+  .run-info-highlighted .run-info-card {
+    background: $appMdBlue;
   }
 }

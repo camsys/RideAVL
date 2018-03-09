@@ -3,7 +3,7 @@
 // App Button Primary (bright orange, black on click)
 // EXAMPLE: <button ion-button round class="app-button-primary"> BUTTON TEXT </button>
 button.app-button-primary {
-  background-color: $appOrange;
+  background-color: $primary;
   color: $appWhite;
   
   ion-icon.icon.icon-ios,
@@ -12,8 +12,8 @@ button.app-button-primary {
     color: inherit;
   }
   
-  &:active, &:hover {
-    background-color: $appBlack;
+  &:highlighted, &:hover {
+    background-color: $appBlue !important;
     color: $appWhite;
   }
 }
@@ -25,7 +25,7 @@ button.app-button-outline {
   border: size(-5) solid $appDarkOrange;
   color: $appDarkOrange;
   
-  &:active, &:hover {
+  &:highlighted, &:hover {
     background-color: $appDarkOrange;
     color: $appWhite;
   }
@@ -34,14 +34,14 @@ button.app-button-outline {
 // App Button Dark (dark orange, white on click)
 // EXAMPLE: <button ion-button round class="app-button-dark"> BUTTON TEXT </button>
 button.app-button-dark {
-  background-color: $appDarkOrange;
-  border: size(-5) solid $appDarkOrange;
+  background-color: $primary;
+  border: size(-5) solid $primary;
   color: $appWhite;
   
-  &:active, &:hover {
+  &:highlighted, &:hover {
     background-color: $appWhite !important;
     border-color: $appLtGray;
-    color: $appDarkOrange;
+    color: $primary;
   }
 }
 
@@ -51,7 +51,7 @@ button.app-button-white {
   background-color: $appWhite;
   color: $appDarkOrange;
   
-  &:active, &:hover {
+  &:highlighted, &:hover {
     background-color: $appDarkOrange;
     color: $appWhite;
   }
@@ -83,28 +83,32 @@ a.app-button-link {
   font-weight: 500;
   margin: size(1);
   text-decoration: none;
+  color: $appBlue;
+  &:highlighted, &:hover {
+    color: $primary;
+  }
   
-  &:active, &:hover {
+  &:highlighted, &:hover {
     opacity: 1.0;
   }
   
   // Link colorings
   &.link-orange {
     color: $appDarkOrange;
-    &:active, &:hover {
-      color: $appOrange;
+    &:highlighted, &:hover {
+      color: $primary;
     }
   }
   &.link-black {
     color: $appBlack;
-    &:active, &:hover {
+    &:highlighted, &:hover {
       color: $appWhite;
     }
   }
   &.link-white {
     color: $appWhite;
-    &:active, &:hover {
-      color: $appOrange;
+    &:highlighted, &:hover {
+      color: $primary;
     }
   }
 }

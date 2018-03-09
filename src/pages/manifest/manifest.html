@@ -7,8 +7,8 @@
 <ion-header no-border>
 
   <ion-navbar>
-    <ion-title text-center>{{run.name || 'Empty'}} Manifest{{run && run.complete ? ' (Completed)' : ''}}</ion-title>
-    <button ion-button menuToggle>
+    <ion-title text-center>{{run.name || 'Empty'}} Manifest{{run && run.completed() ? ' (Completed)' : ''}}</ion-title>
+    <button ion-button menuToggle end>
       <ion-icon name="menu"></ion-icon>
     </button>
   </ion-navbar>
@@ -25,12 +25,12 @@
         <ion-list class="app-list">
 
           <!-- ITIN DETAILS -->
-          <ion-item class="itin-list" text-wrap *ngFor="let itin of itineraries">
+          <div class="itin-list" text-wrap *ngFor="let itin of itineraries">
 
             <!-- Itin info -->
-            <itinerary-info [itin]="itin" [ngClass]="{'itin-info-active': activeItinerary == itin}" (click)="setActiveItinerary(itin)"></itinerary-info>
+            <itinerary-info [itin]="itin" [ngClass]="{'itin-info-highlighted': this.activeItinerary == itin}" (click)="loadItin(itin)"></itinerary-info>
 
-          </ion-item>
+          </div>
         </ion-list>
         <h2 *ngIf="itineraries.length == 0">
           No Itinerary
@@ -42,18 +42,29 @@
 
 </ion-content>
 
-<ion-footer>
-  <ion-toolbar transparent>
-    <button ion-button icon-start round (click)="loadRunList()" id="load-runs-button">
-      <ion-icon name="arrow-back"></ion-icon>
-      Exit
-    </button>
-    <button ion-button icon-end round (click)="loadItinerary()" id="select-itin-button">
-      Select
-      <ion-icon name="arrow-forward"></ion-icon>
-    </button>
-  </ion-toolbar>
-  <ion-toolbar *ngIf="!run.complete" transparent>
-
-  </ion-toolbar>
+<ion-footer no-border>
+  <div *ngIf="!run.completed()">
+    <ion-toolbar>
+      <ion-title class="manifest-next-stop"> {{this.getNextItinTitle()}}</ion-title>
+      <hr class="manifest-next-divider">
+      <ion-row id="itin-time-info" [ngClass]="{'itin-eta-early': this.activeItin.gap_status() == 2}" [ngClass]="{'itin-eta-late': this.activeItin.gap_status() == 3}">
+        <ion-col col-sm-3>
+          <ion-row>TIME</ion-row>
+          <ion-row class="time-highlight">{{this.currentTime | amDateFormat:'hh:mm A'}}</ion-row>
+        </ion-col>
+        <ion-col col-sm-3>
+          <ion-row>SCH</ion-row>
+          <ion-row class="time-highlight">{{this.activeItin.time_seconds | prettyTimeFromSeconds}}</ion-row>
+        </ion-col>
+        <ion-col col-sm-3 class="itin-info-eta">
+          <ion-row>ETA</ion-row>
+          <ion-row class="time-highlight">{{this.activeItin.eta_seconds | prettyTimeFromSeconds}}</ion-row>
+        </ion-col>
+        <ion-col col-sm-3 class="itin-info-time-gap">
+          <ion-row>GAP</ion-row>
+          <ion-row class="time-highlight">{{this.activeItin.gap_status() > 1 ?  (this.activeItin.gap_in_seconds() | amDuration:'seconds') : ''}} {{this.activeItin.gap_status_label()}}</ion-row>
+        </ion-col>
+      </ion-row>
+    </ion-toolbar>
+  </div>
 </ion-footer>

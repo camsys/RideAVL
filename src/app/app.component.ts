@@ -102,6 +102,7 @@ export class MyApp {
   setMenu(){
     // Pages to display if user is signed in
     this.signedInPages = [
+      //{ title: 'Runs for Today', component: RunsPage},
       { title: 'Sign Out', component: "sign_out"},
       { title: 'About This App', component: AboutPage }
     ] as PageModel[];

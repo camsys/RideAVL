@@ -7,4 +7,9 @@ export class Address {
   longitude: string;
   notes: string;
   latlng_only: boolean;
+  one_line_text: string;
+
+  displayText() {
+    return this.address;
+  }
 }

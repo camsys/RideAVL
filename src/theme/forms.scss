@@ -1,8 +1,8 @@
 /* FORMS AND INPUTS */
 
 
-// Basic Lynx Form Input Field (white, sharp corners, small spacing between)
-// EXAMPLE: <ion-input class="lynx-input"></ion-input>
+// Basic APP Form Input Field (white, sharp corners, small spacing between)
+// EXAMPLE: <ion-input class="APP-input"></ion-input>
 ion-input.app-input {
   
   background-color: $appWhite;
@@ -13,4 +13,8 @@ ion-input.app-input {
     color: $appDkGray;
   }
   
+}
+
+ion-input.app-input-border {
+  border: 1px solid $primary;
 }

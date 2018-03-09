@@ -1,8 +1,15 @@
 import { NgModule } from '@angular/core';
-import { PrettyTimePipe } from './pretty-time/pretty-time';
+import { PrettyTimeFromSecondsPipe } from './pretty-time-from-seconds/pretty-time-from-seconds';
+import { PhoneNumberPipe } from './phone-number/phone-number';
 @NgModule({
-	declarations: [PrettyTimePipe],
+	declarations: [
+    PrettyTimeFromSecondsPipe,
+    PhoneNumberPipe
+    ],
 	imports: [],
-	exports: [PrettyTimePipe]
+	exports: [
+    PrettyTimeFromSecondsPipe,
+    PhoneNumberPipe
+    ]
 })
 export class PipesModule {}

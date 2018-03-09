@@ -1,16 +1,15 @@
 itinerary-info {
   .itin-info-card {
-    border: 2px solid $appOrange;
-    padding: 5px;
+    margin-bottom: size(2);
+    border: 2px solid $primary;
+    border-radius: size(2);
+    padding: size(1);
     cursor: pointer;
+    background: $appLightBlue;
+    font-size: $font-size-md;
   }
 
   .itin-info-title {
-    font-size: 1.6em;
     font-weight: bold;
-  }
-  .itin-info-status {
-    float: right;
-    font-size: 1em;
   }
 }

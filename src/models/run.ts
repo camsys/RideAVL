@@ -8,5 +8,11 @@ export class Run {
   scheduled_start_time_seconds: number;
   scheduled_end_time_seconds: number;
   vehicle: Vehicle;
-  complete: boolean;
+  status_code: number;
+  status: string;
+  trips_count: number;
+
+  completed() {
+    return this.status_code == 2;
+  }
 }

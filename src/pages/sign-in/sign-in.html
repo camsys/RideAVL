@@ -1,46 +1,56 @@
 <ion-header no-border>
 
-  <ion-navbar transparent>
-    <ion-title text-center>RidePilot</ion-title>
+  <ion-navbar>
+    <ion-title text-center class="app-logo-header">
+      <img class="app-logo" src="assets/imgs/client_logo.png"/>
+      <span class="app-title">RideAVL</span>
+    </ion-title>
   </ion-navbar>
 
 </ion-header>
 
-<ion-content padding>
+<ion-content padding transparent>
 
   <ion-grid>
     <form (ngSubmit)="signIn()" #signInForm="ngForm">
 
       <ion-row>
         <ion-col no-padding col-sm-10 offset-sm-1 col-md-8 offset-md-2>
-          <ion-input  class="app-input"
+          <h2>
+            Login to RideAVL
+          </h2>
+
+          <ion-input  class="app-input app-input-border"
                       type="text"
                       placeholder="Username"
                       name="username"
-                      [(ngModel)]="user.username"
+                      [(ngModel)]="user.username" 
                       required>
           </ion-input>
-          <ion-input  class="app-input"
+
+
+          <ion-input  class="app-input app-input-border"
                       type="password"
                       placeholder="Password"
                       name="password"
                       [(ngModel)]="user.password"
                       required>
           </ion-input>
+
         </ion-col>
       </ion-row>
 
       <ion-row>
         <ion-col text-center>
-          <button ion-button round class="app-button-dark center" type="submit" [disabled]="!signInForm.form.valid">
-            SIGN IN
+          <button ion-button round class="app-button-primary center" type="submit" [disabled]="!signInForm.form.valid">
+            Login
           </button>
         </ion-col>
       </ion-row>
 
       <ion-row>
         <ion-col text-center>
-          <button type="button" class="app-button-link link-black" (click)="resetPassword()">
+          <button type="button" class="app-button-link link-blue" (click)="resetPassword()">
             Forgot your Password?
           </button>
         </ion-col>
@@ -50,3 +60,11 @@
   </ion-grid>
 
 </ion-content>
+
+<ion-footer no-border>
+
+  <ion-toolbar>
+    <ion-title text-center>Open source AVL for the RidePilot transportation scheduling system</ion-title>
+  </ion-toolbar>
+
+</ion-footer>

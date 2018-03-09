@@ -26,12 +26,12 @@ export class RunsPage {
   
   runs: Run[] = [];
 
-  activeRun: Run = {} as Run;
+  highlightedRun: Run = {} as Run;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               private ridepilotProvider: RidepilotProvider) {
-              this.activeRun = this.navParams.data.activeRun || {};
+              this.highlightedRun = this.navParams.data.highlightedRun || {};
   }
 
   ionViewDidLoad() {
@@ -41,25 +41,26 @@ export class RunsPage {
 
   loadRuns(runs: Run[]) {
     this.runs = runs || [];
-    if(!this.hasActiveRun()) {
-      this.activeRun = this.runs.find(r => !r.complete) || ({} as Run);
+    if(!this.hasHighlightedRun()) {
+      this.highlightedRun = this.runs.find(r => !r.completed()) || (new Run());
     }
   }
 
-  setActiveRun(run: Run) {
-    this.activeRun = run;
+  setHighlightedRun(run: Run) {
+    this.highlightedRun = run;
   }
 
-  checkIfActiveRun(run: Run) {
-    return this.hasActiveRun() && (run === this.activeRun || run.id == this.activeRun.id);
+  checkIfHighlightedRun(run: Run) {
+    return this.hasHighlightedRun() && (run === this.highlightedRun || run.id == this.highlightedRun.id);
   }
 
-  hasActiveRun() {
-    return this.activeRun && this.activeRun.id;
+  hasHighlightedRun() {
+    return this.highlightedRun && this.highlightedRun.id;
   }
 
-  loadManifest() {
-    this.navCtrl.setRoot(ManifestPage, {run: this.activeRun});
+  loadManifest(run: Run) {
+    this.setHighlightedRun(run);
+    this.navCtrl.push(ManifestPage, {run: run});
   }
 
 }

@@ -1,6 +1,30 @@
+<!-- Generated template for the ItineraryInfoComponent component -->
 <div class="itin-info-card">
-  <p class="itin-info-title"> 
-    {{itin.time_seconds | prettyTime}}
-    <span> {{itin.label()}} </span>
-  </p>
+  <ion-row class="itin-info-title">
+    <ion-col col-sm-2>
+      <span> {{itin.time_seconds | prettyTimeFromSeconds}}</span>
+    </ion-col>
+  
+    <ion-col col-sm-8>
+      {{itin.label()}}
+    </ion-col>
+
+     <ion-col col-sm-2 text-right>
+      <span> {{itin.status()}}</span>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col col-sm-2>
+    </ion-col>
+    
+    <ion-col col-sm-8>
+      {{itin.address.one_line_text}}
+    </ion-col>
+
+    <ion-col col-sm-2 text-right>
+      <span>{{itin.phone | phoneNumber}}</span>
+    </ion-col>
+  </ion-row>
 </div>
+

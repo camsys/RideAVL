@@ -1,17 +1,21 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 /**
- * Generated class for the PrettyTimePipe pipe.
+ * Generated class for the PrettyTimeFromSecondsPipe pipe.
  *
  * See https://angular.io/api/core/Pipe for more info on Angular Pipes.
  */
 @Pipe({
-  name: 'prettyTime',
+  name: 'prettyTimeFromSeconds',
 })
-export class PrettyTimePipe implements PipeTransform {
+export class PrettyTimeFromSecondsPipe implements PipeTransform {
   constructor() { }
   
   transform(secs: number): string {
+    if(!secs && secs != 0) {
+      return 'N/A';
+    }
+    
     let hrs = Math.floor(secs / 3600);
     let mins = Math.floor((secs - (hrs * 3600)) / 60);
     let ampm = "PM";

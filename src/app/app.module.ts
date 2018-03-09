@@ -12,6 +12,9 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
+// Third-party Imports
+import { MomentModule } from 'angular2-moment';
+
 // Pages
 import { MyApp } from './app.component';
 import { SignInPage } from '../pages/sign-in/sign-in';
@@ -30,7 +33,9 @@ import { RunInfoComponent } from '../components/run-info/run-info';
 import { ItineraryInfoComponent } from '../components/itinerary-info/itinerary-info';
 
 // Pipes
-import { PrettyTimePipe } from '../pipes/pretty-time/pretty-time';
+import { PrettyTimeFromSecondsPipe } from '../pipes/pretty-time-from-seconds/pretty-time-from-seconds';
+import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
+
 
 @NgModule({
   declarations: [
@@ -42,11 +47,13 @@ import { PrettyTimePipe } from '../pipes/pretty-time/pretty-time';
     AboutPage,
     RunInfoComponent,
     ItineraryInfoComponent,
-    PrettyTimePipe
+    PrettyTimeFromSecondsPipe,
+    PhoneNumberPipe
   ],
   imports: [
     BrowserModule,
     HttpModule,
+    MomentModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
