@@ -1,0 +1,47 @@
+<!--
+  Generated template for the ItineraryPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header no-border>
+
+  <ion-navbar>
+    <ion-title text-center>{{itin.label()}}</ion-title>
+    <button ion-button menuToggle end>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+</ion-content>
+
+<ion-footer no-border>
+  <div *ngIf="!run.completed()">
+    <ion-toolbar>
+      <ion-row id="itin-time-info" [ngClass]="{'itin-eta-early': this.itin.gap_status() == 2}" [ngClass]="{'itin-eta-late': this.itin.gap_status() == 3}">
+        <ion-col col-sm-3>
+          <ion-row>TIME</ion-row>
+          <ion-row class="time-highlight">{{this.currentTime | amDateFormat:'hh:mm A'}}</ion-row>
+        </ion-col>
+        <ion-col col-sm-3>
+          <ion-row>SCH</ion-row>
+          <ion-row class="time-highlight">{{this.itin.time_seconds | prettyTimeFromSeconds}}</ion-row>
+        </ion-col>
+        <ion-col col-sm-3 class="itin-info-eta">
+          <ion-row>ETA</ion-row>
+          <ion-row class="time-highlight">{{this.itin.eta_seconds | prettyTimeFromSeconds}}</ion-row>
+        </ion-col>
+        <ion-col col-sm-3 class="itin-info-time-gap">
+          <ion-row>GAP</ion-row>
+          <ion-row class="time-highlight">{{this.itin.gap_status() > 1 ?  (this.itin.gap_in_seconds() | amDuration:'seconds') : ''}} {{this.itin.gap_status_label()}}</ion-row>
+        </ion-col>
+      </ion-row>
+    </ion-toolbar>
+  </div>
+</ion-footer>
+

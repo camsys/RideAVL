@@ -1,0 +1,26 @@
+page-itinerary {
+  #itin-time-info {
+    color: $appWhite;
+    padding: 0 size(1);
+  }
+
+  .time-highlight {
+    font-size: $font-size-lg;
+  }
+
+  .itin-info-highlighted .itin-info-card {
+    background: $appMdBlue;
+  }
+
+  .itin-eta-early {
+    .itin-info-eta, .itin-info-time-gap {
+      background: $appGrenn;
+    }
+  }
+
+  .itin-eta-late {
+    .itin-info-eta, .itin-info-time-gap {
+      background: $appRed;
+    }
+  }
+}

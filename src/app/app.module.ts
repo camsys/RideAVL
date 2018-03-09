@@ -21,12 +21,14 @@ import { SignInPage } from '../pages/sign-in/sign-in';
 import { ResetPasswordPage } from '../pages/reset-password/reset-password';
 import { RunsPage } from '../pages/runs/runs';
 import { ManifestPage } from '../pages/manifest/manifest';
+import { ItineraryPage } from '../pages/itinerary/itinerary';
 import { AboutPage } from '../pages/about/about';
 
 // Providers
 import { AuthProvider } from '../providers/auth/auth';
 import { GlobalProvider } from '../providers/global/global';
 import { RunProvider } from '../providers/run/run';
+import { ManifestProvider } from '../providers/manifest/manifest';
 import { ItineraryProvider } from '../providers/itinerary/itinerary';
 
 // Components
@@ -37,13 +39,13 @@ import { ItineraryInfoComponent } from '../components/itinerary-info/itinerary-i
 import { PrettyTimeFromSecondsPipe } from '../pipes/pretty-time-from-seconds/pretty-time-from-seconds';
 import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
 
-
 @NgModule({
   declarations: [
     MyApp,
     SignInPage,
     RunsPage,
     ManifestPage,
+    ItineraryPage,
     ResetPasswordPage,
     AboutPage,
     RunInfoComponent,
@@ -63,6 +65,7 @@ import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
     SignInPage,
     RunsPage,
     ManifestPage,
+    ItineraryPage,
     ResetPasswordPage,
     AboutPage
   ],
@@ -73,6 +76,7 @@ import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
     AuthProvider,
     GlobalProvider,
     RunProvider,
+    ManifestProvider,
     ItineraryProvider
   ]
 })

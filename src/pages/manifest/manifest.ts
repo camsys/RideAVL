@@ -14,10 +14,11 @@ import { Itinerary } from '../../models/itinerary';
 
 // Pages
 import { RunsPage } from '../runs/runs';
+import { ItineraryPage } from '../itinerary/itinerary';
 
 // Providers
 import { GlobalProvider } from '../../providers/global/global';
-import { ItineraryProvider } from '../../providers/itinerary/itinerary';
+import { ManifestProvider } from '../../providers/manifest/manifest';
 
 @IonicPage()
 @Component({
@@ -34,13 +35,13 @@ export class ManifestPage {
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public global: GlobalProvider,
-              private itinProvider: ItineraryProvider) {
+              private manifestProvider: ManifestProvider) {
               this.run = this.navParams.data.run || {};
               setInterval(() => this.currentTime = new Date(), 500);
   }
 
   ionViewDidLoad() {
-    this.itinProvider.getItineraries(this.run.id)
+    this.manifestProvider.getItineraries(this.run.id)
                           .subscribe((itins) => this.loadItins(itins));
   }
 
@@ -82,6 +83,7 @@ export class ManifestPage {
 
   loadItin(itin: Itinerary) {
     this.setHighlightedItin(itin);
+    this.navCtrl.push(ItineraryPage, { itin: itin, run: this.run });
   }
 
   // Show the info of next/in_progress itin
