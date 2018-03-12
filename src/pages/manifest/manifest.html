@@ -21,7 +21,9 @@
   <ion-grid no-padding>
     <ion-row>
       <ion-col col-sm-10 offset-sm-1 col-md-8 offset-md-2>
-
+        <h2 *ngIf="!this.dataLoaded">
+          Loading...
+        </h2>
         <ion-list class="app-list">
 
           <!-- ITIN DETAILS -->
@@ -32,7 +34,7 @@
 
           </div>
         </ion-list>
-        <h2 *ngIf="itineraries.length == 0">
+        <h2 *ngIf="this.dataLoaded && itineraries.length == 0">
           No Itinerary
         </h2>
 

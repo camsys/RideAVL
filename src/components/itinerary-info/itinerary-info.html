@@ -19,7 +19,7 @@
     </ion-col>
     
     <ion-col col-sm-8>
-      {{itin.address.one_line_text}}
+      {{itin.address ? itin.address.one_line_text : '(Address missing)'}}
     </ion-col>
 
     <ion-col col-sm-2 text-right>

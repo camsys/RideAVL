@@ -26,6 +26,7 @@ import { ManifestProvider } from '../../providers/manifest/manifest';
   templateUrl: 'manifest.html',
 })
 export class ManifestPage {
+  dataLoaded: Boolean = false;
   itineraries: Itinerary[] = [];
   activeItin: Itinerary = new Itinerary();
   highlightedItin: Itinerary = new Itinerary();
@@ -46,6 +47,7 @@ export class ManifestPage {
   }
 
   loadItins(itins: Itinerary[]) {
+    this.dataLoaded = true;
     this.itineraries = itins || [];
     if(!this.hasHighlightedItin()) {
       this.activeItin = this.itineraries.find(r => r.pending()) || (new Itinerary());

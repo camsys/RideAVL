@@ -23,7 +23,7 @@ import { RunProvider } from '../../providers/run/run';
   templateUrl: 'runs.html',
 })
 export class RunsPage {
-  
+  dataLoaded: Boolean = false;
   runs: Run[] = [];
 
   highlightedRun: Run = {} as Run;
@@ -40,6 +40,7 @@ export class RunsPage {
   }
 
   loadRuns(runs: Run[]) {
+    this.dataLoaded = true;
     this.runs = runs || [];
     if(!this.hasHighlightedRun()) {
       this.highlightedRun = this.runs.find(r => !r.completed()) || (new Run());
