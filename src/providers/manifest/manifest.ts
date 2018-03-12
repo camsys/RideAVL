@@ -58,7 +58,7 @@ export class ManifestProvider {
     let itin: Itinerary = new Itinerary();
     Object.assign(itin, itin_data.attributes);
     itin.id = itin_data.id;
-    if(itin_data.relationships && addresses_data && addresses_data.length > 0) {
+    if(itin_data.relationships && itin_data.relationships.address.data && addresses_data && addresses_data.length > 0) {
       let addr_id = itin_data.relationships.address.data.id;
       let addr_data = addresses_data.find(x => x.id === addr_id).attributes;
       let addr = new Address();
