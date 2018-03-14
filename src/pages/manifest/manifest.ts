@@ -32,16 +32,28 @@ export class ManifestPage {
   nextItin: Itinerary = new Itinerary();
   currentTime: Date = new Date();
   run: Run = {} as Run;
+  runs: Run[] = [];
   
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public global: GlobalProvider,
               private manifestProvider: ManifestProvider) {
-              this.run = this.navParams.data.run || (new Run());
-              this.itineraries = this.navParams.data.itineraries || [];
-              if(this.itineraries && this.itineraries.length > 0) {
-                this.dataLoaded = true;
+
+              if(this.navParams.data.run) {
+                this.run = this.navParams.data.run;
               }
+
+              if(this.navParams.data.runs) {
+                this.runs = this.navParams.data.runs;
+              }
+
+              if(this.navParams.data.itineraries) {
+                this.itineraries = this.navParams.data.itineraries;
+                if(this.itineraries.length > 0) {
+                  this.dataLoaded = true;
+                }
+              }
+              
               setInterval(() => this.currentTime = new Date(), 500);
   }
 
@@ -69,7 +81,7 @@ export class ManifestPage {
   }
 
   loadRunList() {
-    this.navCtrl.setRoot(RunsPage);
+    this.navCtrl.setRoot(RunsPage, {runs: this.runs});
   }
 
   loadItin(itin: Itinerary) {

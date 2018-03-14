@@ -29,8 +29,19 @@ export class ItineraryPage {
               public navParams: NavParams,
               public global: GlobalProvider,
               private itinProvider: ItineraryProvider) {
-              this.itin = this.navParams.data.itin || {};
-              this.itins = this.navParams.data.itins || [];
+
+              if(this.navParams.data.itin) {
+                this.itin = this.navParams.data.itin;
+              }
+
+              if(this.navParams.data.itins) {
+                this.itins = this.navParams.data.itins;
+              }
+
+              if(this.navParams.data.run) {
+                this.run = this.navParams.data.run;
+              }
+
               this.active = this.navParams.data.active || false;
               setInterval(() => this.currentTime = new Date(), 500);
   }
@@ -110,11 +121,13 @@ export class ItineraryPage {
   // status action buttons
   startRun() {
     this.itin.flagCompleted();
+    this.run.flagInProgress();
     this.navToNextItin();
   }
 
   endRun() {
     this.itin.flagCompleted();
+    this.run.flagCompleted();
     this.navCtrl.setRoot(RunsPage);
   }
 

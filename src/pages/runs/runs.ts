@@ -31,12 +31,24 @@ export class RunsPage {
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               private runProvider: RunProvider) {
-              this.highlightedRun = this.navParams.data.highlightedRun || {};
+
+              if(this.navParams.data.runs) {
+                this.runs = this.navParams.data.runs;
+                if(this.runs.length > 0) {
+                  this.dataLoaded = true;
+                }
+              }
+
+              if(this.navParams.data.highlightedRun) {
+                this.highlightedRun = this.navParams.data.highlightedRun;
+              }
   }
 
   ionViewDidLoad() {
-    this.runProvider.getRuns()
-                          .subscribe((runs) => this.loadRuns(runs));
+    if(!this.dataLoaded) {
+      this.runProvider.getRuns()
+                      .subscribe((runs) => this.loadRuns(runs));
+    }
   }
 
   loadRuns(runs: Run[]) {
@@ -61,7 +73,7 @@ export class RunsPage {
 
   loadManifest(run: Run) {
     this.setHighlightedRun(run);
-    this.navCtrl.setRoot(ManifestPage, {run: run});
+    this.navCtrl.setRoot(ManifestPage, {run: run, runs: this.runs});
   }
 
 }
