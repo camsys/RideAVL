@@ -4,6 +4,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { Http, HttpModule } from '@angular/http';
 
+// Native imports
+import { LaunchNavigator } from '@ionic-native/launch-navigator';
+
 // Environment
 import { environment } from './environment';
 
@@ -77,7 +80,8 @@ import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
     GlobalProvider,
     RunProvider,
     ManifestProvider,
-    ItineraryProvider
+    ItineraryProvider,
+    LaunchNavigator
   ]
 })
 export class AppModule {}

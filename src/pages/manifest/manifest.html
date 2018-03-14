@@ -10,6 +10,7 @@
     <ion-buttons left>
         <button ion-button icon-only (click)="this.loadRunList()">
           <ion-icon name="arrow-back"></ion-icon>
+          Runs
         </button>
     </ion-buttons>
     <ion-title text-center>{{run.name || 'Empty'}} Manifest{{run && run.completed() ? ' (Completed)' : ''}}</ion-title>
@@ -52,7 +53,7 @@
 <ion-footer no-border>
   <div *ngIf="!run.completed()">
     <ion-toolbar>
-      <ion-title class="manifest-next-stop"> {{this.getNextItinTitle()}}</ion-title>
+      <ion-row class="manifest-next-stop"> {{this.getNextItinTitle()}}</ion-row>
       <hr class="manifest-next-divider">
       <ion-row id="itin-time-info" [ngClass]="{'itin-eta-early': this.activeItin.gap_status() == 2}" [ngClass]="{'itin-eta-late': this.activeItin.gap_status() == 3}">
         <ion-col col-sm-3>

@@ -3,8 +3,8 @@ export class Address {
   name: string;
   address: string;
   city: string;
-  latitude: string;
-  longitude: string;
+  latitude: number;
+  longitude: number;
   notes: string;
   latlng_only: boolean;
   one_line_text: string;

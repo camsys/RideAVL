@@ -1,9 +1,13 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
+// Third-party native plugins
+import { LaunchNavigator, LaunchNavigatorOptions } from '@ionic-native/launch-navigator';
+
 // Models
 import { Run } from '../../models/run';
 import { Itinerary } from '../../models/itinerary';
+import { Address } from '../../models/address';
 
 // Providers
 import { GlobalProvider } from '../../providers/global/global';
@@ -28,7 +32,8 @@ export class ItineraryPage {
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public global: GlobalProvider,
-              private itinProvider: ItineraryProvider) {
+              private itinProvider: ItineraryProvider,
+              private navigator: LaunchNavigator) {
 
               if(this.navParams.data.itin) {
                 this.itin = this.navParams.data.itin;
@@ -165,5 +170,15 @@ export class ItineraryPage {
     this.navCtrl.setRoot(ManifestPage, {run: this.run, itineraries: this.itins});
   }
   
+  launchNavigator() {
+    let addr: Address = this.itin.address;
+    let options: LaunchNavigatorOptions = {};
+
+    this.navigator.navigate([addr.latitude, addr.longitude], options)
+      .then(
+        success => console.log('Launched navigator'),
+        error => console.log('Error launching navigator', error)
+      );
+  }
 }
 

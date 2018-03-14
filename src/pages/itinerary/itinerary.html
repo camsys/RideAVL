@@ -10,6 +10,7 @@
     <ion-buttons left>
         <button ion-button icon-only (click)="this.loadManifest()">
           <ion-icon name="arrow-back"></ion-icon>
+          Manifest
         </button>
     </ion-buttons>
     <ion-title text-center>{{itin.label()}}</ion-title>
@@ -21,7 +22,7 @@
   <ion-toolbar transparent class="address-toolbar">
     <ion-title>{{itin.address ? itin.address.one_line_text : '(Address missing)'}}</ion-title>
     <ion-buttons right *ngIf="this.showNavigateButton()">
-      <button ion-button icon-only large><ion-icon name="navigate"></ion-icon></button>
+      <button ion-button icon-only large (click)="this.launchNavigator()"><ion-icon name="navigate"></ion-icon></button>
     </ion-buttons>
   </ion-toolbar>
 
@@ -146,11 +147,6 @@
       </ion-col>
 
       <ion-col text-center *ngIf="this.itin.finished() && this.itin.hasTrip()">
-        <button ion-button round large
-                id="show-manifest-button"
-                (click)="this.loadManifest()">
-          Return to Manifest
-        </button>
         <button ion-button round large
                 id="show-next-itin-button"
                 *ngIf="this.getNextItin()"

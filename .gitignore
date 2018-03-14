@@ -36,4 +36,6 @@ UserInterfaceState.xcuserstate
 *.keystore
 *.apk
 deploy/apk/*
+deploy/device/*
+deploy/emulate/*
 apks/*

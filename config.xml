@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="io.ionic.starter" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>ridepilotDriverApp</name>
-    <description>An awesome Ionic/Cordova app.</description>
-    <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
+    <name>RideAVL</name>
+    <description>A driver app for RidePilot.</description>
+    <author email="xudongliu@camsys.com" href="camsys.software">Cambridge Systematics</author>
     <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
@@ -85,4 +85,7 @@
     <allow-navigation href="http://192.168.0.6:8100" />
     <engine name="android" spec="7.0.0" />
     <engine name="browser" spec="5.0.3" />
+    <plugin name="uk.co.workingedge.phonegap.plugin.launchnavigator" spec="^4.1.5" />
+    <allow-navigation href="http://172.31.98.249:8100" />
+    <allow-navigation href="http://192.168.6.41:8100" />
 </widget>
