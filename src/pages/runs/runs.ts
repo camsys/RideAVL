@@ -61,7 +61,7 @@ export class RunsPage {
 
   loadManifest(run: Run) {
     this.setHighlightedRun(run);
-    this.navCtrl.push(ManifestPage, {run: run});
+    this.navCtrl.setRoot(ManifestPage, {run: run});
   }
 
 }

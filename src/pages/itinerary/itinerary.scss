@@ -23,4 +23,16 @@ page-itinerary {
       background: $appRed;
     }
   }
+
+  .address-toolbar {
+    button, .toolbar-title {
+      color: $appBlue;
+    }
+  }
+
+  .notes-card {
+    .card-header {
+      color: $appBlue;
+    }
+  }
 }

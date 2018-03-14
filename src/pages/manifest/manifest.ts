@@ -29,7 +29,7 @@ export class ManifestPage {
   dataLoaded: Boolean = false;
   itineraries: Itinerary[] = [];
   activeItin: Itinerary = new Itinerary();
-  highlightedItin: Itinerary = new Itinerary();
+  nextItin: Itinerary = new Itinerary();
   currentTime: Date = new Date();
   run: Run = {} as Run;
   
@@ -37,55 +37,43 @@ export class ManifestPage {
               public navParams: NavParams,
               public global: GlobalProvider,
               private manifestProvider: ManifestProvider) {
-              this.run = this.navParams.data.run || {};
+              this.run = this.navParams.data.run || (new Run());
+              this.itineraries = this.navParams.data.itineraries || [];
+              if(this.itineraries && this.itineraries.length > 0) {
+                this.dataLoaded = true;
+              }
               setInterval(() => this.currentTime = new Date(), 500);
   }
 
   ionViewDidLoad() {
-    this.manifestProvider.getItineraries(this.run.id)
+    console.log('loading manifest...');
+    this.requestManifest();
+  }
+
+  ionViewWillEnter() {
+    console.log('entering manifest screen...');
+    this.activeItin = this.itineraries.find(r => (r.pending() || r.in_progress())) || (new Itinerary());
+  }
+
+  requestManifest() {
+    if(!this.dataLoaded) {
+      this.manifestProvider.getItineraries(this.run.id)
                           .subscribe((itins) => this.loadItins(itins));
+    }
   }
 
   loadItins(itins: Itinerary[]) {
     this.dataLoaded = true;
     this.itineraries = itins || [];
-    if(!this.hasHighlightedItin()) {
-      this.activeItin = this.itineraries.find(r => r.pending()) || (new Itinerary());
-      this.highlightedItin = this.highlightedItin;
-    }
+    this.activeItin = this.itineraries.find(r => (r.pending() || r.in_progress())) || (new Itinerary());
   }
 
   loadRunList() {
-    this.navCtrl.setRoot(RunsPage, { highlightedRun: this.run });
-  }
-
-  checkIfActiveItin(itin: Itinerary) {
-    return this.hasActiveItin() && itin.sameAs(this.activeItin);
-  }
-
-  hasActiveItin() {
-    return this.activeItin && this.activeItin.address;
-  }
-
-  setActiveItin(itin: Itinerary) {
-    this.activeItin = itin;
-  }
-
-  checkIfHighlightedItin(itin: Itinerary) {
-    return this.hasHighlightedItin() && itin.sameAs(this.highlightedItin);
-  }
-
-  hasHighlightedItin() {
-    return this.highlightedItin && this.highlightedItin.address;
-  }
-
-  setHighlightedItin(itin: Itinerary) {
-    this.highlightedItin = itin;
+    this.navCtrl.setRoot(RunsPage);
   }
 
   loadItin(itin: Itinerary) {
-    this.setHighlightedItin(itin);
-    this.navCtrl.push(ItineraryPage, { itin: itin, run: this.run });
+    this.navCtrl.setRoot(ItineraryPage, { itin: itin, run: this.run, active: (this.activeItin == itin), itins: this.itineraries});
   }
 
   // Show the info of next/in_progress itin

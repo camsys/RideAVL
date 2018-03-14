@@ -32,6 +32,39 @@ export class ItineraryProvider {
     return new RequestOptions({ headers: this.auth.authHeaders() });
   }
 
+  // Flag itinerary status
+  updateStatus(itinId: Number, statusCode: Number): Observable<Itinerary> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + itinId + '/updateStatus');
+    let body = JSON.stringify({status_code: statusCode});
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => this.parseItinerary(response))
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
+  // Parse individual itinerary
+  private parseItinerary(response): Itinerary {
+    let json_resp = response.json();
+    let itin_data = json_resp.data || {};
+    let addresses_data = json_resp.included || [];
+    let rel_data = json_resp.relationships || [];
+
+    let itin: Itinerary = new Itinerary();
+    Object.assign(itin, itin_data.attributes);
+    itin.id = itin_data.id;
+    if(rel_data && rel_data.address.data && addresses_data && addresses_data.length > 0) {
+      let addr_id = rel_data.address.data.id;
+      let addr_data = addresses_data.find(x => x.id === addr_id).attributes;
+      let addr = new Address();
+      addr.id = addr_id;
+      Object.assign(addr, addr_data);
+      itin.address = addr;
+    }
+
+    return itin;
+  }
+
   // Handle errors by console logging the error, and publishing an error event
   // for consumption by the app's home page.
   private handleError(error: Response | any): Observable<any> {

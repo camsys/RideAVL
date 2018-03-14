@@ -6,11 +6,16 @@
 -->
 <ion-header no-border>
 
-  <ion-navbar>
+  <ion-navbar color="primary">
+    <ion-buttons left>
+        <button ion-button icon-only (click)="this.loadRunList()">
+          <ion-icon name="arrow-back"></ion-icon>
+        </button>
+    </ion-buttons>
     <ion-title text-center>{{run.name || 'Empty'}} Manifest{{run && run.completed() ? ' (Completed)' : ''}}</ion-title>
-    <button ion-button menuToggle end>
-      <ion-icon name="menu"></ion-icon>
-    </button>
+    <ion-buttons right>
+      <button ion-button menuToggle icon-only><ion-icon name="menu"></ion-icon></button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -30,7 +35,7 @@
           <div class="itin-list" text-wrap *ngFor="let itin of itineraries">
 
             <!-- Itin info -->
-            <itinerary-info [itin]="itin" [ngClass]="{'itin-info-highlighted': this.activeItinerary == itin}" (click)="loadItin(itin)"></itinerary-info>
+            <itinerary-info [itin]="itin" [ngClass]="{'itin-info-highlighted': this.activeItin == itin}" (click)="loadItin(itin)"></itinerary-info>
 
           </div>
         </ion-list>

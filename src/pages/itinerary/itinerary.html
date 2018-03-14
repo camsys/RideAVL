@@ -6,17 +6,160 @@
 -->
 <ion-header no-border>
 
-  <ion-navbar>
+  <ion-navbar color="primary">
+    <ion-buttons left>
+        <button ion-button icon-only (click)="this.loadManifest()">
+          <ion-icon name="arrow-back"></ion-icon>
+        </button>
+    </ion-buttons>
     <ion-title text-center>{{itin.label()}}</ion-title>
-    <button ion-button menuToggle end>
-      <ion-icon name="menu"></ion-icon>
-    </button>
+    <ion-buttons right>
+      <button ion-button menuToggle icon-only><ion-icon name="menu"></ion-icon></button>
+    </ion-buttons>
   </ion-navbar>
+
+  <ion-toolbar transparent class="address-toolbar">
+    <ion-title>{{itin.address ? itin.address.one_line_text : '(Address missing)'}}</ion-title>
+    <ion-buttons right *ngIf="this.showNavigateButton()">
+      <button ion-button icon-only large><ion-icon name="navigate"></ion-icon></button>
+    </ion-buttons>
+  </ion-toolbar>
 
 </ion-header>
 
 
 <ion-content padding>
+
+  <!-- Address Notes -->
+  <ion-row *ngIf="this.itin.trip_address_notes">
+    <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2>
+      <ion-card id="address-notes-card" class="notes-card">
+        <ion-card-header>
+          Address Notes
+        </ion-card-header>
+        
+        <ion-card-content>
+          {{this.itin.trip_address_notes}}
+        </ion-card-content>
+      </ion-card>
+
+    </ion-col>
+  </ion-row>
+
+  <!-- Customer Notes -->
+  <ion-row *ngIf="this.itin.customer_notes">
+    <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2>
+      <ion-card id="customer-notes-card"  class="notes-card">
+        <ion-card-header>
+          Customer Notes
+        </ion-card-header>
+        
+        <ion-card-content>
+          {{this.itin.customer_notes}}
+        </ion-card-content>
+      </ion-card>
+
+    </ion-col>
+  </ion-row>
+
+  <!-- Trip Notes -->
+  <ion-row *ngIf="this.itin.trip_notes">
+    <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2>
+      <ion-card id="trip-notes-card"  class="notes-card">
+        <ion-card-header>
+          Trip Notes
+        </ion-card-header>
+        
+        <ion-card-content>
+          {{this.itin.trip_notes}}
+        </ion-card-content>
+      </ion-card>
+
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+      <ion-col text-center *ngIf="this.itin.beginRun() && !this.itin.finished()">
+        <button ion-button round large
+                id="start-run-button"
+                *ngIf="this.showStartRunButton()"
+                (click)="this.startRun()">
+          Start Run
+        </button>
+      </ion-col>
+
+      <ion-col text-center *ngIf="this.itin.endRun() && !this.itin.finished()">
+         <button ion-button round large
+                id="end-run-button"
+                *ngIf="this.showEndRunButton()"
+                (click)="this.endRun()">
+          End Run
+        </button>
+      </ion-col>
+
+      <ion-col text-center *ngIf="this.itin.pickup() && !this.itin.finished()">
+        <button ion-button round large
+                id="pickup-button"
+                *ngIf="this.showPickupButton()"
+                (click)="this.pickup()">
+          Picked Up
+        </button>
+        <button ion-button round large
+                id="noshow-button"
+                *ngIf="this.showNoshowButton()"
+                (click)="this.noshow()">
+          No Show
+        </button>
+        <button ion-button round large
+                id="depart-button"
+                *ngIf="this.showDepartButton()"
+                (click)="this.depart()">
+          Depart
+        </button>
+        <button ion-button round large
+                id="arrive-button"
+                *ngIf="this.showArriveButton()"
+                (click)="this.arrive()">
+          Arrived
+        </button>
+      </ion-col>
+
+      <ion-col text-center *ngIf="this.itin.dropoff() && !this.itin.finished()">
+        <button ion-button round large
+                id="depart-button"
+                *ngIf="this.showDepartButton()"
+                (click)="this.depart()">
+          Depart
+        </button>
+        <button ion-button round large
+                id="arrive-button"
+                *ngIf="this.showArriveButton()"
+                (click)="this.arrive()">
+          Arrived
+        </button>
+        <button ion-button round large
+                id="dropoff-button"
+                *ngIf="this.showDropoffButton()"
+                (click)="this.dropoff()">
+          Dropped Off
+        </button>
+      </ion-col>
+
+      <ion-col text-center *ngIf="this.itin.finished() && this.itin.hasTrip()">
+        <button ion-button round large
+                id="show-manifest-button"
+                (click)="this.loadManifest()">
+          Return to Manifest
+        </button>
+        <button ion-button round large
+                id="show-next-itin-button"
+                *ngIf="this.getNextItin()"
+                (click)="this.navToNextItin()">
+          Proceed to Next Stop
+        </button>
+      </ion-col>
+
+  </ion-row>
 
 </ion-content>
 
