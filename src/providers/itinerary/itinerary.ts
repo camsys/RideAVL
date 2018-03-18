@@ -32,14 +32,80 @@ export class ItineraryProvider {
     return new RequestOptions({ headers: this.auth.authHeaders() });
   }
 
-  // Flag itinerary status
-  updateStatus(itinId: Number, statusCode: Number): Observable<Itinerary> {
-    let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + itinId + '/updateStatus');
-    let body = JSON.stringify({status_code: statusCode});
+  // Update itinerary
+  update(itinId: Number, changes: {}): Observable<Itinerary> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + itinId);
+    let body = JSON.stringify({itinerary: changes});
 
     return this.http
         .put(uri, body, this.requestOptions())
         .map( response => this.parseItinerary(response))
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
+  // Depart
+  depart(itinId: Number): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + itinId + '/depart');
+    let body = JSON.stringify({});
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => response)
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
+  // Arrive
+  arrive(itinId: Number): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + itinId + '/arrive');
+    let body = JSON.stringify({});
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => response)
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
+  // Pickup
+  pickup(itinId: Number): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + itinId + '/pickup');
+    let body = JSON.stringify({});
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => response)
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
+  // Dropoff
+  dropoff(itinId: Number): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + itinId + '/dropoff');
+    let body = JSON.stringify({});
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => response)
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
+  // No-show
+  noshow(itinId: Number): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + itinId + '/noshow');
+    let body = JSON.stringify({});
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => response)
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
+  // Undo
+  undo(itinId: Number): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + itinId + '/undo');
+    let body = JSON.stringify({});
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => response)
         .catch((error: Response) =>  this.handleError(error));
   }
 

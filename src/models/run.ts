@@ -14,6 +14,10 @@ export class Run {
   vehicle: Vehicle;
   status_code: number;
   trips_count: number;
+  start_odometer: number;
+  end_odometer: number;
+  actual_start_time: string;
+  actual_end_time: string;
 
   completed() {
     return this.status_code == 2;

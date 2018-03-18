@@ -40,6 +40,39 @@ export class RunProvider {
                .catch((error: Response) =>  this.handleError(error));
   }
 
+  // Update itinerary
+  update(runId: Number, changes: {}): Observable<Run> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'runs/' + runId);
+    let body = JSON.stringify({run: changes});
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => this.unpackRun(response))
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
+  // Start Run
+  startRun(runId: Number, data: {}): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'runs/' + runId + '/start');
+    let body = JSON.stringify(data);
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => response)
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
+  // End Run
+  endRun(runId: Number, data: {}): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'runs/' + runId + '/end');
+    let body = JSON.stringify(data);
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => response)
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
   // Parse Runs response
   private unpackRunsResponse(response): Run[] {
     let json_resp = response.json();
@@ -47,6 +80,16 @@ export class RunProvider {
     let vehicles = json_resp.included || [];
     let runModels: Run[] = runs.map(run => this.parseRun(run, vehicles));
     return  runModels;
+  }
+
+  // Unpack individual run
+  private unpackRun(response): Run {
+    let json_resp = response.json();
+    let run_data = json_resp.data || [];
+    let vehicles = json_resp.included || [];
+    let run: Run = this.parseRun(run_data, vehicles);
+
+    return run;
   }
 
   // Parse individual run

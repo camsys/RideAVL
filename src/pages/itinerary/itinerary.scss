@@ -25,8 +25,20 @@ page-itinerary {
   }
 
   .address-toolbar {
-    button, .toolbar-title {
+    button, .address-label {
       color: $appBlue;
+      font-size: $font-size-lg;
+    }
+  }
+
+  .action-info {
+    button {
+      background: $appRed;
+      font-size: $font-size-md;
+    }
+    .action-label {
+      color: $appBlue;
+      font-size: $font-size-lg;
     }
   }
 
@@ -34,5 +46,9 @@ page-itinerary {
     .card-header {
       color: $appBlue;
     }
+  }
+
+  .action-buttons {
+    margin-top: size(3);
   }
 }

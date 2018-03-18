@@ -20,9 +20,11 @@
   </ion-navbar>
 
   <ion-toolbar transparent class="address-toolbar">
-    <ion-title>{{itin.address ? itin.address.one_line_text : '(Address missing)'}}</ion-title>
+    <ion-row text-wrap class="address-label">
+      <span>{{itin.address ? itin.address.one_line_text : '(Address missing)'}}</span>
+    </ion-row>
     <ion-buttons right *ngIf="this.showNavigateButton()">
-      <button ion-button icon-only large (click)="this.launchNavigator()"><ion-icon name="navigate"></ion-icon></button>
+      <button ion-button icon-only (click)="this.launchNavigator()"><ion-icon name="navigate"></ion-icon></button>
     </ion-buttons>
   </ion-toolbar>
 
@@ -79,23 +81,87 @@
     </ion-col>
   </ion-row>
 
-  <ion-row>
-      <ion-col text-center *ngIf="this.itin.beginRun() && !this.itin.finished()">
-        <button ion-button round large
-                id="start-run-button"
-                *ngIf="this.showStartRunButton()"
-                (click)="this.startRun()">
-          Start Run
-        </button>
+  <!-- Feedback info from last action -->
+  <ion-row *ngIf="this.itin.hasTrip()" class="action-info">
+    <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2 text-center>
+      <div *ngIf="this.active && !this.itin.pending()">
+        <span class="action-label">{{this.itin.lastActionInfo()}}</span>
+        <button ion-button icon-only (click)="this.executeUndo()"><ion-icon name="undo">Undo</ion-icon></button>
+      </div>
+      <ion-list class="app-list" *ngIf="!this.active && this.itin.finished()">
+
+        <div class="history-action-list" text-wrap *ngFor="let actionLabel of this.itin.historyActions()">
+
+          <span class="action-label">{{actionLabel}}</span>
+
+        </div>
+      </ion-list>
+    </ion-col>
+  </ion-row>
+
+  <!-- Action buttons -->
+  <ion-row class="action-buttons">
+      <ion-col text-center *ngIf="this.itin.beginRun()">
+        <ion-grid>
+          <form (ngSubmit)="startRun()" #startRunForm="ngForm">
+
+            <ion-list>
+              <ion-item>
+                <ion-label color="primary">Start Odometer</ion-label>
+                <ion-input  type="number"
+                            placeholder="Start Odometer"
+                            name="start_odometer"
+                            [(ngModel)]="run_start_odometer" 
+                            [disabled]="this.itin.finished()"
+                            required>
+                </ion-input>
+              </ion-item>
+            </ion-list>
+
+            <ion-row>
+              <ion-col text-center>
+                <button ion-button round large 
+                  class="app-button-primary center" 
+                  type="submit" 
+                  *ngIf="this.showStartRunButton()"
+                  [disabled]="!startRunForm.form.valid">
+                  Start Run
+                </button>
+              </ion-col>
+            </ion-row>
+          </form>
+        </ion-grid>
       </ion-col>
 
-      <ion-col text-center *ngIf="this.itin.endRun() && !this.itin.finished()">
-         <button ion-button round large
-                id="end-run-button"
-                *ngIf="this.showEndRunButton()"
-                (click)="this.endRun()">
-          End Run
-        </button>
+      <ion-col text-center *ngIf="this.itin.endRun()">
+        <ion-grid>  
+          <form (ngSubmit)="endRun()" #endRunForm="ngForm">
+            <ion-list>
+              <ion-item>
+                <ion-label color="primary">End Odometer</ion-label>
+                <ion-input  type="number"
+                            placeholder="End Odometer"
+                            name="end_odometer"
+                            [(ngModel)]="run_end_odometer" 
+                            [disabled]="this.itin.finished()"
+                            required>
+                </ion-input>
+              </ion-item>
+            </ion-list>
+
+            <ion-row>
+              <ion-col text-center>
+                <button ion-button round large 
+                  class="app-button-primary center" 
+                  type="submit" 
+                  *ngIf="this.showEndRunButton()"
+                  [disabled]="!endRunForm.form.valid">
+                  End Run
+                </button>
+              </ion-col>
+            </ion-row>
+          </form>
+        </ion-grid>
       </ion-col>
 
       <ion-col text-center *ngIf="this.itin.pickup() && !this.itin.finished()">
@@ -146,7 +212,7 @@
         </button>
       </ion-col>
 
-      <ion-col text-center *ngIf="this.itin.finished() && this.itin.hasTrip()">
+      <ion-col text-center *ngIf="this.active && this.itin.finished() && this.itin.hasTrip()">
         <button ion-button round large
                 id="show-next-itin-button"
                 *ngIf="this.getNextItin()"
@@ -159,6 +225,7 @@
 
 </ion-content>
 
+<!-- Time info in footer-->
 <ion-footer no-border>
   <div *ngIf="!run.completed()">
     <ion-toolbar>

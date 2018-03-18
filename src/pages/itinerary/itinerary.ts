@@ -12,6 +12,7 @@ import { Address } from '../../models/address';
 // Providers
 import { GlobalProvider } from '../../providers/global/global';
 import { ItineraryProvider } from '../../providers/itinerary/itinerary';
+import { RunProvider } from '../../providers/run/run';
 
 // Page
 import {RunsPage} from '../runs/runs';
@@ -26,6 +27,8 @@ export class ItineraryPage {
   run: Run = new Run();
   itin: Itinerary = new Itinerary();
   itins: Itinerary[] = [];
+  run_start_odometer: number;
+  run_end_odometer: number;
   active: Boolean = false;
   currentTime: Date = new Date();
   
@@ -33,6 +36,7 @@ export class ItineraryPage {
               public navParams: NavParams,
               public global: GlobalProvider,
               private itinProvider: ItineraryProvider,
+              private runProvider: RunProvider,
               private navigator: LaunchNavigator) {
 
               if(this.navParams.data.itin) {
@@ -45,6 +49,8 @@ export class ItineraryPage {
 
               if(this.navParams.data.run) {
                 this.run = this.navParams.data.run;
+                this.run_start_odometer = this.run.start_odometer;
+                this.run_end_odometer = this.run.end_odometer;
               }
 
               this.active = this.navParams.data.active || false;
@@ -119,42 +125,79 @@ export class ItineraryPage {
     return true;
   }
 
+  // Show Undo once departed 
+  showUndoButton() {
+    return this.active && this.itin.departed() && this.itin.hasTrip();
+  }
+
+  // Show Undo once departed but not arrived
   showNavigateButton() {
     return this.itin.address && this.itin.departed() && !this.itin.arrived();
   }
 
   // status action buttons
   startRun() {
-    this.itin.flagCompleted();
-    this.run.flagInProgress();
-    this.navToNextItin();
+    this.runProvider.startRun(this.run.id, {start_odometer: this.run_start_odometer})
+        .subscribe((resp) => {
+          this.itin.flagCompleted();
+          this.run.flagInProgress();
+          this.navToNextItin();
+        });
   }
 
   endRun() {
-    this.itin.flagCompleted();
-    this.run.flagCompleted();
-    this.navCtrl.setRoot(RunsPage);
+    this.runProvider.endRun(this.run.id, {end_odometer: this.run_end_odometer})
+        .subscribe((resp) => {
+          this.itin.flagCompleted();
+          this.run.flagCompleted();
+          this.navCtrl.setRoot(RunsPage);
+        });
   }
 
   depart() {
-    this.itin.flagInProgress();
-    this.itin.is_departed = true;
+    this.itinProvider.depart(this.itin.id)
+        .subscribe((resp) => {
+          this.itin.flagInProgress();
+          this.itin.departure_time = this.getCurrentUTC();
+        });
   }
   
   arrive() {
-    this.itin.is_arrived = true;
+    this.itinProvider.arrive(this.itin.id)
+        .subscribe((resp) => {
+          this.itin.arrival_time = this.getCurrentUTC();
+        });
   }
 
   pickup() {
-    this.itin.flagCompleted();
+    this.itinProvider.pickup(this.itin.id)
+        .subscribe((resp) => {
+          this.itin.flagCompleted();
+          this.itin.finish_time = this.getCurrentUTC();
+        });
   }
 
   dropoff() {
-    this.itin.flagCompleted();
+    this.itinProvider.dropoff(this.itin.id)
+        .subscribe((resp) => {
+          this.itin.flagCompleted();
+          this.itin.finish_time = this.getCurrentUTC();
+        });
   }
 
   noshow() {
-    this.itin.flagOther();
+    this.itinProvider.noshow(this.itin.id)
+        .subscribe((resp) => {
+          this.itin.flagOther();
+          this.itin.finish_time = this.getCurrentUTC();
+        });
+  }
+
+  executeUndo() {
+    this.itinProvider.undo(this.itin.id)
+        .subscribe((resp) => {
+          this.itin.undo();
+        });
   }
 
   getNextItin() {
@@ -179,6 +222,10 @@ export class ItineraryPage {
         success => console.log('Launched navigator'),
         error => console.log('Error launching navigator', error)
       );
+  }
+
+  getCurrentUTC() {
+    return (new Date()).toUTCString();
   }
 }
 

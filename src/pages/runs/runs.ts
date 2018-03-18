@@ -44,12 +44,21 @@ export class RunsPage {
               }
   }
 
+  doRefresh(refresher) {
+    this.runProvider.getRuns()
+                      .subscribe((runs) => {
+                        this.loadRuns(runs);
+                        refresher.complete();
+                      });
+  }
+
   ionViewDidLoad() {
     if(!this.dataLoaded) {
       this.runProvider.getRuns()
                       .subscribe((runs) => this.loadRuns(runs));
     }
   }
+
 
   loadRuns(runs: Run[]) {
     this.dataLoaded = true;

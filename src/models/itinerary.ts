@@ -18,8 +18,9 @@ export class Itinerary {
   phone: string;
   status_code: number;
   address: Address;
-  is_departed: Boolean;
-  is_arrived: Boolean;
+  departure_time: string;
+  arrival_time: string;
+  finish_time: string;
 
   label() {
     let label = "";
@@ -162,14 +163,72 @@ export class Itinerary {
     return this.leg_flag == 3;
   }
 
+  // Get info of last action
+  lastActionInfo() {
+    if(this.completed()) {
+      if(this.dropoff()) {
+        return "You have dropped off at " + this.formatTime(this.finish_time);
+      } else if(this.pickup()) {
+        return "You have picked up at " + this.formatTime(this.finish_time);
+      } 
+    } else if (this.finished()) {
+      return "You marked as No Show at " + this.formatTime(this.finish_time);
+    } else if (this.in_progress()) {
+      if(this.arrived()) {
+        return "You have arrived at " + this.formatTime(this.arrival_time);
+      } else if (this.departed()) {
+        return "You have departed at " + this.formatTime(this.departure_time);
+      }
+    }
+  }
+
+  // Get list of history action 
+  historyActions() {
+    let actions = [];
+    if(this.departed()) {
+      actions.push("Departed at " + this.formatTime(this.departure_time));
+    }
+    if(this.arrived()) {
+      actions.push("Arrived at " + this.formatTime(this.arrival_time));
+    }
+    if(this.completed()) {
+      if(this.pickup()) {
+        actions.push("Picked up at " + this.formatTime(this.finish_time));
+      }
+      if(this.dropoff()) {
+        actions.push("Dropped off at " + this.formatTime(this.finish_time));
+      }
+    } else if (this.finished()) {
+      actions.push("Marked as No Show at " + this.formatTime(this.finish_time));
+    }
+
+
+    return actions;
+  }
+
+  // Undo last action
+  undo() {
+    if (this.finished()) {
+      this.finish_time = null;
+      this.flagInProgress();
+    } else if (this.in_progress()) {
+      if(this.arrived()) {
+        this.arrival_time = null;
+      } else if (this.departed()) {
+        this.departure_time = null;
+        this.flagPending();
+      }
+    }
+  }
+
   // departed?
   departed() {
-    return this.is_departed;
+    return this.departure_time;
   }
 
   // arrived?
   arrived() {
-    return this.is_arrived;
+    return this.arrival_time;
   }
 
   // Comparison
@@ -178,5 +237,25 @@ export class Itinerary {
       return false;
     }
     return itin === this || (itin.time_seconds == this.time_seconds && itin.address == this.address);
+  }
+
+  private formatTime(strTime: string): string {
+    if(strTime) {
+      let timeObj = new Date(strTime);
+      return this.formatAMPM(timeObj);
+    } else {
+      return "N/A";
+    }
+  }
+
+  private formatAMPM(date: Date): string {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    let ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    let strMin = minutes < 10 ? '0'+minutes : minutes;
+    let strTime = hours + ':' + strMin + ' ' + ampm;
+    return strTime;
   }
 }

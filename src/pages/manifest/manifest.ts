@@ -81,7 +81,7 @@ export class ManifestPage {
   }
 
   loadRunList() {
-    this.navCtrl.setRoot(RunsPage, {runs: this.runs});
+    this.navCtrl.setRoot(RunsPage);
   }
 
   loadItin(itin: Itinerary) {

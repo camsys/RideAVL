@@ -17,6 +17,9 @@
 
 
 <ion-content padding full-screen>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
   <ion-grid no-padding>
     <ion-row>
