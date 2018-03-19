@@ -56,8 +56,11 @@ export class MyApp {
       case 401: // Unauthorized--sign user out and send to sign in page
         console.error("USER TOKEN EXPIRED");
         this.signOut();
-        this.nav.push(SignInPage);
+        this.nav.setRoot(SignInPage);
         this.showErrorToast('Please sign in again.');
+        break;
+      case 503:
+        this.showErrorToast('Sorry. Service unavailable. Please check your internet connection.');
         break;
       default:
         this.goHome();

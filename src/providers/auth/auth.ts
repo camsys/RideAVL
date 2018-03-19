@@ -89,7 +89,8 @@ export class AuthProvider {
           }
 
           return response;
-        });
+        })
+        .catch((error: Response) =>  this.handleError(error));
   }
 
   // Unpacks a session response and stores the user in the session
@@ -116,7 +117,8 @@ export class AuthProvider {
           .delete(uri, options)
           .map((response: Response) => {
             return response;
-          });
+          })
+          .catch((error: Response) =>  this.handleError(error));
     } else { // If not signed in, return an empty observable
       return Observable.of();
     }
@@ -134,7 +136,8 @@ export class AuthProvider {
         .post(uri, body, options)
         .map((response: Response) => {
           return response;
-        });
+        })
+        .catch((error: Response) =>  this.handleError(error));
   }
 
   // Updates the session based on a user object
@@ -146,6 +149,14 @@ export class AuthProvider {
     this.global.user = user;
     this.events.publish('user:updated', user);  // Publish user updated event for pages to listen to
     return this.user();
+  }
+
+  // Handle errors by console logging the error, and publishing an error event
+  // for consumption by the app's home page.
+  private handleError(error: Response | any): Observable<any> {
+    console.error('An error occurred', error, this); // for demo purposes only
+    this.events.publish('error:http', error);
+    return Observable.empty(); // return an empty observable so subscribe calls don't break
   }
 
 }
