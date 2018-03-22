@@ -7,6 +7,7 @@ export class Itinerary {
   readonly STATUS_OTHER = 3;
 
   id: number;
+  trip_id: number;
   time_seconds: string;
   eta_seconds: string;
   leg_flag: number;
@@ -140,6 +141,7 @@ export class Itinerary {
 
   flagOther() {
     this.status_code = this.STATUS_OTHER;
+    this.trip_result = "No-show";
   }
 
   // Type check
@@ -211,6 +213,7 @@ export class Itinerary {
     if (this.finished()) {
       this.finish_time = null;
       this.flagInProgress();
+      this.trip_result = null;
     } else if (this.in_progress()) {
       if(this.arrived()) {
         this.arrival_time = null;

@@ -200,16 +200,27 @@ export class ItineraryPage {
         });
   }
 
+  filterNoShowItin() {
+    if(this.itin.hasTrip() && this.itin.finished() && !this.itin.completed()) {
+      // Other status (No show), need to remove the dropoff leg
+      let trip_id: Number = this.itin.trip_id;
+      this.itins = this.itins.filter(r => !(r.dropoff() && r.trip_id == trip_id));
+    }
+  }
+
   getNextItin() {
     return this.itins.find(r => (r.pending() || r.in_progress()));
   }
 
   navToNextItin() {
+    this.filterNoShowItin();
+
     let itin: Itinerary = this.getNextItin();
     this.navCtrl.setRoot(ItineraryPage, { itin: itin, run: this.run, active: true, itins: this.itins});
   }
 
   loadManifest() {
+    this.filterNoShowItin();
     this.navCtrl.setRoot(ManifestPage, {run: this.run, itineraries: this.itins});
   }
   
