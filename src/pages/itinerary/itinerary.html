@@ -111,7 +111,7 @@
                 Vehicle Inspections
               </ion-list-header>
               <ion-item (click)="clicked = 'item '+ i" tappable *ngFor="let insp of inspections">
-                <span>{{insp.description}}</span>
+                <span text-wrap>{{insp.description}}</span>
                 <button type="button" ion-button icon-only small clear item-left 
                             [ngClass]="{'inspection-responded': insp.checked}"
                             (click)="markInspectionChecked(insp)"
@@ -180,7 +180,7 @@
                             placeholder="End Odometer"
                             name="end_odometer"
                             [(ngModel)]="run_end_odometer" 
-                            [disabled]="this.itin.finished()"
+                            [disabled]="!this.active || this.itin.finished()"
                             required>
                 </ion-input>
               </ion-item>
