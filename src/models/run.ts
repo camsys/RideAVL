@@ -18,6 +18,7 @@ export class Run {
   end_odometer: number;
   actual_start_time: string;
   actual_end_time: string;
+  driver_notes: string;
 
   completed() {
     return this.status_code == 2;

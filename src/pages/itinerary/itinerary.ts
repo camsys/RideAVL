@@ -8,6 +8,7 @@ import { LaunchNavigator, LaunchNavigatorOptions } from '@ionic-native/launch-na
 import { Run } from '../../models/run';
 import { Itinerary } from '../../models/itinerary';
 import { Address } from '../../models/address';
+import { Inspection } from '../../models/inspection';
 
 // Providers
 import { GlobalProvider } from '../../providers/global/global';
@@ -27,6 +28,9 @@ export class ItineraryPage {
   run: Run = new Run();
   itin: Itinerary = new Itinerary();
   itins: Itinerary[] = [];
+  inspections: Inspection[] = [];
+  inspectionLoaded: boolean;
+  driver_notes: string;
   run_start_odometer: number;
   run_end_odometer: number;
   active: Boolean = false;
@@ -49,6 +53,7 @@ export class ItineraryPage {
 
               if(this.navParams.data.run) {
                 this.run = this.navParams.data.run;
+                this.driver_notes = this.run.driver_notes;
                 this.run_start_odometer = this.run.start_odometer;
                 this.run_end_odometer = this.run.end_odometer;
               }
@@ -58,6 +63,19 @@ export class ItineraryPage {
   }
 
   ionViewDidLoad() {
+    if(this.itin.beginRun() && !this.inspectionLoaded) {
+      this.requestInspections();
+    }
+  }
+
+  requestInspections() {
+    this.inspectionLoaded = true;
+    this.runProvider.getInspections(this.run.id)
+                          .subscribe((resp) => this.loadInspections(resp));
+  }
+
+  loadInspections(insps: Inspection[]) {
+    this.inspections = insps;
   }
 
   // button display checks when itinerary is active
@@ -137,10 +155,12 @@ export class ItineraryPage {
 
   // status action buttons
   startRun() {
-    this.runProvider.startRun(this.run.id, {start_odometer: this.run_start_odometer})
+    this.runProvider.startRun(this.run.id, {inspections: this.inspections, driver_notes: this.driver_notes, start_odometer: this.run_start_odometer})
         .subscribe((resp) => {
           this.itin.flagCompleted();
           this.run.flagInProgress();
+          this.run.start_odometer = this.run_start_odometer;
+          this.run.driver_notes = this.driver_notes;
           this.navToNextItin();
         });
   }
@@ -150,6 +170,7 @@ export class ItineraryPage {
         .subscribe((resp) => {
           this.itin.flagCompleted();
           this.run.flagCompleted();
+          this.run.end_odometer = this.run_end_odometer;
           this.navCtrl.setRoot(RunsPage);
         });
   }
@@ -206,6 +227,18 @@ export class ItineraryPage {
       let trip_id: Number = this.itin.trip_id;
       this.itins = this.itins.filter(r => !(r.dropoff() && r.trip_id == trip_id));
     }
+  }
+
+  markInspectionChecked(insp: Inspection) {
+    insp.checked = true;
+  }
+
+  markInspectionUnchecked(insp: Inspection) {
+    insp.checked = false;
+  }
+
+  inspectionsResponded(): Boolean {
+    return !this.inspections.find(r => r.checked == null);
   }
 
   getNextItin() {

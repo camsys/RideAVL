@@ -99,11 +99,48 @@
     </ion-col>
   </ion-row>
 
-  <!-- Action buttons -->
-  <ion-row class="action-buttons">
-      <ion-col text-center *ngIf="this.itin.beginRun()">
+  <!-- Begin & end Run -->
+  <ion-row>
+    <ion-col *ngIf="this.itin.beginRun()">
         <ion-grid>
           <form (ngSubmit)="startRun()" #startRunForm="ngForm">
+
+            <!-- Inspections -->
+            <ion-list>
+              <ion-list-header  class="run-list-header">
+                Vehicle Inspections
+              </ion-list-header>
+              <ion-item (click)="clicked = 'item '+ i" tappable *ngFor="let insp of inspections">
+                <span>{{insp.description}}</span>
+                <button type="button" ion-button icon-only small clear item-left 
+                            [ngClass]="{'inspection-responded': insp.checked}"
+                            (click)="markInspectionChecked(insp)"
+                            [disabled]="this.itin.finished()">
+                  <ion-icon name="checkmark"></ion-icon>
+                </button>
+                <button type="button" ion-button icon-only small clear item-left
+                            [ngClass]="{'inspection-responded': insp.checked == false}"
+                            (click)="markInspectionUnchecked(insp)"
+                            [disabled]="this.itin.finished()">
+                  <ion-icon name="close"></ion-icon>
+                </button>
+              </ion-item>
+            </ion-list>
+
+            <ion-list>
+               <ion-list-header class="run-list-header">
+                Notes
+              </ion-list-header>
+              <ion-item>
+                <ion-textarea  type="text"
+                            placeholder="Driver notes..."
+                            name="notes"
+                            [(ngModel)]="driver_notes" 
+                            [disabled]="this.itin.finished()"
+                            >
+                </ion-textarea>
+              </ion-item>
+            </ion-list>
 
             <ion-list>
               <ion-item>
@@ -124,7 +161,7 @@
                   class="app-button-primary center" 
                   type="submit" 
                   *ngIf="this.showStartRunButton()"
-                  [disabled]="!startRunForm.form.valid">
+                  [disabled]="!startRunForm.form.valid || !inspectionsResponded()">
                   Start Run
                 </button>
               </ion-col>
@@ -163,7 +200,10 @@
           </form>
         </ion-grid>
       </ion-col>
+  </ion-row>
 
+  <!-- Action buttons -->
+  <ion-row class="action-buttons">
       <ion-col text-center *ngIf="this.itin.pickup() && !this.itin.finished()">
         <button ion-button round large
                 id="pickup-button"

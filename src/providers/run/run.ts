@@ -11,6 +11,7 @@ import { environment } from '../../app/environment'
 // Models
 import { Run } from '../../models/run';
 import { Vehicle } from '../../models/vehicle';
+import { Inspection } from '../../models/inspection';
 
 // Providers
 import { AuthProvider } from '../../providers/auth/auth';
@@ -40,7 +41,7 @@ export class RunProvider {
                .catch((error: Response) =>  this.handleError(error));
   }
 
-  // Update itinerary
+  // Update run
   update(runId: Number, changes: {}): Observable<Run> {
     let uri: string = encodeURI(this.baseAvlUrl + 'runs/' + runId);
     let body = JSON.stringify({run: changes});
@@ -71,6 +72,15 @@ export class RunProvider {
         .put(uri, body, this.requestOptions())
         .map( response => response)
         .catch((error: Response) =>  this.handleError(error));
+  }
+
+  // Get run inspection items
+  getInspections(runId: Number): Observable<Inspection[]> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'runs/' + runId + '/inspections');
+    return this.http
+               .get(uri, this.requestOptions())
+               .map( response => this.unpackInspectionsResponse(response))
+               .catch((error: Response) =>  this.handleError(error));
   }
 
   // Parse Runs response
@@ -106,6 +116,22 @@ export class RunProvider {
     }
 
     return run;
+  }
+
+  // Parse inspections response
+  private unpackInspectionsResponse(response): Inspection[] {
+    let json_resp = response.json();
+    let inspections = json_resp.data || [];
+    let insps: Inspection[] = inspections.map(insp => this.parseInspection(insp));
+    return  insps;
+  }
+
+  // Parse individual inspections
+  private parseInspection(insp_data): Inspection {
+    let insp: Inspection = new Inspection();
+    Object.assign(insp, insp_data);
+
+    return insp;
   }
 
   // Handle errors by console logging the error, and publishing an error event

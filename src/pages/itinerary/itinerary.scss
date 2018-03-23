@@ -51,4 +51,17 @@ page-itinerary {
   .action-buttons {
     margin-top: size(3);
   }
+
+  ion-list-header.run-list-header {
+    border-top: none;
+    color: $primary;
+    font-weight: 500;
+    font-size: $font-size-md;
+    margin-bottom: 0;
+  }
+
+  .inspection-responded {
+    background: $appMdGray;
+    color: $appWhite;
+  }
 }
