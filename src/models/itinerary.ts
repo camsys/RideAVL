@@ -1,4 +1,5 @@
 import { Address } from '../models/address';
+import { Fare } from '../models/fare';
 
 export class Itinerary {
   readonly STATUS_PENDING = 0;
@@ -18,10 +19,13 @@ export class Itinerary {
   customer_name: string;
   phone: string;
   status_code: number;
-  address: Address;
   departure_time: string;
   arrival_time: string;
   finish_time: string;
+
+  address: Address;
+  fare: Fare;
+
 
   label() {
     let label = "";
@@ -119,7 +123,15 @@ export class Itinerary {
   }
 
   completed() {
-    return this.status_code == this.STATUS_COMPLETED;
+    if(this.status_code != this.STATUS_COMPLETED) {
+      return false;
+    }
+
+    if(this.hasFare() && !this.fare.collected()) {
+      return false;
+    }
+
+    return true;
   }
 
   finished() {
@@ -171,11 +183,19 @@ export class Itinerary {
       if(this.dropoff()) {
         return "You have dropped off at " + this.formatTime(this.finish_time);
       } else if(this.pickup()) {
-        return "You have picked up at " + this.formatTime(this.finish_time);
+        if(this.hasFare() && this.fare.collected()) {
+          return "Collected $" + this.fare.amount + " " + this.fare.fare_type + " at " + this.formatTime(this.fare.collected_time);
+        } else {
+          return "You have picked up at " + this.formatTime(this.finish_time);
+        }
       } 
+    } else if(this.hasFare() && this.fare.collected()) {
+      return "Collected $" + this.fare.amount + " " + this.fare.fare_type + " at " + this.formatTime(this.fare.collected_time);
+    } else if(this.pickup() && this.status_code == this.STATUS_COMPLETED) {
+      return "You have picked up at " + this.formatTime(this.finish_time);
     } else if (this.finished()) {
       return "You marked as No Show at " + this.formatTime(this.finish_time);
-    } else if (this.in_progress()) {
+    } else {
       if(this.arrived()) {
         return "You have arrived at " + this.formatTime(this.arrival_time);
       } else if (this.departed()) {
@@ -196,8 +216,14 @@ export class Itinerary {
     if(this.completed()) {
       if(this.pickup()) {
         actions.push("Picked up at " + this.formatTime(this.finish_time));
+        if(this.hasFare()) {
+          actions.push("Collected $" + this.fare.amount + " " + this.fare.fare_type + " at " + this.formatTime(this.fare.collected_time));
+        }
       }
       if(this.dropoff()) {
+        if(this.hasFare()) {
+          actions.push("Collected $" + this.fare.amount + " " + this.fare.fare_type + " at " + this.formatTime(this.fare.collected_time));
+        }
         actions.push("Dropped off at " + this.formatTime(this.finish_time));
       }
     } else if (this.finished()) {
@@ -232,6 +258,35 @@ export class Itinerary {
   // arrived?
   arrived() {
     return this.arrival_time;
+  }
+
+  // check if itin has fare
+  hasFare() {
+    return this.fare && (
+      ( this.fare.pre_trip && this.pickup() ) ||
+      (!this.fare.pre_trip && this.dropoff())
+    );
+  }
+
+  // check if need to present fare info
+  showFare() {
+    let showFare = false;
+
+    if(this.fare && !this.fare.collected()) {
+      // if pre_trip, then collect fare after picked up the passenger
+      if(this.fare.pre_trip && this.pickup() && (this.status_code == this.STATUS_COMPLETED)) {
+        
+        showFare = true;
+
+      } else if (!this.fare.pre_trip && this.dropoff() && this.arrived() && !this.completed()) {
+        // if post_trip, then collect fare before dropping off the passnger
+        // after arriving at the destination
+        
+        showFare = true;
+      }
+    }
+
+    return showFare;
   }
 
   // Comparison

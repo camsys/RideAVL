@@ -11,6 +11,7 @@ import { environment } from '../../app/environment'
 // Models
 import { Itinerary } from '../../models/itinerary';
 import { Address } from '../../models/address';
+import { Fare } from '../../models/fare';
 
 // Providers
 import { AuthProvider } from '../../providers/auth/auth';
@@ -58,6 +59,14 @@ export class ManifestProvider {
     let itin: Itinerary = new Itinerary();
     Object.assign(itin, itin_data.attributes);
     itin.id = itin_data.id;
+
+    if(itin.fare) {
+      let fare_attrs = itin.fare;
+      let fare = new Fare();
+      Object.assign(fare, fare_attrs);
+      itin.fare = fare;
+    }
+    
     if(itin_data.relationships && itin_data.relationships.address.data && addresses_data && addresses_data.length > 0) {
       let addr_id = itin_data.relationships.address.data.id;
       let addr_data = addresses_data.find(x => x.id === addr_id).attributes;

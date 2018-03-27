@@ -9,6 +9,7 @@ import { Run } from '../../models/run';
 import { Itinerary } from '../../models/itinerary';
 import { Address } from '../../models/address';
 import { Inspection } from '../../models/inspection';
+import { Fare } from '../../models/fare';
 
 // Providers
 import { GlobalProvider } from '../../providers/global/global';
@@ -211,6 +212,13 @@ export class ItineraryPage {
         .subscribe((resp) => {
           this.itin.flagOther();
           this.itin.finish_time = this.getCurrentUTC();
+        });
+  }
+
+  processFare() {
+    this.itinProvider.updateTripFare(this.itin.trip_id, this.itin.fare.amount)
+        .subscribe((resp) => {
+          this.itin.fare.collected_time = this.getCurrentUTC();
         });
   }
 

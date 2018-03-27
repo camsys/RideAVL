@@ -41,6 +41,7 @@ import { ItineraryInfoComponent } from '../components/itinerary-info/itinerary-i
 // Pipes
 import { PrettyTimeFromSecondsPipe } from '../pipes/pretty-time-from-seconds/pretty-time-from-seconds';
 import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
+import { TitleCasePipe } from '../pipes/title-case/title-case';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
     RunInfoComponent,
     ItineraryInfoComponent,
     PrettyTimeFromSecondsPipe,
-    PhoneNumberPipe
+    PhoneNumberPipe,
+    TitleCasePipe
   ],
   imports: [
     BrowserModule,

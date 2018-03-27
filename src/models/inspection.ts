@@ -1,5 +1,5 @@
 export class Inspection {
-  id: Number;
+  id: number;
   description: string;
   checked: boolean;
 }

@@ -202,21 +202,43 @@
       </ion-col>
   </ion-row>
 
+  <!-- Fare -->
+  <ion-row>
+    <ion-col *ngIf="this.itin.showFare()">
+        <ion-grid>
+          <form (ngSubmit)="processFare()" #fareForm="ngForm">
+
+            <ion-list>
+              <ion-item>
+                <ion-label color="primary">{{this.itin.fare.fare_type | titleCase}}</ion-label>
+                <ion-input  type="number"
+                            placeholder="Enter amount"
+                            name="fare_amount"
+                            [(ngModel)]="this.itin.fare.amount" 
+                            [disabled]="this.itin.finished()"
+                            required>
+                </ion-input>
+              </ion-item>
+            </ion-list>
+
+            <ion-row>
+              <ion-col text-center>
+                <button ion-button round large 
+                  class="app-button-primary center" 
+                  type="submit" 
+                  [disabled]="!fareForm.form.valid">
+                  Collected
+                </button>
+              </ion-col>
+            </ion-row>
+          </form>
+        </ion-grid>
+      </ion-col>
+  </ion-row>
+
   <!-- Action buttons -->
   <ion-row class="action-buttons">
       <ion-col text-center *ngIf="this.itin.pickup() && !this.itin.finished()">
-        <button ion-button round large
-                id="pickup-button"
-                *ngIf="this.showPickupButton()"
-                (click)="this.pickup()">
-          Picked Up
-        </button>
-        <button ion-button round large
-                id="noshow-button"
-                *ngIf="this.showNoshowButton()"
-                (click)="this.noshow()">
-          No Show
-        </button>
         <button ion-button round large
                 id="depart-button"
                 *ngIf="this.showDepartButton()"
@@ -228,6 +250,18 @@
                 *ngIf="this.showArriveButton()"
                 (click)="this.arrive()">
           Arrived
+        </button>
+        <button ion-button round large
+                id="pickup-button"
+                *ngIf="this.showPickupButton()"
+                (click)="this.pickup()">
+          Picked Up
+        </button>
+        <button ion-button round large
+                id="noshow-button"
+                *ngIf="this.showNoshowButton()"
+                (click)="this.noshow()">
+          No Show
         </button>
       </ion-col>
 

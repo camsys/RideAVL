@@ -11,6 +11,7 @@ import { environment } from '../../app/environment'
 // Models
 import { Itinerary } from '../../models/itinerary';
 import { Address } from '../../models/address';
+import { Fare } from '../../models/fare';
 
 // Providers
 import { AuthProvider } from '../../providers/auth/auth';
@@ -98,6 +99,18 @@ export class ItineraryProvider {
         .catch((error: Response) =>  this.handleError(error));
   }
 
+
+  // save trip fare
+  updateTripFare(tripId: Number, amount: number): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'trips/' + tripId + '/update_fare');
+    let body = JSON.stringify({fare_amount: amount});
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => response)
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
   // Undo
   undo(itinId: Number): Observable<Response> {
     let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + itinId + '/undo');
@@ -119,6 +132,14 @@ export class ItineraryProvider {
     let itin: Itinerary = new Itinerary();
     Object.assign(itin, itin_data.attributes);
     itin.id = itin_data.id;
+
+    if(itin.fare) {
+      let fare_attrs = itin.fare;
+      let fare = new Fare();
+      Object.assign(fare, fare_attrs);
+      itin.fare = fare;
+    }
+    
     if(rel_data && rel_data.address.data && addresses_data && addresses_data.length > 0) {
       let addr_id = rel_data.address.data.id;
       let addr_data = addresses_data.find(x => x.id === addr_id).attributes;
