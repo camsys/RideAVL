@@ -51,20 +51,14 @@ export class Itinerary {
 
   status() {
     let status_label = "Pending";
-    switch(this.status_code) {
-      case this.STATUS_IN_PROGRESS:
-        status_label = "In Progress";
-        break;
-      case this.STATUS_COMPLETED:
-        status_label = "Completed";
-        break;
-      case this.STATUS_OTHER:
-        status_label = this.trip_result;
-        break;
-      default:
-        break;
+    if(this.in_progress()) {
+      status_label = "In Progress";
+    } else if (this.completed()) {
+      status_label = "Completed";
+    } else if (this.finished()) {
+      status_label = this.trip_result;
     }
-
+    
     return status_label;
   }
 
@@ -118,12 +112,32 @@ export class Itinerary {
     return !this.status_code;
   }
 
-  in_progress() {
+  // status_code as in_progress
+  flaged_in_progress() {
     return this.status_code == this.STATUS_IN_PROGRESS;
   }
 
+  // actual in_progress status check
+  in_progress() {
+    if(this.flaged_in_progress()) {
+      return true;
+    }
+    
+    if(this.hasFare() && this.flaged_completed() && !this.fare.collected()) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // status_code as completed, but might have fare to collect 
+  flaged_completed() {
+    return this.status_code == this.STATUS_COMPLETED;
+  }
+
+  // actual completed status check
   completed() {
-    if(this.status_code != this.STATUS_COMPLETED) {
+    if(!this.flaged_completed()) {
       return false;
     }
 
@@ -191,7 +205,7 @@ export class Itinerary {
       } 
     } else if(this.hasFare() && this.fare.collected()) {
       return "Collected $" + this.fare.amount + " " + this.fare.fare_type + " at " + this.formatTime(this.fare.collected_time);
-    } else if(this.pickup() && this.status_code == this.STATUS_COMPLETED) {
+    } else if(this.pickup() && this.flaged_completed()) {
       return "You have picked up at " + this.formatTime(this.finish_time);
     } else if (this.finished()) {
       return "You marked as No Show at " + this.formatTime(this.finish_time);
@@ -236,16 +250,29 @@ export class Itinerary {
 
   // Undo last action
   undo() {
-    if (this.finished()) {
+    // first dealing with fare undo
+    if(this.hasFare() && this.completed() && this.pickup()) {
+      this.fare.collected_time = null;
+    } else if(this.hasFare() && this.pickup() && this.flaged_completed() && !this.fare.collected()) { 
       this.finish_time = null;
       this.flagInProgress();
       this.trip_result = null;
-    } else if (this.in_progress()) {
-      if(this.arrived()) {
-        this.arrival_time = null;
-      } else if (this.departed()) {
-        this.departure_time = null;
-        this.flagPending();
+    } else if(this.hasFare() && this.dropoff() && this.in_progress() && this.fare.collected()) {
+      this.fare.collected_time = null;
+    } else if(this.hasFare() && this.dropoff() && this.in_progress() && this.arrived() && !this.fare.collected()) { 
+      this.arrival_time = null;
+    } else {
+      if (this.finished()) {
+        this.finish_time = null;
+        this.flagInProgress();
+        this.trip_result = null;
+      } else if (this.in_progress()) {
+        if(this.arrived()) {
+          this.arrival_time = null;
+        } else if (this.departed()) {
+          this.departure_time = null;
+          this.flagPending();
+        }
       }
     }
   }
@@ -274,7 +301,7 @@ export class Itinerary {
 
     if(this.fare && !this.fare.collected()) {
       // if pre_trip, then collect fare after picked up the passenger
-      if(this.fare.pre_trip && this.pickup() && (this.status_code == this.STATUS_COMPLETED)) {
+      if(this.fare.pre_trip && this.pickup() && this.flaged_completed()) {
         
         showFare = true;
 

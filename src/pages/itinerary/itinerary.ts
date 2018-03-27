@@ -110,7 +110,7 @@ export class ItineraryPage {
 
   // only a In Progress itin should see Arrive button
   showArriveButton() {
-    if (!this.active || !this.itin.id || !this.itin.hasTrip() ||  !this.itin.in_progress() || this.itin.arrived()) {
+    if (!this.active || !this.itin.id || !this.itin.hasTrip() ||  !this.itin.flaged_in_progress() || this.itin.arrived()) {
       return false;
     }
 
@@ -119,7 +119,7 @@ export class ItineraryPage {
 
   // only a In Progress Arrived Pickup itin should see Pickup button
   showPickupButton() {
-    if (!this.active || !this.itin.id || !this.itin.pickup() || !this.itin.arrived() || !this.itin.in_progress()) {
+    if (!this.active || !this.itin.id || !this.itin.pickup() || !this.itin.arrived() || !this.itin.flaged_in_progress()) {
       return false;
     }
 
@@ -128,7 +128,7 @@ export class ItineraryPage {
 
   // only a In Progress Arrived Pickup itin should see No Show button
   showNoshowButton() {
-    if (!this.active || !this.itin.id || !this.itin.pickup() || !this.itin.arrived() || !this.itin.in_progress()) {
+    if (!this.active || !this.itin.id || !this.itin.pickup() || !this.itin.arrived() || !this.itin.flaged_in_progress()) {
       return false;
     }
 
@@ -137,7 +137,11 @@ export class ItineraryPage {
 
   // only a In Progress Arrived Dropoff itin should see Dropoff button
   showDropoffButton() {
-    if (!this.active || !this.itin.id || !this.itin.dropoff() || !this.itin.arrived() || !this.itin.in_progress()) {
+    if (!this.active || !this.itin.id || !this.itin.dropoff() || !this.itin.arrived() || !this.itin.flaged_in_progress()) {
+      return false;
+    }
+
+    if(this.itin.hasFare() && !this.itin.fare.collected()) {
       return false;
     }
 
@@ -152,6 +156,11 @@ export class ItineraryPage {
   // Show Undo once departed but not arrived
   showNavigateButton() {
     return this.itin.address && this.itin.departed() && !this.itin.arrived();
+  }
+
+  // Show proceed to next stop button when finished
+  showProceedButton() {
+    return this.active && this.itin.finished() && this.itin.hasTrip();
   }
 
   // status action buttons
@@ -250,7 +259,7 @@ export class ItineraryPage {
   }
 
   getNextItin() {
-    return this.itins.find(r => (r.pending() || r.in_progress()));
+    return this.itins.find(r => (!r.finished()));
   }
 
   navToNextItin() {

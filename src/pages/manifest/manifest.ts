@@ -64,7 +64,7 @@ export class ManifestPage {
 
   ionViewWillEnter() {
     console.log('entering manifest screen...');
-    this.activeItin = this.itineraries.find(r => (r.pending() || r.in_progress())) || (new Itinerary());
+    this.activeItin = this.itineraries.find(r => !r.finished()) || (new Itinerary());
   }
 
   requestManifest() {
@@ -77,7 +77,7 @@ export class ManifestPage {
   loadItins(itins: Itinerary[]) {
     this.dataLoaded = true;
     this.itineraries = itins || [];
-    this.activeItin = this.itineraries.find(r => (r.pending() || r.in_progress())) || (new Itinerary());
+    this.activeItin = this.itineraries.find(r => !r.finished()) || (new Itinerary());
   }
 
   loadRunList() {

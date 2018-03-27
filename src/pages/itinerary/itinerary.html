@@ -286,7 +286,7 @@
         </button>
       </ion-col>
 
-      <ion-col text-center *ngIf="this.active && this.itin.finished() && this.itin.hasTrip()">
+      <ion-col text-center *ngIf="this.showProceedButton()">
         <button ion-button round large
                 id="show-next-itin-button"
                 *ngIf="this.getNextItin()"
