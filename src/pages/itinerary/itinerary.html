@@ -86,7 +86,10 @@
     <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2 text-center>
       <div *ngIf="this.active && !this.itin.pending()">
         <span class="action-label">{{this.itin.lastActionInfo()}}</span>
-        <button ion-button icon-only (click)="this.executeUndo()"><ion-icon name="undo">Undo</ion-icon></button>
+        <button ion-button color="danger" icon-start (click)="this.executeUndo()">
+          <ion-icon name="undo"></ion-icon>
+          Undo
+        </button>
       </div>
       <ion-list class="app-list" *ngIf="!this.active && this.itin.finished()">
 
@@ -101,7 +104,7 @@
 
   <!-- Begin & end Run -->
   <ion-row>
-    <ion-col *ngIf="this.itin.beginRun()">
+    <ion-col *ngIf="this.itin.beginRun()" col-md-6 offset-md-3>
         <ion-grid>
           <form (ngSubmit)="startRun()" #startRunForm="ngForm">
 
@@ -170,7 +173,7 @@
         </ion-grid>
       </ion-col>
 
-      <ion-col text-center *ngIf="this.itin.endRun()">
+      <ion-col text-center *ngIf="this.itin.endRun()" col-sm-4 offset-sm-4>
         <ion-grid>  
           <form (ngSubmit)="endRun()" #endRunForm="ngForm">
             <ion-list>
@@ -204,7 +207,7 @@
 
   <!-- Fare -->
   <ion-row>
-    <ion-col *ngIf="this.itin.showFare()">
+    <ion-col *ngIf="this.itin.showFare()" col-sm-4 offset-sm-4>
         <ion-grid>
           <form (ngSubmit)="processFare()" #fareForm="ngForm">
 
