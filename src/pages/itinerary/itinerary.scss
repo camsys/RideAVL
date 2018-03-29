@@ -33,13 +33,14 @@ page-itinerary {
 
   .action-info {
     button {
-      background: $appRed;
       font-size: $font-size-md;
     }
     .action-label {
       color: $appBlue;
       font-size: $font-size-lg;
+      vertical-align: text-top;
     }
+
   }
 
   .notes-card {

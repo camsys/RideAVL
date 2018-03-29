@@ -1,4 +1,5 @@
 import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
+import {Observable} from 'rxjs/Rx';
 import { Nav, Platform, Events, ToastController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -16,6 +17,8 @@ import { PageModel } from '../models/page';
 // PROVIDERS
 import { GlobalProvider} from '../providers/global/global';
 import { AuthProvider } from '../providers/auth/auth';
+import { GpsProvider } from '../providers/gps/gps';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 @Component({
   templateUrl: 'app.html'
@@ -37,6 +40,8 @@ export class MyApp {
               public splashScreen: SplashScreen,
               public global: GlobalProvider,
               private auth: AuthProvider,
+              private gps: GpsProvider,
+              private backgroundMode: BackgroundMode,
               private changeDetector: ChangeDetectorRef,
               public events: Events,
               private toastCtrl: ToastController) {
@@ -46,6 +51,20 @@ export class MyApp {
     // When a server error occurs, show an error message and return to the home page.
     this.events.subscribe("error:http", (error) => {
       this.handleError(error);
+    });
+
+    // enable device background mode so keep app active while in background mode
+    if(this.platform.is('cordova')) {
+      this.backgroundMode.enable();
+    }
+
+    // Track location periodically 
+    Observable.interval(1000).subscribe(() => {
+      let isBackgroundMode = false;
+      if(this.platform.is('cordova')) {
+        isBackgroundMode = this.backgroundMode.isActive();
+      }
+      gps.track(isBackgroundMode);
     });
   }
 

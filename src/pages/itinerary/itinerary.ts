@@ -60,6 +60,13 @@ export class ItineraryPage {
               }
 
               this.active = this.navParams.data.active || false;
+              
+              // set system-wide active itinerary
+              if(this.active) {
+                global.activeItin = this.itin;
+                global.activeRun = this.run;
+              }
+
               setInterval(() => this.currentTime = new Date(), 500);
   }
 

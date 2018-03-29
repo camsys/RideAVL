@@ -6,6 +6,9 @@ import { Http, HttpModule } from '@angular/http';
 
 // Native imports
 import { LaunchNavigator } from '@ionic-native/launch-navigator';
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
+import { Geolocation } from '@ionic-native/geolocation';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 // Environment
 import { environment } from './environment';
@@ -42,6 +45,7 @@ import { ItineraryInfoComponent } from '../components/itinerary-info/itinerary-i
 import { PrettyTimeFromSecondsPipe } from '../pipes/pretty-time-from-seconds/pretty-time-from-seconds';
 import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
 import { TitleCasePipe } from '../pipes/title-case/title-case';
+import { GpsProvider } from '../providers/gps/gps';
 
 @NgModule({
   declarations: [
@@ -83,7 +87,11 @@ import { TitleCasePipe } from '../pipes/title-case/title-case';
     RunProvider,
     ManifestProvider,
     ItineraryProvider,
-    LaunchNavigator
+    GpsProvider,
+    LaunchNavigator,
+    Geolocation,
+    BackgroundGeolocation,
+    BackgroundMode
   ]
 })
 export class AppModule {}

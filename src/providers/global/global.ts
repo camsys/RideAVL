@@ -3,10 +3,14 @@ import { Http } from '@angular/http';
 
 // Models
 import { User } from '../../models/user';
+import { Run } from '../../models/run';
+import { Itinerary } from '../../models/itinerary';
 
 @Injectable()
 export class GlobalProvider {
   public user: User = {} as User;
+  public activeItin: Itinerary;
+  public activeRun: Run;
 
   constructor(public http: Http) {
     console.log('Hello GlobalProvider Provider');

@@ -40,6 +40,11 @@ export class Run {
     return status_label;
   }
 
+  // check if run is active
+  inProgress() {
+    return this.status_code == this.STATUS_IN_PROGRESS;
+  }
+
   // Update status
   flagPending() {
     this.status_code = this.STATUS_PENDING;
