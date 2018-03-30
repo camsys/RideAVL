@@ -59,7 +59,7 @@ export class MyApp {
     }
 
     // Track location periodically 
-    Observable.interval(1000).subscribe(() => {
+    Observable.interval(global.gpsInterval * 1000).subscribe(() => {
       let isBackgroundMode = false;
       if(this.platform.is('cordova')) {
         isBackgroundMode = this.backgroundMode.isActive();

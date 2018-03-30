@@ -11,6 +11,7 @@ export class GlobalProvider {
   public user: User = {} as User;
   public activeItin: Itinerary;
   public activeRun: Run;
+  public gpsInterval: number = 30; //30 seconds as default
 
   constructor(public http: Http) {
     console.log('Hello GlobalProvider Provider');
