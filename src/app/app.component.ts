@@ -29,6 +29,7 @@ export class MyApp {
 
   rootPage: any = SignInPage;
   showSpinner: Boolean = false;
+  gpsPager: any;
 
   signedInPages: PageModel[];
   universalPages: PageModel[]; //Pages for both signed in and signed out users
@@ -53,18 +54,14 @@ export class MyApp {
       this.handleError(error);
     });
 
-    // enable device background mode so keep app active while in background mode
-    if(this.platform.is('cordova')) {
-      this.backgroundMode.enable();
-    }
+    // listen to gps ping request
+    this.events.subscribe("gps:start", (error) => {
+      //this.startGpsTracking();
+    });
 
-    // Track location periodically 
-    Observable.interval(global.gpsInterval * 1000).subscribe(() => {
-      let isBackgroundMode = false;
-      if(this.platform.is('cordova')) {
-        isBackgroundMode = this.backgroundMode.isActive();
-      }
-      gps.track(isBackgroundMode);
+    // listen to stopping gps ping request
+    this.events.subscribe("gps:stop", (error) => {
+      //this.stopGpsTracking();
     });
   }
 
@@ -147,6 +144,7 @@ export class MyApp {
   // Check if we're already at the home page; if not, go there.
   goHome() {
     if(this.auth.isSignedIn()) {
+      this.events.publish('gps:start');
       if((this.nav.getActive() && this.nav.getActive().name) !== "RunsPage") {
         this.nav.setRoot(RunsPage); 
       }
@@ -171,6 +169,30 @@ export class MyApp {
   onSignOut() {
     this.nav.setRoot(SignInPage);
     this.setMenu();
+    this.events.publish('gps:stop');
+  }
+
+  startGpsTracking() {
+    // enable device background mode so keep app active while in background mode
+    if(this.platform.is('cordova')) {
+      this.backgroundMode.enable();
+    }
+
+    // Track location periodically 
+    this.gpsPager = Observable.interval(this.global.gpsInterval * 1000).subscribe(() => {
+      console.log('pinging...');
+      let isBackgroundMode = false;
+      if(this.platform.is('cordova')) {
+        isBackgroundMode = this.backgroundMode.isActive();
+      }
+      this.gps.track(isBackgroundMode);
+    });
+  }
+
+  stopGpsTracking() {
+    if(this.gpsPager) {
+      this.gpsPager.unsubscribe();
+    }
   }
 
   // Subscribe to spinner:show and spinner:hide events that can be published by child pages

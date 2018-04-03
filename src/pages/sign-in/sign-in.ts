@@ -3,7 +3,8 @@ import {  IonicPage,
           NavController,
           NavParams,
           ToastController,
-          Toast} from 'ionic-angular';
+          Toast,
+          Events} from 'ionic-angular';
 
 // Pages
 import { RunsPage } from '../runs/runs';
@@ -29,6 +30,7 @@ export class SignInPage {
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
+              public events: Events,
               private authProvider: AuthProvider,
               private toastCtrl: ToastController) {
     this.errorToast = this.toastCtrl.create({});
@@ -43,6 +45,9 @@ export class SignInPage {
             this.authProvider.unpackSignInResponse(data);
             // Then, redirect the user to the home page
             this.navCtrl.setRoot(RunsPage);
+
+            // Once logged in, should start gps tracking
+            this.events.publish('gps:start');
           },
           error => {
             // On failed response, display a pop-up error message and remain on page.
