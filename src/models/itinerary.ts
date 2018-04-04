@@ -198,13 +198,13 @@ export class Itinerary {
         return "You have dropped off at " + this.formatTime(this.finish_time);
       } else if(this.pickup()) {
         if(this.hasFare() && this.fare.collected()) {
-          return "Collected $" + this.fare.amount + " " + this.fare.fare_type + " at " + this.formatTime(this.fare.collected_time);
+          return this.fare.collectedText();
         } else {
           return "You have picked up at " + this.formatTime(this.finish_time);
         }
       } 
     } else if(this.hasFare() && this.fare.collected()) {
-      return "Collected $" + this.fare.amount + " " + this.fare.fare_type + " at " + this.formatTime(this.fare.collected_time);
+      return this.fare.collectedText();
     } else if(this.pickup() && this.flaged_completed()) {
       return "You have picked up at " + this.formatTime(this.finish_time);
     } else if (this.finished()) {
@@ -231,12 +231,12 @@ export class Itinerary {
       if(this.pickup()) {
         actions.push("Picked up at " + this.formatTime(this.finish_time));
         if(this.hasFare()) {
-          actions.push("Collected $" + this.fare.amount + " " + this.fare.fare_type + " at " + this.formatTime(this.fare.collected_time));
+          actions.push(this.fare.collectedText());
         }
       }
       if(this.dropoff()) {
         if(this.hasFare()) {
-          actions.push("Collected $" + this.fare.amount + " " + this.fare.fare_type + " at " + this.formatTime(this.fare.collected_time));
+          actions.push(this.fare.collectedText());
         }
         actions.push("Dropped off at " + this.formatTime(this.finish_time));
       }

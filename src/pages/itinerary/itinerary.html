@@ -226,8 +226,13 @@
 
             <ion-row>
               <ion-col text-center>
+                <button *ngIf="this.showSkipDonationButton()" 
+                  ion-button round large 
+                  type="button"
+                  (click)="this.skipDonation()">
+                  Skip
+                </button>
                 <button ion-button round large 
-                  class="app-button-primary center" 
                   type="submit" 
                   [disabled]="!fareForm.form.valid">
                   Collected

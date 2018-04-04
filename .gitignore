@@ -38,4 +38,5 @@ UserInterfaceState.xcuserstate
 deploy/publish/*
 deploy/device/*
 deploy/emulate/*
+deploy/docs
 apks/*

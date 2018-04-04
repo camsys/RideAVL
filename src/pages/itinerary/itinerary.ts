@@ -170,6 +170,11 @@ export class ItineraryPage {
     return this.active && this.itin.finished() && this.itin.hasTrip();
   }
 
+  // Show skip donation button
+  showSkipDonationButton() {
+    return this.itin.fare && this.itin.fare.isDonation() && !this.itin.fare.collected();
+  }
+
   // status action buttons
   startRun() {
     this.runProvider.startRun(this.run.id, {inspections: this.inspections, driver_notes: this.driver_notes, start_odometer: this.run_start_odometer})
@@ -228,6 +233,13 @@ export class ItineraryPage {
         .subscribe((resp) => {
           this.itin.flagOther();
           this.itin.finish_time = this.getCurrentUTC();
+        });
+  }
+
+  skipDonation() {
+    this.itinProvider.updateTripFare(this.itin.trip_id, 0)
+        .subscribe((resp) => {
+          this.itin.fare.collected_time = this.getCurrentUTC();
         });
   }
 
