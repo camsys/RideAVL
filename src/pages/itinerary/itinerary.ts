@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 // Third-party native plugins
 import { LaunchNavigator, LaunchNavigatorOptions } from '@ionic-native/launch-navigator';
@@ -36,8 +37,10 @@ export class ItineraryPage {
   run_end_odometer: number;
   active: Boolean = false;
   currentTime: Date = new Date();
+  endRunFormGroup: FormGroup;
   
   constructor(public navCtrl: NavController, 
+              public formBuilder: FormBuilder,
               public navParams: NavParams,
               public global: GlobalProvider,
               private itinProvider: ItineraryProvider,
@@ -65,6 +68,12 @@ export class ItineraryPage {
               if(this.active) {
                 global.activeItin = this.itin;
                 global.activeRun = this.run;
+              }
+
+              if(this.itin.endRun()) {
+                this.endRunFormGroup = formBuilder.group({
+                  formControlEndOdometer: new FormControl('', Validators.min(this.run_start_odometer))
+                });
               }
 
               setInterval(() => this.currentTime = new Date(), 500);

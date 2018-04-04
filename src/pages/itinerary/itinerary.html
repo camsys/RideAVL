@@ -175,14 +175,16 @@
 
       <ion-col text-center *ngIf="this.itin.endRun()" col-sm-4 offset-sm-4>
         <ion-grid>  
-          <form (ngSubmit)="endRun()" #endRunForm="ngForm">
+          <form [formGroup]="endRunFormGroup" (ngSubmit)="endRun()" #endRunForm="ngForm">
             <ion-list>
               <ion-item>
                 <ion-label color="primary">End Odometer</ion-label>
-                <ion-input  type="number"
+                <ion-input  formControlName="formControlEndOdometer"
+                            type="number"
                             placeholder="End Odometer"
                             name="end_odometer"
                             [(ngModel)]="run_end_odometer" 
+                            min="{{ run_start_odometer }}"
                             [disabled]="!this.active || this.itin.finished()"
                             required>
                 </ion-input>
