@@ -17,6 +17,7 @@ import { PageModel } from '../models/page';
 // PROVIDERS
 import { GlobalProvider} from '../providers/global/global';
 import { AuthProvider } from '../providers/auth/auth';
+import { RunProvider } from '../providers/run/run';
 import { GpsProvider } from '../providers/gps/gps';
 import { BackgroundMode } from '@ionic-native/background-mode';
 
@@ -42,6 +43,7 @@ export class MyApp {
               public global: GlobalProvider,
               private auth: AuthProvider,
               private gps: GpsProvider,
+              private runProvider: RunProvider,
               private backgroundMode: BackgroundMode,
               private changeDetector: ChangeDetectorRef,
               public events: Events,
@@ -49,19 +51,30 @@ export class MyApp {
 
     this.initializeApp();
 
+    this.initializeEvents();
+  }
+
+  // define global events
+  initializeEvents() {
     // When a server error occurs, show an error message and return to the home page.
     this.events.subscribe("error:http", (error) => {
       this.handleError(error);
     });
 
+    // init app data
+    this.events.subscribe("app:init", () => {
+      console.log('init app data...');
+      this.loadDriverRunData();
+    });
+
     // listen to gps ping request
-    this.events.subscribe("gps:start", (error) => {
-      //this.startGpsTracking();
+    this.events.subscribe("gps:start", () => {
+      this.startGpsTracking();
     });
 
     // listen to stopping gps ping request
-    this.events.subscribe("gps:stop", (error) => {
-      //this.stopGpsTracking();
+    this.events.subscribe("gps:stop", () => {
+      this.stopGpsTracking();
     });
   }
 
@@ -144,10 +157,11 @@ export class MyApp {
   // Check if we're already at the home page; if not, go there.
   goHome() {
     if(this.auth.isSignedIn()) {
-      this.events.publish('gps:start');
       if((this.nav.getActive() && this.nav.getActive().name) !== "RunsPage") {
         this.nav.setRoot(RunsPage); 
       }
+      this.events.publish('app:init');
+      this.events.publish('gps:start');
     } else {
       this.nav.setRoot(SignInPage);
     }
@@ -170,6 +184,12 @@ export class MyApp {
     this.nav.setRoot(SignInPage);
     this.setMenu();
     this.events.publish('gps:stop');
+  }
+
+  // load app data
+  loadDriverRunData() {
+    this.runProvider.loadDriverRunData()
+      .subscribe(); 
   }
 
   startGpsTracking() {

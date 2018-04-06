@@ -78,7 +78,7 @@ export class GpsProvider {
           location.accuracy = loc_data.accuracy;
           location.bearing = loc_data.bearing;
           location.log_time = new Date(loc_data.time).toUTCString();
-          this.send(location);
+          this.send(location).subscribe();
         });
 
     // start recording location
@@ -95,12 +95,10 @@ export class GpsProvider {
       return Observable.empty();
     }
 
-    //console.log('watching...');
     this.geolocation.getCurrentPosition()
       .then((resp) => {
         // Run update inside of Angular's zone
         this.zone.run(() => {
-          console.log(resp);
           let loc_data = resp.coords;
           let location = new GpsLocation();
           location.latitude = loc_data.latitude;
@@ -109,7 +107,7 @@ export class GpsProvider {
           location.accuracy = loc_data.accuracy;
           location.bearing = loc_data.heading;
           location.log_time = new Date(resp.timestamp).toUTCString();
-          this.send(location);
+          this.send(location).subscribe();
         });
       })
       .catch((error: Response) =>  this.handleError(error));

@@ -10,11 +10,13 @@ import { environment } from '../../app/environment'
 
 // Models
 import { Run } from '../../models/run';
+import { Itinerary } from '../../models/itinerary';
 import { Vehicle } from '../../models/vehicle';
 import { Inspection } from '../../models/inspection';
 
 // Providers
 import { AuthProvider } from '../../providers/auth/auth';
+import { GlobalProvider } from '../../providers/global/global';
 
 // Runs Provider handles API Calls to the RidePilot back-end 
 // to load and update Runs data
@@ -26,6 +28,7 @@ export class RunProvider {
 
   constructor(public http: Http,
               private auth: AuthProvider,
+              private global: GlobalProvider,
               public events: Events) {}
               
   // Constructs a request options hash with auth headers
@@ -132,6 +135,38 @@ export class RunProvider {
     Object.assign(insp, insp_data);
 
     return insp;
+  }
+
+  loadDriverRunData(): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'driver_run_data');
+
+    return this.http
+        .get(uri, this.requestOptions())
+        .map( response => this.parseDriverRunData(response))
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
+  parseDriverRunData(response) {
+    let json_resp = response.json();
+    if(json_resp.active_run) {
+      let run_data = json_resp.active_run.data;
+      let run: Run = new Run();
+      Object.assign(run, run_data.attributes);
+      run.id = run_data.id;
+
+      this.global.activeRun = run;
+    }
+
+    if(json_resp.active_itin) {
+      let itin_data = json_resp.active_itin.data;
+      let itin: Itinerary = new Itinerary();
+      Object.assign(itin, itin_data.attributes);
+      itin.id = itin_data.id;
+
+      this.global.activeItin = itin;
+
+    }
+    return response;
   }
 
   // Handle errors by console logging the error, and publishing an error event

@@ -6,7 +6,7 @@ import { Events } from 'ionic-angular';
 import { Observable } from "rxjs/Rx";
 import 'rxjs/add/operator/map';
 
-import { environment } from '../../app/environment'
+import { environment } from '../../app/environment';
 
 // Models
 import { Itinerary } from '../../models/itinerary';

@@ -88,6 +88,9 @@ export class AuthProvider {
             this.setSession(session);
           }
 
+          this.events.publish('app:init');
+          this.events.publish('gps:start');
+
           return response;
         })
         .catch((error: Response) =>  this.handleError(error));

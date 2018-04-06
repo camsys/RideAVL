@@ -45,9 +45,6 @@ export class SignInPage {
             this.authProvider.unpackSignInResponse(data);
             // Then, redirect the user to the home page
             this.navCtrl.setRoot(RunsPage);
-
-            // Once logged in, should start gps tracking
-            this.events.publish('gps:start');
           },
           error => {
             // On failed response, display a pop-up error message and remain on page.
