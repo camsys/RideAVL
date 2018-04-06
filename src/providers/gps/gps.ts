@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { RequestOptions } from '@angular/http';
 import { Events } from 'ionic-angular';
@@ -35,7 +35,6 @@ export class GpsProvider {
     };
 
   constructor(public http: Http,
-              public zone: NgZone,
               private auth: AuthProvider,
               private global: GlobalProvider,
               private geolocation: Geolocation,
@@ -95,22 +94,25 @@ export class GpsProvider {
       return Observable.empty();
     }
 
-    this.geolocation.getCurrentPosition()
+    let posOptions = {
+      timeout: (this.global.gpsInterval) * 1000, 
+      enableHighAccuracy: true
+    };
+    this.geolocation.getCurrentPosition(posOptions)
       .then((resp) => {
-        // Run update inside of Angular's zone
-        this.zone.run(() => {
-          let loc_data = resp.coords;
-          let location = new GpsLocation();
-          location.latitude = loc_data.latitude;
-          location.longitude = loc_data.longitude;
-          location.speed = loc_data.speed;
-          location.accuracy = loc_data.accuracy;
-          location.bearing = loc_data.heading;
-          location.log_time = new Date(resp.timestamp).toUTCString();
-          this.send(location).subscribe();
-        });
-      })
-      .catch((error: Response) =>  this.handleError(error));
+        let loc_data = resp.coords;
+        let location = new GpsLocation();
+        location.latitude = loc_data.latitude;
+        location.longitude = loc_data.longitude;
+        location.speed = loc_data.speed;
+        location.accuracy = loc_data.accuracy;
+        location.bearing = loc_data.heading;
+        location.log_time = new Date(resp.timestamp).toUTCString();
+        this.send(location).subscribe();
+
+      }, (error) => {
+        console.log(error);
+      });
   }
 
   send(location: GpsLocation): Observable<Response>{
