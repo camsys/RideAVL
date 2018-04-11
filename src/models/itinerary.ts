@@ -40,7 +40,7 @@ export class Itinerary {
         label = "Dropoff: " + this.customer_name;
         break;
       case 3:
-        label = "Finsh the Run";
+        label = "Finish the Run";
         break;
       default:
         break;
