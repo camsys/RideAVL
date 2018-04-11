@@ -62,7 +62,26 @@ page-itinerary {
   }
 
   .inspection-responded {
-    background: $appMdGray;
-    color: $appWhite;
+    color: $appWhite !important;
+  }
+
+  .inspection-responded.inspection-pass {
+    background-color: $appGrenn;
+  }
+
+  .inspection-responded.inspection-fail {
+    background-color: $appRed;
+  }
+
+  .inspection-pass {
+    color: $appGrenn;
+  }
+
+  .inspection-fail {
+    color: $appRed;
+  }
+
+  .inspection-item {
+    font-size: $font-size-lg;
   }
 }

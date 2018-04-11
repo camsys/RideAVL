@@ -113,15 +113,15 @@
               <ion-list-header  class="run-list-header">
                 Vehicle Inspections
               </ion-list-header>
-              <ion-item (click)="clicked = 'item '+ i" tappable *ngFor="let insp of inspections">
+              <ion-item class="inspection-item" (click)="clicked = 'item '+ i" tappable *ngFor="let insp of inspections">
                 <span text-wrap>{{insp.description}}</span>
-                <button type="button" ion-button icon-only small clear item-left 
+                <button type="button" class="inspection-pass" ion-button icon-only large clear item-left 
                             [ngClass]="{'inspection-responded': insp.checked}"
                             (click)="markInspectionChecked(insp)"
                             [disabled]="this.itin.finished()">
                   <ion-icon name="checkmark"></ion-icon>
                 </button>
-                <button type="button" ion-button icon-only small clear item-left
+                <button type="button" class="inspection-fail" ion-button icon-only large clear item-left
                             [ngClass]="{'inspection-responded': insp.checked == false}"
                             (click)="markInspectionUnchecked(insp)"
                             [disabled]="this.itin.finished()">
