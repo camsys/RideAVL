@@ -20,6 +20,7 @@ import { AuthProvider } from '../providers/auth/auth';
 import { RunProvider } from '../providers/run/run';
 import { GpsProvider } from '../providers/gps/gps';
 import { BackgroundMode } from '@ionic-native/background-mode';
+import { Network } from '@ionic-native/network';
 
 @Component({
   templateUrl: 'app.html'
@@ -31,6 +32,7 @@ export class MyApp {
   rootPage: any = SignInPage;
   showSpinner: Boolean = false;
   gpsPager: any;
+  wasOffline: Boolean = false;
 
   signedInPages: PageModel[];
   universalPages: PageModel[]; //Pages for both signed in and signed out users
@@ -46,6 +48,7 @@ export class MyApp {
               private runProvider: RunProvider,
               private backgroundMode: BackgroundMode,
               private changeDetector: ChangeDetectorRef,
+              private network: Network,
               public events: Events,
               private toastCtrl: ToastController) {
 
@@ -76,6 +79,9 @@ export class MyApp {
     this.events.subscribe("gps:stop", () => {
       this.stopGpsTracking();
     });
+
+    // network connect/disconnect
+    this.registerNetworkEvents();
   }
 
   // Handles errors based on their status code
@@ -86,14 +92,14 @@ export class MyApp {
         console.error("USER TOKEN EXPIRED");
         this.signOut();
         this.nav.setRoot(SignInPage);
-        this.showErrorToast('Please sign in again.');
+        this.showToast('Please sign in again.');
         break;
       case 503:
-        this.showErrorToast('Sorry. Service unavailable. Please check your internet connection.');
+        this.showToast('Sorry. Service unavailable. Please check your internet connection.');
         break;
       default:
         this.goHome();
-        this.showErrorToast('Sorry. An error happened.');
+        this.showToast('Sorry. An error happened.');
         break;
     }
 
@@ -101,7 +107,7 @@ export class MyApp {
   }
 
   // Shows an error toast at the top of the screen for 3 sec, with the given message
-  showErrorToast(message: string) {
+  showToast(message: string) {
     let errorToast = this.toastCtrl.create({
       message: message,
       position: 'top',
@@ -110,6 +116,22 @@ export class MyApp {
     errorToast.present();
 
     return errorToast;
+  }
+
+  registerNetworkEvents() {
+    // watch network for a disconnect
+    this.network.onDisconnect().subscribe(() => {
+      this.wasOffline = true;
+      this.showToast("Network disconnected.");
+    });
+
+    // watch network for a connection
+    this.network.onConnect().subscribe(() => {
+      if(this.wasOffline) {
+        this.wasOffline = false;
+        this.showToast("Network connected.");
+      }
+    });
   }
 
   initializeApp() {

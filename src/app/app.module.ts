@@ -9,6 +9,7 @@ import { LaunchNavigator } from '@ionic-native/launch-navigator';
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { Geolocation } from '@ionic-native/geolocation';
 import { BackgroundMode } from '@ionic-native/background-mode';
+import { Network } from '@ionic-native/network';
 
 // Environment
 import { environment } from './environment';
@@ -91,7 +92,8 @@ import { GpsProvider } from '../providers/gps/gps';
     LaunchNavigator,
     Geolocation,
     BackgroundGeolocation,
-    BackgroundMode
+    BackgroundMode,
+    Network
   ]
 })
 export class AppModule {}
