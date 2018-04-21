@@ -148,6 +148,13 @@ export class MyApp {
     this.platform.ready().then(() => {
       // go to home screen
       this.goHome();
+
+      // check app network state
+      setTimeout(() => {
+        if (this.network.type === 'none') {
+          this.showToast("No network access.");
+        }
+      }, 3000);
     });
   }
 
