@@ -55,6 +55,7 @@ export class ManifestPage {
               }
               
               setInterval(() => this.currentTime = new Date(), 500);
+              setInterval(() => this.updateETA(), global.gpsInterval * 1000);
   }
 
   ionViewDidLoad() {
@@ -65,6 +66,18 @@ export class ManifestPage {
   ionViewWillEnter() {
     console.log('entering manifest screen...');
     this.activeItin = this.itineraries.find(r => !r.finished()) || (new Itinerary());
+  }
+
+  // apply calculated eta_diff in all incomplete itins
+  updateETA() {
+    if(!this.global.activeItinEtaDiff || !this.itineraries) {
+      return;
+    }
+
+    for(let it of this.itineraries) {
+      it.update_eta(this.global.activeItinEtaDiff);
+    }
+    this.global.activeItinEtaDiff = 0;
   }
 
   requestManifest() {

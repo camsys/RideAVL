@@ -27,6 +27,7 @@ export class GpsProvider {
 
   public baseUrl = environment.BASE_RIDEPILOT_URL;
   public baseAvlUrl = environment.BASE_RIDEPILOT_AVL_URL;
+  public etaUrl = "https://maps.googleapis.com/maps/api/distancematrix/json?key=" + environment.GOOGLE_MAPS_KEY;
 
   private backgroundLocationConfig: BackgroundGeolocationConfig = {
             desiredAccuracy: 10,
@@ -78,6 +79,7 @@ export class GpsProvider {
           location.bearing = loc_data.bearing;
           location.log_time = new Date(loc_data.time).toUTCString();
           this.send(location).subscribe();
+          this.getETA(location).subscribe();
         });
 
     // start recording location
@@ -109,10 +111,53 @@ export class GpsProvider {
         location.bearing = loc_data.heading;
         location.log_time = new Date(resp.timestamp).toUTCString();
         this.send(location).subscribe();
+        this.getETA(location).subscribe();
 
       }, (error) => {
         console.log(error);
       });
+  }
+
+  getETA(location: GpsLocation): Observable<Response>{
+    let dest = this.global.activeItin.address;
+    let uri = this.etaUrl + "&departure_time=now" + 
+      "&origins=" + location.latitude + "," + location.longitude + 
+      "&destinations=" + dest.latitude + "," + dest.longitude;
+
+    return this.http
+        .get(uri, this.requestOptions())
+        .map( response => this.parseEtaResponse(response))
+        .catch((error: Response) => this.handleError(error));
+  }
+
+  parseEtaResponse(response): void {
+    let json_resp = response.json();
+    let drive_duration = parseInt(json_resp["rows"][0]["elements"][0]["duration"]["value"]);
+    let current_time = new Date();
+    let new_eta_seconds = current_time.getHours() * 3600 + current_time.getMinutes() * 60 + current_time.getSeconds() + drive_duration;
+    let activeItin = this.global.activeItin;
+
+    if(new_eta_seconds && activeItin) {
+      if(activeItin.eta_seconds) {
+        this.global.activeItinEtaDiff = new_eta_seconds - parseInt(activeItin.eta_seconds);
+      } 
+
+      this.global.activeItin.eta_seconds = new_eta_seconds;
+      console.log(new_eta_seconds);
+
+      let new_eta: Date = new Date(current_time.getTime() + drive_duration * 1000);;
+      this.uploadEta(activeItin.id, new_eta).subscribe();
+    }
+  }
+
+  uploadEta(itin_id: number, eta: Date) {
+    let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + itin_id + '/update_eta');
+    let body = JSON.stringify({eta: eta.toISOString()});
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => response)
+        .catch((error: Response) =>  this.handleError(error));
   }
 
   send(location: GpsLocation): Observable<Response>{
@@ -131,7 +176,7 @@ export class GpsProvider {
   // for consumption by the app's home page.
   private handleError(error: Response | any): Observable<any> {
     console.error('An error occurred', error, this); // for demo purposes only
-    this.events.publish('error:http', error);
+    //this.events.publish('error:http', error);
     return Observable.empty(); // return an empty observable so subscribe calls don't break
   }
 }

@@ -11,6 +11,7 @@ export class GlobalProvider {
   public user: User = {} as User;
   public activeItin: Itinerary;
   public activeRun: Run;
+  public activeItinEtaDiff: number = 0; // ETA difference in seconds for current leg (new_eta - old_eta)
   public gpsInterval: number = 30; //30 seconds as default
 
   constructor(public http: Http) {

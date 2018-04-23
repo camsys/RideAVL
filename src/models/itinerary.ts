@@ -62,6 +62,12 @@ export class Itinerary {
     return status_label;
   }
 
+  update_eta(eta_diff) {
+    if(eta_diff && !this.arrived() && (this.eta_seconds || parseInt(this.eta_seconds) == 0)) {
+      this.eta_seconds = parseInt(this.eta_seconds) + eta_diff;
+    }
+  }
+
   // Gap between ETA and Schedueld Time
   gap_in_seconds() {
     let diff = parseInt(this.eta_seconds) - parseInt(this.time_seconds);
@@ -76,7 +82,7 @@ export class Itinerary {
 
     if(gap == 0) {
       code = 1; // On Time
-    } else if(gap > 0) {
+    } else if(gap < 0) {
       code = 2; // Early
     } else if(gap > 0) {
       code = 3; // Late
@@ -321,7 +327,7 @@ export class Itinerary {
     if(!itin) {
       return false;
     }
-    return itin === this || (itin.time_seconds == this.time_seconds && itin.address == this.address);
+    return itin === this || (this.id && itin.id && this.id == itin.id) || (itin.time_seconds == this.time_seconds && itin.address == this.address);
   }
 
   private formatTime(strTime: string): string {

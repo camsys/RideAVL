@@ -55,7 +55,7 @@
     <ion-toolbar>
       <ion-row class="manifest-next-stop"> {{this.getNextItinTitle()}}</ion-row>
       <hr class="manifest-next-divider">
-      <ion-row id="itin-time-info" [ngClass]="{'itin-eta-early': this.activeItin.gap_status() == 2}" [ngClass]="{'itin-eta-late': this.activeItin.gap_status() == 3}">
+      <ion-row id="itin-time-info" [ngClass]="{'itin-eta-early': this.activeItin.gap_status() == 2, 'itin-eta-late': this.activeItin.gap_status() == 3}">
         <ion-col col-sm-3>
           <ion-row>TIME</ion-row>
           <ion-row class="time-highlight">{{this.currentTime | amDateFormat:'hh:mm A'}}</ion-row>

@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 
 // Third-party native plugins
 import { LaunchNavigator, LaunchNavigatorOptions } from '@ionic-native/launch-navigator';
+import { Geolocation } from '@ionic-native/geolocation';
 
 // Models
 import { Run } from '../../models/run';
@@ -43,12 +44,14 @@ export class ItineraryPage {
               public formBuilder: FormBuilder,
               public navParams: NavParams,
               public global: GlobalProvider,
+              private geolocation: Geolocation,
               private itinProvider: ItineraryProvider,
               private runProvider: RunProvider,
               private navigator: LaunchNavigator) {
 
               if(this.navParams.data.itin) {
                 this.itin = this.navParams.data.itin;
+                this.itin.update_eta(global.activeItinEtaDiff);
               }
 
               if(this.navParams.data.itins) {
@@ -67,6 +70,7 @@ export class ItineraryPage {
               // set system-wide active itinerary
               if(this.active) {
                 global.activeItin = this.itin;
+                global.activeItinEtaDiff = 0;
                 global.activeRun = this.run;
               }
 
@@ -77,12 +81,25 @@ export class ItineraryPage {
               }
 
               setInterval(() => this.currentTime = new Date(), 500);
+              setInterval(() => this.updateETA(), global.gpsInterval * 1000);
   }
 
   ionViewDidLoad() {
     if(this.itin.beginRun() && !this.inspectionLoaded) {
       this.requestInspections();
     }
+  }
+
+  // apply calculated eta_diff in all incomplete itins
+  updateETA() {
+    if(!this.global.activeItinEtaDiff || !this.itins) {
+      return;
+    }
+
+    for(let it of this.itins) {
+      it.update_eta(this.global.activeItinEtaDiff);
+    }
+    this.global.activeItinEtaDiff = 0;
   }
 
   requestInspections() {
@@ -186,7 +203,36 @@ export class ItineraryPage {
 
   // status action buttons
   startRun() {
-    this.runProvider.startRun(this.run.id, {inspections: this.inspections, driver_notes: this.driver_notes, start_odometer: this.run_start_odometer})
+    let posOptions = {
+      timeout: (this.global.gpsInterval) * 1000, 
+      enableHighAccuracy: true
+    };
+    this.geolocation.getCurrentPosition(posOptions)
+      .then((resp) => this.processStartRun(resp.coords), (error) => {
+        console.log(error);
+        this.processStartRun();
+      });
+  }
+
+  endRun() {
+    let posOptions = {
+      timeout: (this.global.gpsInterval) * 1000, 
+      enableHighAccuracy: true
+    };
+    this.geolocation.getCurrentPosition(posOptions)
+      .then((resp) => this.processEndRun(resp.coords), (error) => {
+        console.log(error);
+        this.processEndRun();
+      });
+  }
+
+  processStartRun(coords={}) {
+    let data = {inspections: this.inspections, driver_notes: this.driver_notes, start_odometer: this.run_start_odometer};
+    if(coords && coords['latitude'] && coords['longitude']) {
+      data['latitude'] = coords['latitude'];
+      data['longitude'] = coords['longitude'];
+    }
+    this.runProvider.startRun(this.run.id, data)
         .subscribe((resp) => {
           this.itin.flagCompleted();
           this.run.flagInProgress();
@@ -196,12 +242,19 @@ export class ItineraryPage {
         });
   }
 
-  endRun() {
-    this.runProvider.endRun(this.run.id, {end_odometer: this.run_end_odometer})
+  processEndRun(coords={}) {
+    let data = {end_odometer: this.run_end_odometer};
+    if(coords && coords['latitude'] && coords['longitude']) {
+      data['latitude'] = coords['latitude'];
+      data['longitude'] = coords['longitude'];
+    }
+    this.runProvider.endRun(this.run.id, data)
         .subscribe((resp) => {
           this.itin.flagCompleted();
           this.run.flagCompleted();
           this.run.end_odometer = this.run_end_odometer;
+          this.global.activeItin = null;
+          this.global.activeRun = null;
           this.navCtrl.setRoot(RunsPage);
         });
   }

@@ -12,6 +12,7 @@ import { environment } from '../../app/environment'
 import { Run } from '../../models/run';
 import { Itinerary } from '../../models/itinerary';
 import { Vehicle } from '../../models/vehicle';
+import { Address } from '../../models/address';
 import { Inspection } from '../../models/inspection';
 
 // Providers
@@ -162,6 +163,16 @@ export class RunProvider {
       let itin: Itinerary = new Itinerary();
       Object.assign(itin, itin_data.attributes);
       itin.id = itin_data.id;
+
+      let included_data = json_resp.active_itin.included;
+      if(included_data && included_data.length > 0) {
+        let addr_data = included_data[0].attributes;
+        let addr_id = included_data[0].id;
+        let addr = new Address();
+        addr.id = addr_id;
+        Object.assign(addr, addr_data);
+        itin.address = addr;
+      }
 
       this.global.activeItin = itin;
 

@@ -313,7 +313,7 @@
 <ion-footer no-border>
   <div *ngIf="!run.completed()">
     <ion-toolbar>
-      <ion-row id="itin-time-info" [ngClass]="{'itin-eta-early': this.itin.gap_status() == 2}" [ngClass]="{'itin-eta-late': this.itin.gap_status() == 3}">
+      <ion-row id="itin-time-info" [ngClass]="{'itin-eta-early': this.itin.gap_status() == 2, 'itin-eta-late': this.itin.gap_status() == 3}">
         <ion-col col-sm-3>
           <ion-row>TIME</ion-row>
           <ion-row class="time-highlight">{{this.currentTime | amDateFormat:'hh:mm A'}}</ion-row>
