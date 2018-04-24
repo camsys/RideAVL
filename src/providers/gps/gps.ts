@@ -162,6 +162,9 @@ export class GpsProvider {
 
   send(location: GpsLocation): Observable<Response>{
     console.log(location); 
+    if(!this.global.activeItin) {
+      return Observable.empty();
+    }
 
     let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + this.global.activeItin.id + '/track_location');
     let body = JSON.stringify({gps_location: location});
