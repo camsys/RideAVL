@@ -78,6 +78,28 @@ export class RunProvider {
         .catch((error: Response) =>  this.handleError(error));
   }
 
+  // Update from address
+  updateFromAddress(runId: Number, data: {}): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'runs/' + runId + '/update_from_address');
+    let body = JSON.stringify({address: data});
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => response)
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
+  // Update from address
+  updateToAddress(runId: Number, data: {}): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'runs/' + runId + '/update_to_address');
+    let body = JSON.stringify({address: data});
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => response)
+        .catch((error: Response) =>  this.handleError(error));
+  }
+
   // Get run inspection items
   getInspections(runId: Number): Observable<Inspection[]> {
     let uri: string = encodeURI(this.baseAvlUrl + 'runs/' + runId + '/inspections');

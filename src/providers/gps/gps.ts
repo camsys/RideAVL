@@ -20,8 +20,8 @@ import { GlobalProvider } from '../../providers/global/global';
 import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse } from '@ionic-native/background-geolocation';
 import { Geolocation } from '@ionic-native/geolocation';
 
-// ItineraryProvider handles API Calls to the RidePilot Core back-end
-// to load and update Itinerary data
+// GpsProvider handles API Calls to the RidePilot Core back-end
+// to send GPS data
 @Injectable()
 export class GpsProvider {
 
@@ -139,7 +139,7 @@ export class GpsProvider {
 
     if(new_eta_seconds && activeItin) {
       if(activeItin.eta_seconds) {
-        this.global.activeItinEtaDiff = new_eta_seconds - parseInt(activeItin.eta_seconds);
+        this.global.activeItinEtaDiff = new_eta_seconds - activeItin.eta_seconds;
       } 
 
       this.global.activeItin.eta_seconds = new_eta_seconds;

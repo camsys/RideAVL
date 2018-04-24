@@ -47,6 +47,7 @@ import { PrettyTimeFromSecondsPipe } from '../pipes/pretty-time-from-seconds/pre
 import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
 import { TitleCasePipe } from '../pipes/title-case/title-case';
 import { GpsProvider } from '../providers/gps/gps';
+import { GeocodingProvider } from '../providers/geocoding/geocoding';
 
 @NgModule({
   declarations: [
@@ -93,7 +94,8 @@ import { GpsProvider } from '../providers/gps/gps';
     Geolocation,
     BackgroundGeolocation,
     BackgroundMode,
-    Network
+    Network,
+    GeocodingProvider
   ]
 })
 export class AppModule {}

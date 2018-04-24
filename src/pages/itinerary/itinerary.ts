@@ -17,6 +17,7 @@ import { Fare } from '../../models/fare';
 import { GlobalProvider } from '../../providers/global/global';
 import { ItineraryProvider } from '../../providers/itinerary/itinerary';
 import { RunProvider } from '../../providers/run/run';
+import { GeocodingProvider } from '../../providers/geocoding/geocoding';
 
 // Page
 import {RunsPage} from '../runs/runs';
@@ -44,6 +45,7 @@ export class ItineraryPage {
               public formBuilder: FormBuilder,
               public navParams: NavParams,
               public global: GlobalProvider,
+              private geocoder: GeocodingProvider,
               private geolocation: Geolocation,
               private itinProvider: ItineraryProvider,
               private runProvider: RunProvider,
@@ -76,7 +78,7 @@ export class ItineraryPage {
 
               if(this.itin.endRun()) {
                 this.endRunFormGroup = formBuilder.group({
-                  formControlEndOdometer: new FormControl('', Validators.min(this.run_start_odometer))
+                  formControlEndOdometer: new FormControl('', Validators.min(this.run_start_odometer + 0.00001))
                 });
               }
 
@@ -203,35 +205,41 @@ export class ItineraryPage {
 
   // status action buttons
   startRun() {
-    let posOptions = {
-      timeout: (this.global.gpsInterval) * 1000, 
-      enableHighAccuracy: true
-    };
-    this.geolocation.getCurrentPosition(posOptions)
-      .then((resp) => this.processStartRun(resp.coords), (error) => {
-        console.log(error);
-        this.processStartRun();
-      });
+    this.processStartRun();
+
+    let callback = (lat, lng) => {
+      this.geocoder.reverseGeocode(lat, lng)
+        .subscribe((addr) => this.updateFromAddress(addr));
+    }
+    this.getCurrentLocation(callback);
   }
 
   endRun() {
+    this.processEndRun();
+
+    let callback = (lat, lng) => {
+      this.geocoder.reverseGeocode(lat, lng)
+        .subscribe((addr) => this.updateToAddress(addr));
+    }
+    this.getCurrentLocation(callback);
+  }
+
+  getCurrentLocation(callback) {
     let posOptions = {
       timeout: (this.global.gpsInterval) * 1000, 
       enableHighAccuracy: true
     };
+
     this.geolocation.getCurrentPosition(posOptions)
-      .then((resp) => this.processEndRun(resp.coords), (error) => {
+      .then((resp) => {
+        callback(resp.coords.latitude, resp.coords.longitude)
+      }, (error) => {
         console.log(error);
-        this.processEndRun();
       });
   }
 
-  processStartRun(coords={}) {
+  processStartRun() {
     let data = {inspections: this.inspections, driver_notes: this.driver_notes, start_odometer: this.run_start_odometer};
-    if(coords && coords['latitude'] && coords['longitude']) {
-      data['latitude'] = coords['latitude'];
-      data['longitude'] = coords['longitude'];
-    }
     this.runProvider.startRun(this.run.id, data)
         .subscribe((resp) => {
           this.itin.flagCompleted();
@@ -242,12 +250,9 @@ export class ItineraryPage {
         });
   }
 
-  processEndRun(coords={}) {
+  processEndRun() {
     let data = {end_odometer: this.run_end_odometer};
-    if(coords && coords['latitude'] && coords['longitude']) {
-      data['latitude'] = coords['latitude'];
-      data['longitude'] = coords['longitude'];
-    }
+
     this.runProvider.endRun(this.run.id, data)
         .subscribe((resp) => {
           this.itin.flagCompleted();
@@ -257,6 +262,14 @@ export class ItineraryPage {
           this.global.activeRun = null;
           this.navCtrl.setRoot(RunsPage);
         });
+  }
+
+  updateFromAddress(addr) {
+    this.runProvider.updateFromAddress(this.run.id, addr).subscribe();
+  }
+
+  updateToAddress(addr) {
+    this.runProvider.updateToAddress(this.run.id, addr).subscribe();
   }
 
   depart() {

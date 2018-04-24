@@ -9,8 +9,8 @@ export class Itinerary {
 
   id: number;
   trip_id: number;
-  time_seconds: string;
-  eta_seconds: string;
+  time_seconds: number;
+  eta_seconds: number;
   leg_flag: number;
   trip_notes: string;
   customer_notes: string;
@@ -63,14 +63,17 @@ export class Itinerary {
   }
 
   update_eta(eta_diff) {
-    if(eta_diff && !this.arrived() && (this.eta_seconds || parseInt(this.eta_seconds) == 0)) {
-      this.eta_seconds = parseInt(this.eta_seconds) + eta_diff;
+    if(eta_diff && !this.arrived() && (this.eta_seconds || this.eta_seconds == 0)) {
+      this.eta_seconds = this.eta_seconds + eta_diff;
     }
   }
 
   // Gap between ETA and Schedueld Time
   gap_in_seconds() {
-    let diff = parseInt(this.eta_seconds) - parseInt(this.time_seconds);
+    let diff;
+    if(this.eta_seconds != null && this.time_seconds != null) {
+      diff = this.eta_seconds - this.time_seconds;
+    }
 
     return diff;
   }

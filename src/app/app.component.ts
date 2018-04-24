@@ -19,6 +19,8 @@ import { GlobalProvider} from '../providers/global/global';
 import { AuthProvider } from '../providers/auth/auth';
 import { RunProvider } from '../providers/run/run';
 import { GpsProvider } from '../providers/gps/gps';
+
+// NATIVE
 import { BackgroundMode } from '@ionic-native/background-mode';
 import { Network } from '@ionic-native/network';
 
