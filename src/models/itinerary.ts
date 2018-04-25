@@ -9,8 +9,12 @@ export class Itinerary {
 
   id: number;
   trip_id: number;
+  time: string;
+  eta: string;
   time_seconds: number;
   eta_seconds: number;
+  processing_time_seconds: number;
+  early_pickup_not_allowed: boolean;
   leg_flag: number;
   trip_notes: string;
   customer_notes: string;
@@ -62,9 +66,13 @@ export class Itinerary {
     return status_label;
   }
 
-  update_eta(eta_diff) {
+  updateEta(eta_diff) {
     if(eta_diff && !this.arrived() && (this.eta_seconds || this.eta_seconds == 0)) {
       this.eta_seconds = this.eta_seconds + eta_diff;
+      if(this.eta) {
+        let eta_date = new Date(this.eta);
+        this.eta = (new Date(eta_date.getTime() + eta_diff * 1000)).toISOString();
+      }
     }
   }
 

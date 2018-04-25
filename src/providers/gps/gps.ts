@@ -118,35 +118,84 @@ export class GpsProvider {
       });
   }
 
+  // calculate ETA based on location
   getETA(location: GpsLocation): Observable<Response>{
-    let dest = this.global.activeItin.address;
+    let itin;
+    if(this.global.activeItin && !this.global.activeItin.arrived()) {
+      itin = this.global.activeItin;
+    } else {
+      itin = this.global.nextItin;
+    }
+
+    if(!itin) {
+      return Observable.empty();;
+    }
+
+    let dest = itin.address;
     let uri = this.etaUrl + "&departure_time=now" + 
       "&origins=" + location.latitude + "," + location.longitude + 
       "&destinations=" + dest.latitude + "," + dest.longitude;
 
     return this.http
         .get(uri, this.requestOptions())
-        .map( response => this.parseEtaResponse(response))
+        .map( response => this.parseEtaResponse(itin, response))
         .catch((error: Response) => this.handleError(error));
   }
 
-  parseEtaResponse(response): void {
+  parseEtaResponse(itin, response): void {
     let json_resp = response.json();
     let drive_duration = parseInt(json_resp["rows"][0]["elements"][0]["duration"]["value"]);
-    let current_time = new Date();
-    let new_eta_seconds = current_time.getHours() * 3600 + current_time.getMinutes() * 60 + current_time.getSeconds() + drive_duration;
-    let activeItin = this.global.activeItin;
 
-    if(new_eta_seconds && activeItin) {
-      if(activeItin.eta_seconds) {
-        this.global.activeItinEtaDiff = new_eta_seconds - activeItin.eta_seconds;
+    let new_eta_seconds;
+    let new_eta;
+    let start_time = null;
+    let is_processing = false;
+    if(itin == this.global.activeItin) {
+      // on the way to current leg dest
+      start_time = new Date();
+    } else {
+      let activeItin = this.global.activeItin;
+      if(activeItin.finished()) {
+        // ready to go to next leg
+        start_time = new Date();
+      } else {
+        if(activeItin.early_pickup_not_allowed && activeItin.time) {
+          // need to wait until pickup schedule time
+          let sch_time = new Date(activeItin.time);
+          start_time = new Date();
+          if(start_time < sch_time) {
+            start_time = sch_time;
+          }
+        } else {
+          // add current leg processing time
+          start_time = new Date();
+          is_processing = true; 
+        }
+      }
+    }
+
+    if(start_time) {
+      // add current leg processing time
+      new_eta = new Date(start_time.getTime() + drive_duration * 1000);
+    }
+
+    if(is_processing) {
+      new_eta = new Date(new_eta.getTime() + this.global.activeItin.processing_time_seconds);
+    }
+
+    if(new_eta && itin) {
+      if(itin.eta) {
+        let eta_date = +new Date(itin.eta);
+        this.global.activeItinEtaDiff = Math.floor((new_eta - eta_date) / 1000);
       } 
 
-      this.global.activeItin.eta_seconds = new_eta_seconds;
-      console.log(new_eta_seconds);
+      // update global object
+      itin.eta = new_eta.toISOString();
+      itin.eta_seconds += this.global.activeItinEtaDiff;
 
-      let new_eta: Date = new Date(current_time.getTime() + drive_duration * 1000);;
-      this.uploadEta(activeItin.id, new_eta).subscribe();
+      this.uploadEta(itin.id, new_eta).subscribe();
+    } else {
+      this.global.activeItinEtaDiff = 0;
     }
   }
 

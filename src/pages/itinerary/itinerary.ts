@@ -53,11 +53,17 @@ export class ItineraryPage {
 
               if(this.navParams.data.itin) {
                 this.itin = this.navParams.data.itin;
-                this.itin.update_eta(global.activeItinEtaDiff);
               }
 
               if(this.navParams.data.itins) {
                 this.itins = this.navParams.data.itins;
+                if(this.itin) {
+                  let matchItin = this.itins.find(r => r.id == this.itin.id);
+                  if(matchItin) {
+                    this.itin.eta = matchItin.eta;
+                    this.itin.eta_seconds = matchItin.eta_seconds;
+                  }
+                }
               }
 
               if(this.navParams.data.run) {
@@ -72,6 +78,15 @@ export class ItineraryPage {
               // set system-wide active itinerary
               if(this.active) {
                 global.activeItin = this.itin;
+                let nextItin = null;
+                if(this.itins) {
+                  let activeItinId = global.activeItin.id;
+                  let idx = this.itins.findIndex(r => r.id == activeItinId);
+                  if(idx >=0 && idx < this.itins.length - 1) {
+                    nextItin = this.itins[idx + 1];
+                  }
+                }
+                global.nextItin = nextItin;
                 global.activeItinEtaDiff = 0;
                 global.activeRun = this.run;
               }
@@ -94,14 +109,11 @@ export class ItineraryPage {
 
   // apply calculated eta_diff in all incomplete itins
   updateETA() {
-    if(!this.global.activeItinEtaDiff || !this.itins) {
+    if(!this.itins) {
       return;
     }
 
-    for(let it of this.itins) {
-      it.update_eta(this.global.activeItinEtaDiff);
-    }
-    this.global.activeItinEtaDiff = 0;
+    this.global.updateManifestETA(this.itins);
   }
 
   requestInspections() {
@@ -259,6 +271,7 @@ export class ItineraryPage {
           this.run.flagCompleted();
           this.run.end_odometer = this.run_end_odometer;
           this.global.activeItin = null;
+          this.global.nextItin = null;
           this.global.activeRun = null;
           this.navCtrl.setRoot(RunsPage);
         });

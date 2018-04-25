@@ -70,14 +70,11 @@ export class ManifestPage {
 
   // apply calculated eta_diff in all incomplete itins
   updateETA() {
-    if(!this.global.activeItinEtaDiff || !this.itineraries) {
+    if(!this.itineraries) {
       return;
     }
 
-    for(let it of this.itineraries) {
-      it.update_eta(this.global.activeItinEtaDiff);
-    }
-    this.global.activeItinEtaDiff = 0;
+    this.global.updateManifestETA(this.itineraries);
   }
 
   requestManifest() {

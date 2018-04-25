@@ -171,6 +171,8 @@ export class RunProvider {
 
   parseDriverRunData(response) {
     let json_resp = response.json();
+    this.global.timezone = json_resp.timezone;
+    
     if(json_resp.active_run) {
       let run_data = json_resp.active_run.data;
       let run: Run = new Run();
@@ -197,6 +199,26 @@ export class RunProvider {
       }
 
       this.global.activeItin = itin;
+
+    }
+
+    if(json_resp.next_itin) {
+      let next_itin_data = json_resp.next_itin.data;
+      let nextItin: Itinerary = new Itinerary();
+      Object.assign(nextItin, next_itin_data.attributes);
+      nextItin.id = next_itin_data.id;
+
+      let next_itin_included_data = json_resp.next_itin.included;
+      if(next_itin_included_data && next_itin_included_data.length > 0) {
+        let next_itin_addr_data = next_itin_included_data[0].attributes;
+        let next_itin_addr_id = next_itin_included_data[0].id;
+        let next_itin_addr = new Address();
+        next_itin_addr.id = next_itin_addr_id;
+        Object.assign(next_itin_addr, next_itin_addr_data);
+        nextItin.address = next_itin_addr;
+      }
+
+      this.global.nextItin = nextItin;
 
     }
     return response;
