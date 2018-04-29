@@ -93,7 +93,8 @@ export class ItineraryPage {
 
               if(this.itin.endRun()) {
                 this.endRunFormGroup = formBuilder.group({
-                  formControlEndOdometer: new FormControl('', Validators.min(this.run_start_odometer + 0.00001))
+                  formControlEndOdometer: new FormControl('', Validators.min(
+                    (typeof this.run_start_odometer == "string" ? parseFloat(this.run_start_odometer) :  this.run_start_odometer) + 0.00001))
                 });
               }
 
