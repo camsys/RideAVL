@@ -174,8 +174,21 @@
       </ion-col>
 
       <ion-col text-center *ngIf="this.itin.endRun()" col-sm-4 offset-sm-4>
+        <button ion-button round large
+                id="depart-button"
+                *ngIf="this.showDepartButton()"
+                (click)="this.depart()">
+          Depart
+        </button>
+        <button ion-button round large
+                id="arrive-button"
+                *ngIf="this.showArriveButton()"
+                (click)="this.arrive()">
+          Arrived
+        </button>
+
         <ion-grid>  
-          <form [formGroup]="endRunFormGroup" (ngSubmit)="endRun()" #endRunForm="ngForm">
+          <form [formGroup]="endRunFormGroup" *ngIf="this.itin.arrived()" (ngSubmit)="endRun()" #endRunForm="ngForm">
             <ion-list>
               <ion-item>
                 <ion-label color="primary">End Odometer</ion-label>

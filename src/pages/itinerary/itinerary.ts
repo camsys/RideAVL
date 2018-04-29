@@ -148,7 +148,7 @@ export class ItineraryPage {
 
   // only a Pending itin should see Depart button
   showDepartButton() {
-    if (!this.active || !this.itin.id || !this.itin.hasTrip() || this.itin.departed() || !this.itin.pending()) {
+    if (!this.active || !this.itin.id || this.itin.beginRun() || this.itin.departed() || !this.itin.pending()) {
       return false;
     }
 
@@ -157,7 +157,7 @@ export class ItineraryPage {
 
   // only a In Progress itin should see Arrive button
   showArriveButton() {
-    if (!this.active || !this.itin.id || !this.itin.hasTrip() ||  !this.itin.flaged_in_progress() || this.itin.arrived()) {
+    if (!this.active || !this.itin.id || this.itin.beginRun() ||  !this.itin.flaged_in_progress() || this.itin.arrived()) {
       return false;
     }
 
