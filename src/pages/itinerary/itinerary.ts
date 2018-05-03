@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 // Third-party native plugins
@@ -44,6 +44,7 @@ export class ItineraryPage {
   constructor(public navCtrl: NavController, 
               public formBuilder: FormBuilder,
               public navParams: NavParams,
+              public events: Events,
               public global: GlobalProvider,
               private geocoder: GeocodingProvider,
               private geolocation: Geolocation,
@@ -78,6 +79,8 @@ export class ItineraryPage {
               // set system-wide active itinerary
               if(this.active) {
                 global.activeItin = this.itin;
+                this.events.publish("gps:start");
+
                 let nextItin = null;
                 if(this.itins) {
                   let activeItinId = global.activeItin.id;
@@ -274,6 +277,7 @@ export class ItineraryPage {
           this.global.activeItin = null;
           this.global.nextItin = null;
           this.global.activeRun = null;
+          this.events.publish("gps:stop");
           this.navCtrl.setRoot(RunsPage);
         });
   }

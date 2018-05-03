@@ -18,22 +18,19 @@ import { GlobalProvider } from '../../providers/global/global';
 
 // Native providers
 import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse } from '@ionic-native/background-geolocation';
-import { Geolocation } from '@ionic-native/geolocation';
+import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 
 // GpsProvider handles API Calls to the RidePilot Core back-end
 // to send GPS data
 @Injectable()
 export class GpsProvider {
+  public foregroundGeolocationWatch: any;
 
   public baseUrl = environment.BASE_RIDEPILOT_URL;
   public baseAvlUrl = environment.BASE_RIDEPILOT_AVL_URL;
   public etaUrl = "https://maps.googleapis.com/maps/api/distancematrix/json?key=" + environment.GOOGLE_MAPS_KEY;
 
-  private backgroundLocationConfig: BackgroundGeolocationConfig = {
-            desiredAccuracy: 10,
-            stationaryRadius: 20,
-            distanceFilter: 30
-    };
+  public lastGpsLogTime: Date;
 
   constructor(public http: Http,
               private auth: AuthProvider,
@@ -48,74 +45,97 @@ export class GpsProvider {
   }
 
   // send gps info
-  track(isBackgroundMode: boolean): Observable<Response> {
-    if(isBackgroundMode) {
-      return this.getBackgroundModeGps();
-    } else {
-      return this.getForegroundModeGps();
-    }
-  }
-
-  // gps in background mode
-  getBackgroundModeGps(): Observable<Response>{
+  startTracking(): Observable<Response> {
     let activeRun = this.global.activeRun;
     let activeItin = this.global.activeItin;
 
     // there must be an active in progress run and itinerary
     if(!(activeRun && activeRun.inProgress() && activeItin)) {
-      this.backgroundGeolocation.stop();
       return Observable.empty();
     }
 
-    this.backgroundGeolocation.configure(this.backgroundLocationConfig)
-        .subscribe(loc_data => {
-          this.backgroundGeolocation.finish(); // FOR IOS ONLY
-          
+    let interval: number = (this.global.gpsInterval) * 1000;
+
+    if(this.backgroundGeolocation) {
+      let backgroundLocationConfig: BackgroundGeolocationConfig = {
+              desiredAccuracy: 10,
+              stationaryRadius: 10,
+              distanceFilter: 10,
+              //stopOnTerminate: false,
+              //stopOnStillActivity: false,
+              //startForeground: false,
+              //startOnBoot: true,
+              //debug: true
+      };
+      // background tracking
+      this.backgroundGeolocation.configure(backgroundLocationConfig)
+          .subscribe(loc_data => {
+            let newLogTime = new Date(loc_data.time);
+
+            // ignore too frequent updates
+            //if(this.lastGpsLogTime && newLogTime && (+newLogTime - +this.lastGpsLogTime) < interval) {
+            //  return Observable.empty();
+            //}
+
+            this.lastGpsLogTime = newLogTime;
+
+            let location = new GpsLocation();
+            location.latitude = loc_data.latitude;
+            location.longitude = loc_data.longitude;
+            location.speed = loc_data.speed;
+            location.accuracy = loc_data.accuracy;
+            location.bearing = loc_data.bearing;
+            location.log_time = newLogTime.toUTCString();
+            this.send(location).subscribe();
+            this.getETA(location).subscribe();
+          });
+
+      this.backgroundGeolocation.start();
+    }
+
+    // foreground geolocation tracking
+    if(!this.foregroundGeolocationWatch) {
+      let posOptions = {
+        timeout: 30 * 1000, 
+        enableHighAccuracy: true
+      };
+
+      this.foregroundGeolocationWatch = this.geolocation.watchPosition(posOptions)
+        .filter((p: any) => p.code === undefined)
+        .subscribe((position: Geoposition) => {
+          console.log(position);
+
+          let newLogTime = new Date(position.timestamp);
+          // ignore too frequent updates
+          if(this.lastGpsLogTime && newLogTime && (+newLogTime - +this.lastGpsLogTime) < interval) {
+            return Observable.empty();
+          }
+
+          this.lastGpsLogTime = newLogTime;
+
+          let loc_data = position.coords;
           let location = new GpsLocation();
           location.latitude = loc_data.latitude;
           location.longitude = loc_data.longitude;
           location.speed = loc_data.speed;
           location.accuracy = loc_data.accuracy;
-          location.bearing = loc_data.bearing;
-          location.log_time = new Date(loc_data.time).toUTCString();
+          location.bearing = loc_data.heading;
+          location.log_time = newLogTime.toUTCString();
           this.send(location).subscribe();
           this.getETA(location).subscribe();
         });
-
-    // start recording location
-    this.backgroundGeolocation.start();
+    }
   }
 
-  // gps in foreground mode
-  getForegroundModeGps(): Observable<Response> {
-    let activeRun = this.global.activeRun;
-    let activeItin = this.global.activeItin;
-
-    // there must be an active in progress run and itinerary
-    if(!(activeRun && activeRun.inProgress() && activeItin)) {
-      return Observable.empty();
+  // stop gps tracking
+  stopTracking() {
+    if(this.backgroundGeolocation) {
+      this.backgroundGeolocation.stop();
     }
 
-    let posOptions = {
-      timeout: (this.global.gpsInterval) * 1000, 
-      enableHighAccuracy: true
-    };
-    this.geolocation.getCurrentPosition(posOptions)
-      .then((resp) => {
-        let loc_data = resp.coords;
-        let location = new GpsLocation();
-        location.latitude = loc_data.latitude;
-        location.longitude = loc_data.longitude;
-        location.speed = loc_data.speed;
-        location.accuracy = loc_data.accuracy;
-        location.bearing = loc_data.heading;
-        location.log_time = new Date(resp.timestamp).toUTCString();
-        this.send(location).subscribe();
-        this.getETA(location).subscribe();
-
-      }, (error) => {
-        console.log(error);
-      });
+    if(this.foregroundGeolocationWatch) {
+      this.foregroundGeolocationWatch.unsubscribe();
+    }
   }
 
   // calculate ETA based on location

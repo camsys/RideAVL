@@ -200,6 +200,7 @@ export class RunProvider {
 
       this.global.activeItin = itin;
 
+      this.events.publish('gps:start');
     }
 
     if(json_resp.next_itin) {

@@ -21,7 +21,6 @@ import { RunProvider } from '../providers/run/run';
 import { GpsProvider } from '../providers/gps/gps';
 
 // NATIVE
-import { BackgroundMode } from '@ionic-native/background-mode';
 import { Network } from '@ionic-native/network';
 
 @Component({
@@ -33,7 +32,6 @@ export class MyApp {
 
   rootPage: any = SignInPage;
   showSpinner: Boolean = false;
-  gpsPager: any;
   wasOffline: Boolean = false;
 
   signedInPages: PageModel[];
@@ -48,7 +46,6 @@ export class MyApp {
               private auth: AuthProvider,
               private gps: GpsProvider,
               private runProvider: RunProvider,
-              private backgroundMode: BackgroundMode,
               private changeDetector: ChangeDetectorRef,
               private network: Network,
               public events: Events,
@@ -224,26 +221,11 @@ export class MyApp {
   }
 
   startGpsTracking() {
-    // enable device background mode so keep app active while in background mode
-    if(this.platform.is('cordova')) {
-      this.backgroundMode.enable();
-    }
-
-    // Track location periodically 
-    this.gpsPager = Observable.interval(this.global.gpsInterval * 1000).subscribe(() => {
-      console.log('pinging...');
-      let isBackgroundMode = false;
-      if(this.platform.is('cordova')) {
-        isBackgroundMode = this.backgroundMode.isActive();
-      }
-      this.gps.track(isBackgroundMode);
-    });
+    this.gps.startTracking();
   }
 
   stopGpsTracking() {
-    if(this.gpsPager) {
-      this.gpsPager.unsubscribe();
-    }
+    this.gps.stopTracking();
   }
 
   // Subscribe to spinner:show and spinner:hide events that can be published by child pages

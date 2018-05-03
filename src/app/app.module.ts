@@ -8,7 +8,6 @@ import { Http, HttpModule } from '@angular/http';
 import { LaunchNavigator } from '@ionic-native/launch-navigator';
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { Geolocation } from '@ionic-native/geolocation';
-import { BackgroundMode } from '@ionic-native/background-mode';
 import { Network } from '@ionic-native/network';
 
 // Environment
@@ -93,7 +92,6 @@ import { GeocodingProvider } from '../providers/geocoding/geocoding';
     LaunchNavigator,
     Geolocation,
     BackgroundGeolocation,
-    BackgroundMode,
     Network,
     GeocodingProvider
   ]
