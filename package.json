@@ -23,6 +23,7 @@
     "@ionic-native/background-geolocation": "^4.6.0",
     "@ionic-native/core": "4.4.0",
     "@ionic-native/geolocation": "^4.6.0",
+    "@ionic-native/insomnia": "^4.7.0",
     "@ionic-native/launch-navigator": "^4.5.3",
     "@ionic-native/network": "^4.7.0",
     "@ionic-native/splash-screen": "^4.4.0",
@@ -75,7 +76,8 @@
       "cordova-plugin-geolocation": {
         "GEOLOCATION_USAGE_DESCRIPTION": "track vehicle location"
       },
-      "cordova-plugin-network-information": {}
+      "cordova-plugin-network-information": {},
+      "cordova-plugin-insomnia": {}
     },
     "platforms": [
       "android",

@@ -9,6 +9,7 @@ import { LaunchNavigator } from '@ionic-native/launch-navigator';
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { Geolocation } from '@ionic-native/geolocation';
 import { Network } from '@ionic-native/network';
+import { Insomnia } from '@ionic-native/insomnia';
 
 // Environment
 import { environment } from './environment';
@@ -89,11 +90,12 @@ import { GeocodingProvider } from '../providers/geocoding/geocoding';
     ManifestProvider,
     ItineraryProvider,
     GpsProvider,
+    GeocodingProvider,
     LaunchNavigator,
     Geolocation,
     BackgroundGeolocation,
     Network,
-    GeocodingProvider
+    Insomnia
   ]
 })
 export class AppModule {}

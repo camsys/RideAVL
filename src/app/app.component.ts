@@ -3,6 +3,7 @@ import {Observable} from 'rxjs/Rx';
 import { Nav, Platform, Events, ToastController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { Insomnia } from '@ionic-native/insomnia';
 
 // PAGES
 import { SignInPage } from '../pages/sign-in/sign-in';
@@ -42,6 +43,7 @@ export class MyApp {
   constructor(public platform: Platform,
               public statusBar: StatusBar,
               public splashScreen: SplashScreen,
+              public insomnia: Insomnia,
               public global: GlobalProvider,
               private auth: AuthProvider,
               private gps: GpsProvider,
@@ -135,9 +137,6 @@ export class MyApp {
 
   initializeApp() {
 
-    this.statusBar.styleDefault();
-    this.splashScreen.hide();
-
     // Set up the page links for the sidebar menu
     this.setMenu();
 
@@ -145,6 +144,15 @@ export class MyApp {
     this.setupSpinner();
 
     this.platform.ready().then(() => {
+      this.statusBar.styleDefault();
+      this.splashScreen.hide();
+
+      this.insomnia.keepAwake()
+        .then(
+          () => console.log("keep awake"),
+          () => console.log("failed to keep awake")
+        );
+
       // go to home screen
       this.goHome();
 

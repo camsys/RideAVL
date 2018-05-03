@@ -103,6 +103,7 @@
     <allow-navigation href="http://172.19.216.7:8100" />
     <allow-navigation href="http://172.19.212.214:8100" />
     <allow-navigation href="http://172.19.212.214:8101" />
+    <plugin name="cordova-plugin-insomnia" spec="~4.3.0" />
     <engine name="android" spec="7.0.0" />
     <engine name="browser" spec="5.0.3" />
 </widget>
