@@ -390,7 +390,8 @@ export class ItineraryPage {
     let addr: Address = this.itin.address;
     let options: LaunchNavigatorOptions = {};
 
-    this.navigator.navigate([addr.latitude, addr.longitude], options)
+    let dest = addr.latlng_only ? [addr.latitude, addr.longitude] : addr.address_text;
+    this.navigator.navigate(dest, options)
       .then(
         success => console.log('Launched navigator'),
         error => console.log('Error launching navigator', error)

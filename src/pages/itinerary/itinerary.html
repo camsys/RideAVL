@@ -21,7 +21,7 @@
 
   <ion-toolbar transparent class="address-toolbar">
     <ion-row text-wrap class="address-label">
-      <span>{{itin.address ? itin.address.one_line_text : '(Address missing)'}}</span>
+      <span>{{itin.address ? itin.address.one_line_text() : '(Address missing)'}}</span>
     </ion-row>
     <ion-buttons right *ngIf="this.showNavigateButton()">
       <button ion-button icon-only (click)="this.launchNavigator()"><ion-icon name="navigate"></ion-icon></button>

@@ -56,7 +56,7 @@ export class GpsProvider {
 
     let interval: number = (this.global.gpsInterval) * 1000;
 
-    if(this.backgroundGeolocation) {
+    try {
       let backgroundLocationConfig: BackgroundGeolocationConfig = {
               desiredAccuracy: 10,
               stationaryRadius: 10,
@@ -91,6 +91,9 @@ export class GpsProvider {
           });
 
       this.backgroundGeolocation.start();
+    }
+    catch (error) {
+      console.log(error);
     }
 
     // foreground geolocation tracking
