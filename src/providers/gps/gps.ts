@@ -207,6 +207,8 @@ export class GpsProvider {
     }
 
     if(new_eta && itin) {
+      let new_eta_seconds: number = (new_eta.getHours() * 3600 + new_eta.getMinutes() * 60 + new_eta.getSeconds());
+      let is_new_day: boolean = false;
       if(itin.eta) {
         let eta_date = +new Date(itin.eta);
         this.global.activeItinEtaDiff = Math.floor((new_eta - eta_date) / 1000);
@@ -214,7 +216,7 @@ export class GpsProvider {
 
       // update global object
       itin.eta = new_eta.toISOString();
-      itin.eta_seconds += this.global.activeItinEtaDiff;
+      itin.eta_seconds = new_eta_seconds;
 
       this.uploadEta(itin.id, new_eta).subscribe();
     } else {
