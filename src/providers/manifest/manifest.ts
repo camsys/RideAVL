@@ -15,6 +15,7 @@ import { Fare } from '../../models/fare';
 
 // Providers
 import { AuthProvider } from '../../providers/auth/auth';
+import { GlobalProvider } from '../../providers/global/global';
 
 // ManifestProvider handles API Calls to the RidePilot Core back-end
 // to load manifest data
@@ -26,6 +27,7 @@ export class ManifestProvider {
 
   constructor(public http: Http,
               private auth: AuthProvider,
+              private global: GlobalProvider,
               public events: Events) {}
               
   // Constructs a request options hash with auth headers
@@ -59,6 +61,13 @@ export class ManifestProvider {
     let itin: Itinerary = new Itinerary();
     Object.assign(itin, itin_data.attributes);
     itin.id = itin_data.id;
+
+    if(itin.eta_seconds != null) {
+      itin.eta_seconds += (this.global.timeZoneDiffSeconds || 0);
+    }
+    if(itin.time_seconds) {
+      itin.time_seconds += (this.global.timeZoneDiffSeconds || 0);
+    }
 
     if(itin.fare) {
       let fare_attrs = itin.fare;

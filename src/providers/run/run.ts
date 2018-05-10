@@ -133,6 +133,14 @@ export class RunProvider {
     let run: Run = new Run();
     Object.assign(run, run_data.attributes);
     run.id = run_data.id;
+
+    if(run.scheduled_start_time_seconds != null) {
+      run.scheduled_start_time_seconds += (this.global.timeZoneDiffSeconds || 0);
+    }
+    if(run.scheduled_end_time_seconds) {
+      run.scheduled_end_time_seconds += (this.global.timeZoneDiffSeconds || 0);
+    }
+
     if(run_data.relationships && vehicles_data && vehicles_data.length > 0) {
       let vehicle_id = run_data.relationships.vehicle.data.id;
       let vehicle: Vehicle = new Vehicle();
@@ -171,13 +179,26 @@ export class RunProvider {
 
   parseDriverRunData(response) {
     let json_resp = response.json();
-    this.global.timezone = json_resp.timezone;
+    let server_timezone_offset = json_resp.timezone_offset; // hours
+    if(server_timezone_offset != null) {
+      // convert to seconds
+      // also positive offset in local is equal to negative server offset
+      let local_timezone_offset = (new Date().getTimezoneOffset()) * -60; 
+      this.global.timeZoneDiffSeconds = local_timezone_offset - server_timezone_offset * 3600;
+    }
     
     if(json_resp.active_run) {
       let run_data = json_resp.active_run.data;
       let run: Run = new Run();
       Object.assign(run, run_data.attributes);
       run.id = run_data.id;
+
+      if(run.scheduled_start_time_seconds != null) {
+        run.scheduled_start_time_seconds += (this.global.timeZoneDiffSeconds || 0);
+      }
+      if(run.scheduled_end_time_seconds) {
+        run.scheduled_end_time_seconds += (this.global.timeZoneDiffSeconds || 0);
+      }
 
       this.global.activeRun = run;
     }
@@ -187,6 +208,13 @@ export class RunProvider {
       let itin: Itinerary = new Itinerary();
       Object.assign(itin, itin_data.attributes);
       itin.id = itin_data.id;
+
+      if(itin.eta_seconds != null) {
+        itin.eta_seconds += (this.global.timeZoneDiffSeconds || 0);
+      }
+      if(itin.time_seconds) {
+        itin.time_seconds += (this.global.timeZoneDiffSeconds || 0);
+      }
 
       let included_data = json_resp.active_itin.included;
       if(included_data && included_data.length > 0) {
@@ -208,6 +236,13 @@ export class RunProvider {
       let nextItin: Itinerary = new Itinerary();
       Object.assign(nextItin, next_itin_data.attributes);
       nextItin.id = next_itin_data.id;
+
+      if(nextItin.eta_seconds != null) {
+        nextItin.eta_seconds += (this.global.timeZoneDiffSeconds || 0);
+      }
+      if(nextItin.time_seconds) {
+        nextItin.time_seconds += (this.global.timeZoneDiffSeconds || 0);
+      }
 
       let next_itin_included_data = json_resp.next_itin.included;
       if(next_itin_included_data && next_itin_included_data.length > 0) {
