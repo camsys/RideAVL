@@ -45,6 +45,14 @@ export class RunProvider {
                .catch((error: Response) =>  this.handleError(error));
   }
 
+  // Get one run
+  getRun(run_id): Observable<Run> {
+    return this.http
+               .get(this.baseAvlUrl + 'runs/' + run_id, this.requestOptions())
+               .map( response => this.unpackRun(response))
+               .catch((error: Response) =>  this.handleError(error));
+  }
+
   // Update run
   update(runId: Number, changes: {}): Observable<Run> {
     let uri: string = encodeURI(this.baseAvlUrl + 'runs/' + runId);
@@ -179,6 +187,7 @@ export class RunProvider {
 
   parseDriverRunData(response) {
     let json_resp = response.json();
+
     let server_timezone_offset = json_resp.timezone_offset; // hours
     if(server_timezone_offset != null) {
       // convert to seconds
@@ -186,6 +195,10 @@ export class RunProvider {
       let local_timezone_offset = (new Date().getTimezoneOffset()) * -60; 
       this.global.timeZoneDiffSeconds = local_timezone_offset - server_timezone_offset * 3600;
     }
+
+    // application level time intervals
+    this.global.gpsInterval = json_resp.gps_interval_seconds;
+    this.global.manifestCheckInterval = json_resp.manifest_change_check_interval_seconds;
     
     if(json_resp.active_run) {
       let run_data = json_resp.active_run.data;
@@ -258,6 +271,27 @@ export class RunProvider {
 
     }
     return response;
+  }
+
+  checkActiveRunManifestChange(): Observable<Response>{
+    let activeRun = this.global.activeRun;
+    if(!activeRun) {
+      return Observable.empty();
+    }
+
+    let url = this.baseAvlUrl + 'runs/' + activeRun.id + '/manifest_published_at';
+    return this.http
+               .get(url, this.requestOptions())
+               .map( response => {
+                let changed = false;
+                let json_resp = response.json();
+                if(json_resp.manifest_published_at && json_resp.manifest_published_at != activeRun.manifest_published_at) {
+                  changed = true;
+                }
+
+                return changed;
+               })
+               .catch((error: Response) =>  this.handleError(error));
   }
 
   // Handle errors by console logging the error, and publishing an error event

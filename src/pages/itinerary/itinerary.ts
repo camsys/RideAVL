@@ -15,8 +15,9 @@ import { Fare } from '../../models/fare';
 
 // Providers
 import { GlobalProvider } from '../../providers/global/global';
-import { ItineraryProvider } from '../../providers/itinerary/itinerary';
 import { RunProvider } from '../../providers/run/run';
+import { ManifestProvider } from '../../providers/manifest/manifest';
+import { ItineraryProvider } from '../../providers/itinerary/itinerary';
 import { GeocodingProvider } from '../../providers/geocoding/geocoding';
 
 // Page
@@ -48,8 +49,9 @@ export class ItineraryPage {
               public global: GlobalProvider,
               private geocoder: GeocodingProvider,
               private geolocation: Geolocation,
-              private itinProvider: ItineraryProvider,
               private runProvider: RunProvider,
+              private manifestProvider: ManifestProvider,
+              private itinProvider: ItineraryProvider,
               private navigator: LaunchNavigator) {
 
               if(this.navParams.data.itin) {
@@ -91,6 +93,10 @@ export class ItineraryPage {
                 }
                 global.nextItin = nextItin;
                 global.activeItinEtaDiff = 0;
+                let activeRunChanged = !(global.activeRun) || global.activeRun.id != this.run.id;
+                if(activeRunChanged) {
+                  this.events.publish("manifest:check_change");
+                }
                 global.activeRun = this.run;
               }
 
@@ -109,6 +115,59 @@ export class ItineraryPage {
     if(this.itin.beginRun() && !this.inspectionLoaded) {
       this.requestInspections();
     }
+  }
+
+  ionViewWillLoad() {
+    this.events.subscribe("itinerary:reload", () => this.reloadData());
+  }
+
+  reloadData() {
+      // reload run
+      this.runProvider.getRun(this.run.id)
+        .subscribe((run) => {
+          this.run = run;
+          if(!this.run.id) {
+            //TODO: notification
+            this.navCtrl.setRoot(RunsPage);
+          } else {
+            this.driver_notes = this.run.driver_notes;
+            this.run_start_odometer = this.run.start_odometer;
+            this.run_end_odometer = this.run.end_odometer;
+
+            this.reloadItineraries();
+          }
+        });
+  }
+
+  reloadItineraries() {
+    // reload itins
+    this.manifestProvider.getItineraries(this.run.id)
+                    .subscribe((itins) => {
+                      this.itins = itins || [];
+                      this.itin = this.itins.find(r => r.id == this.itin.id);
+                      let activeItin = this.itins.find(r => !r.finished());
+                      if(!this.itin) {
+                        //TODO: notification
+                        alert("Run removed.");
+                        // itin deleted, go back to manifest
+                        this.loadManifest();
+                      } else {
+                        let wasActive = this.active;
+                        this.active = this.itin == activeItin;
+                        if(wasActive && !this.active) {
+                          //TODO: notification
+                          alert("Destination changed.");
+                          this.loadManifest();
+                        } else if (!wasActive && this.active) {
+                          //TODO: notification
+                          alert("Destination changed.");
+                        }
+                      }
+                    });
+  }
+
+  ionViewWillUnload() {
+    this.events.unsubscribe("itinerary:reload");
   }
 
   // apply calculated eta_diff in all incomplete itins

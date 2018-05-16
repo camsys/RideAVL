@@ -19,6 +19,7 @@ export class Run {
   actual_start_time: string;
   actual_end_time: string;
   driver_notes: string;
+  manifest_published_at: string;
 
   completed() {
     return this.status_code == 2;

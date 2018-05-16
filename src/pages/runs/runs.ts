@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
 
 /**
  * Generated class for the RunsPage page.
@@ -30,7 +30,12 @@ export class RunsPage {
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
+              public events: Events,
               private runProvider: RunProvider) {
+              
+              this.events.subscribe("runs:reload", () => {
+                console.log("Run reloading...");
+              });
 
               if(this.navParams.data.runs) {
                 this.runs = this.navParams.data.runs;
@@ -59,6 +64,18 @@ export class RunsPage {
     }
   }
 
+  ionViewWillLoad() {
+    this.events.unsubscribe("runs:reload", () => {
+      this.runProvider.getRuns()
+                      .subscribe((runs) => {
+                        this.loadRuns(runs);
+                      });
+    });
+  }
+
+  ionViewWillUnload() {
+    this.events.unsubscribe("runs:reload");
+  }
 
   loadRuns(runs: Run[]) {
     this.dataLoaded = true;

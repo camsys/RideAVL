@@ -71,6 +71,11 @@ export class MyApp {
       this.loadDriverRunData();
     });
 
+    // start checking manifest change periodically
+    this.events.subscribe("manifest:check_change", () => {
+      this.startManifestChangeCheck();
+    });
+
     // listen to gps ping request
     this.events.subscribe("gps:start", () => {
       this.startGpsTracking();
@@ -225,7 +230,7 @@ export class MyApp {
   // load app data
   loadDriverRunData() {
     this.runProvider.loadDriverRunData()
-      .subscribe(); 
+      .subscribe(() => this.events.publish("manifest:check_change")); 
   }
 
   startGpsTracking() {
@@ -234,6 +239,32 @@ export class MyApp {
 
   stopGpsTracking() {
     this.gps.stopTracking();
+  }
+
+  startManifestChangeCheck() {
+    setTimeout(() => {
+      this.runProvider.checkActiveRunManifestChange()
+        .subscribe((changed) => this.fireManifestChangeEvents(changed));
+    }, this.global.manifestCheckInterval * 1000);
+  }
+
+  fireManifestChangeEvents(changed) {
+    console.log(changed);
+    if(changed) {
+      this.loadDriverRunData();
+
+      let activePageName = this.nav.getActive().name;
+
+      if(activePageName == "RunsPage") {
+        this.events.publish("runs:reload");
+      } else if(activePageName == "ManifestPage") {
+        this.events.publish("manifest:reload");
+      } else if(activePageName == "ItineraryPage") {
+        this.events.publish("itinerary:reload");
+      } 
+    }
+
+    this.events.publish("manifest:check_change");
   }
 
   // Subscribe to spinner:show and spinner:hide events that can be published by child pages
