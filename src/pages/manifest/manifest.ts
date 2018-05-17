@@ -67,8 +67,7 @@ export class ManifestPage {
                       .subscribe((run) => {
                         this.run = run;
                         if(!this.run.id) {
-                          //TODO: notification
-                          alert("Run removed.");
+                          this.events.publish("app:notification", "Run was removed by dispatcher.");
                           this.loadRunList();
                         }
                       });

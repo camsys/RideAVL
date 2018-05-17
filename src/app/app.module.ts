@@ -10,6 +10,7 @@ import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { Geolocation } from '@ionic-native/geolocation';
 import { Network } from '@ionic-native/network';
 import { Insomnia } from '@ionic-native/insomnia';
+import { LocalNotifications } from '@ionic-native/local-notifications';
 
 // Environment
 import { environment } from './environment';
@@ -95,7 +96,8 @@ import { GeocodingProvider } from '../providers/geocoding/geocoding';
     Geolocation,
     BackgroundGeolocation,
     Network,
-    Insomnia
+    Insomnia,
+    LocalNotifications
   ]
 })
 export class AppModule {}

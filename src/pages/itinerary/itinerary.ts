@@ -127,7 +127,8 @@ export class ItineraryPage {
         .subscribe((run) => {
           this.run = run;
           if(!this.run.id) {
-            //TODO: notification
+            this.events.publish("app:notification", "Run was removed by dispatcher.");
+
             this.navCtrl.setRoot(RunsPage);
           } else {
             this.driver_notes = this.run.driver_notes;
@@ -147,20 +148,17 @@ export class ItineraryPage {
                       this.itin = this.itins.find(r => r.id == this.itin.id);
                       let activeItin = this.itins.find(r => !r.finished());
                       if(!this.itin) {
-                        //TODO: notification
-                        alert("Run removed.");
+                        this.events.publish("app:notification", "Trip was removed by dispatcher.");
                         // itin deleted, go back to manifest
                         this.loadManifest();
                       } else {
                         let wasActive = this.active;
                         this.active = this.itin == activeItin;
                         if(wasActive && !this.active) {
-                          //TODO: notification
-                          alert("Destination changed.");
+                          this.events.publish("app:notification", "Current destination changed. Please pull over and re-route.");
                           this.loadManifest();
                         } else if (!wasActive && this.active) {
-                          //TODO: notification
-                          alert("Destination changed.");
+                          this.events.publish("app:notification", "Current destination changed. Please pull over and re-route.");
                         }
                       }
                     });

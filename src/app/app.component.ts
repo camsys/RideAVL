@@ -4,6 +4,7 @@ import { Nav, Platform, Events, ToastController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Insomnia } from '@ionic-native/insomnia';
+import { LocalNotifications } from '@ionic-native/local-notifications';
 
 // PAGES
 import { SignInPage } from '../pages/sign-in/sign-in';
@@ -50,6 +51,7 @@ export class MyApp {
               private runProvider: RunProvider,
               private changeDetector: ChangeDetectorRef,
               private network: Network,
+              private localNotifications: LocalNotifications,
               public events: Events,
               private toastCtrl: ToastController) {
 
@@ -84,6 +86,15 @@ export class MyApp {
     // listen to stopping gps ping request
     this.events.subscribe("gps:stop", () => {
       this.stopGpsTracking();
+    });
+
+    // notificatio nevents
+    this.events.subscribe('app:notification', (text) => {
+      this.localNotifications.schedule({
+        text: text,
+        vibrate: true,
+        launch: true
+      });
     });
 
     // network connect/disconnect
