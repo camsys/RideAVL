@@ -1,6 +1,9 @@
 import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
 import {Observable} from 'rxjs/Rx';
-import { Nav, Platform, Events, ToastController } from 'ionic-angular';
+import { Nav, Platform, Events, AlertController, ToastController } from 'ionic-angular';
+
+// NATIVE
+import { Network } from '@ionic-native/network';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Insomnia } from '@ionic-native/insomnia';
@@ -22,8 +25,6 @@ import { AuthProvider } from '../providers/auth/auth';
 import { RunProvider } from '../providers/run/run';
 import { GpsProvider } from '../providers/gps/gps';
 
-// NATIVE
-import { Network } from '@ionic-native/network';
 
 @Component({
   templateUrl: 'app.html'
@@ -41,6 +42,8 @@ export class MyApp {
   signInPage: PageModel;
   user: User;
 
+  private manifestChangeChecker:any;
+
   constructor(public platform: Platform,
               public statusBar: StatusBar,
               public splashScreen: SplashScreen,
@@ -53,7 +56,8 @@ export class MyApp {
               private network: Network,
               private localNotifications: LocalNotifications,
               public events: Events,
-              private toastCtrl: ToastController) {
+              private toastCtrl: ToastController,
+              private alertCtrl: AlertController) {
 
     this.initializeApp();
 
@@ -90,15 +94,34 @@ export class MyApp {
 
     // notificatio nevents
     this.events.subscribe('app:notification', (text) => {
-      this.localNotifications.schedule({
-        text: text,
-        vibrate: true,
-        launch: true
-      });
+      this.notifyDriver(text);
+
+      this.presentAlert(text);
     });
 
     // network connect/disconnect
     this.registerNetworkEvents();
+  }
+
+  notifyDriver(text) {
+    alert("notifying...");
+    this.localNotifications.requestPermission().then((permission) => {
+      this.localNotifications.schedule({
+         id: 1,
+         text: text,
+         vibrate: true,
+         launch: true
+      });
+    });
+  }
+
+  presentAlert(text) {
+    let alert = this.alertCtrl.create({
+      title: 'Alert',
+      subTitle: text,
+      buttons: ['Dismiss']
+    });
+    alert.present();
   }
 
   // Handles errors based on their status code
@@ -253,8 +276,12 @@ export class MyApp {
   }
 
   startManifestChangeCheck() {
+    if(this.manifestChangeChecker) {
+      this.manifestChangeChecker.unsubscribe();
+    }
+
     setTimeout(() => {
-      this.runProvider.checkActiveRunManifestChange()
+      this.manifestChangeChecker = this.runProvider.checkActiveRunManifestChange()
         .subscribe((changed) => this.fireManifestChangeEvents(changed));
     }, this.global.manifestCheckInterval * 1000);
   }
@@ -275,7 +302,7 @@ export class MyApp {
       } 
     }
 
-    this.events.publish("manifest:check_change");
+    this.startManifestChangeCheck();
   }
 
   // Subscribe to spinner:show and spinner:hide events that can be published by child pages

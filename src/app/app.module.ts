@@ -96,8 +96,8 @@ import { GeocodingProvider } from '../providers/geocoding/geocoding';
     Geolocation,
     BackgroundGeolocation,
     Network,
-    Insomnia,
-    LocalNotifications
+    LocalNotifications,
+    Insomnia
   ]
 })
 export class AppModule {}

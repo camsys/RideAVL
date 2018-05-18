@@ -32,10 +32,6 @@ export class RunsPage {
               public navParams: NavParams,
               public events: Events,
               private runProvider: RunProvider) {
-              
-              this.events.subscribe("runs:reload", () => {
-                console.log("Run reloading...");
-              });
 
               if(this.navParams.data.runs) {
                 this.runs = this.navParams.data.runs;
@@ -65,7 +61,7 @@ export class RunsPage {
   }
 
   ionViewWillLoad() {
-    this.events.unsubscribe("runs:reload", () => {
+    this.events.subscribe("runs:reload", () => {
       this.runProvider.getRuns()
                       .subscribe((runs) => {
                         this.loadRuns(runs);
