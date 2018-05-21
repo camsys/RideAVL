@@ -13,7 +13,7 @@
           Manifest
         </button>
     </ion-buttons>
-    <ion-title text-center>{{itin.label()}}</ion-title>
+    <ion-title text-center>{{this.itin ? itin.label() : "(N/A)"}}</ion-title>
     <ion-buttons right>
       <button ion-button menuToggle icon-only><ion-icon name="menu"></ion-icon></button>
     </ion-buttons>
@@ -21,7 +21,7 @@
 
   <ion-toolbar transparent class="address-toolbar">
     <ion-row text-wrap class="address-label">
-      <span>{{itin.address ? itin.address.one_line_text() : '(Address missing)'}}</span>
+      <span>{{this.itin && itin.address ? itin.address.one_line_text() : '(Address missing)'}}</span>
     </ion-row>
     <ion-buttons right *ngIf="this.showNavigateButton()">
       <button ion-button icon-only (click)="this.launchNavigator()"><ion-icon name="navigate"></ion-icon></button>
@@ -34,7 +34,7 @@
 <ion-content padding>
 
   <!-- Address Notes -->
-  <ion-row *ngIf="this.itin.trip_address_notes">
+  <ion-row *ngIf="this.itin && this.itin.trip_address_notes">
     <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2>
       <ion-card id="address-notes-card" class="notes-card">
         <ion-card-header>
@@ -50,7 +50,7 @@
   </ion-row>
 
   <!-- Customer Notes -->
-  <ion-row *ngIf="this.itin.customer_notes">
+  <ion-row *ngIf="this.itin && this.itin.customer_notes">
     <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2>
       <ion-card id="customer-notes-card"  class="notes-card">
         <ion-card-header>
@@ -66,7 +66,7 @@
   </ion-row>
 
   <!-- Trip Notes -->
-  <ion-row *ngIf="this.itin.trip_notes">
+  <ion-row *ngIf="this.itin && this.itin.trip_notes">
     <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2>
       <ion-card id="trip-notes-card"  class="notes-card">
         <ion-card-header>
@@ -82,7 +82,7 @@
   </ion-row>
 
   <!-- Feedback info from last action -->
-  <ion-row *ngIf="this.itin.hasTrip()" class="action-info">
+  <ion-row *ngIf="this.itin && this.itin.hasTrip()" class="action-info">
     <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2 text-center>
       <div *ngIf="this.active && !this.itin.pending()">
         <span class="action-label">{{this.itin.lastActionInfo()}}</span>
@@ -104,7 +104,7 @@
 
   <!-- Begin & end Run -->
   <ion-row>
-    <ion-col *ngIf="this.itin.beginRun()" col-md-6 offset-md-3>
+    <ion-col *ngIf="this.itin && this.itin.beginRun()" col-md-6 offset-md-3>
         <ion-grid>
           <form (ngSubmit)="startRun()" #startRunForm="ngForm">
 
@@ -173,7 +173,7 @@
         </ion-grid>
       </ion-col>
 
-      <ion-col text-center *ngIf="this.itin.endRun()" col-sm-4 offset-sm-4>
+      <ion-col text-center *ngIf="this.itin && this.itin.endRun()" col-sm-4 offset-sm-4>
         <button ion-button round large
                 id="depart-button"
                 *ngIf="this.showDepartButton()"
@@ -188,7 +188,7 @@
         </button>
 
         <ion-grid>  
-          <form [formGroup]="endRunFormGroup" *ngIf="this.itin.arrived()" (ngSubmit)="endRun()" #endRunForm="ngForm">
+          <form [formGroup]="endRunFormGroup" *ngIf="this.itin && this.itin.arrived()" (ngSubmit)="endRun()" #endRunForm="ngForm">
             <ion-list>
               <ion-item>
                 <ion-label color="primary">End Odometer</ion-label>
@@ -222,7 +222,7 @@
 
   <!-- Fare -->
   <ion-row>
-    <ion-col *ngIf="this.itin.showFare()" col-sm-4 offset-sm-4>
+    <ion-col *ngIf="this.itin && this.itin.showFare()" col-sm-4 offset-sm-4>
         <ion-grid>
           <form (ngSubmit)="processFare()" #fareForm="ngForm">
 
@@ -261,7 +261,7 @@
 
   <!-- Action buttons -->
   <ion-row class="action-buttons">
-      <ion-col text-center *ngIf="this.itin.pickup() && !this.itin.finished()">
+      <ion-col text-center *ngIf="this.itin && this.itin.pickup() && !this.itin.finished()">
         <button ion-button round large
                 id="depart-button"
                 *ngIf="this.showDepartButton()"
@@ -288,7 +288,7 @@
         </button>
       </ion-col>
 
-      <ion-col text-center *ngIf="this.itin.dropoff() && !this.itin.finished()">
+      <ion-col text-center *ngIf="this.itin && this.itin.dropoff() && !this.itin.finished()">
         <button ion-button round large
                 id="depart-button"
                 *ngIf="this.showDepartButton()"
@@ -324,7 +324,7 @@
 
 <!-- Time info in footer-->
 <ion-footer no-border>
-  <div *ngIf="!run.completed()">
+  <div *ngIf="this.itin && !run.completed()">
     <ion-toolbar>
       <ion-row id="itin-time-info" [ngClass]="{'itin-eta-early': this.itin.gap_status() == 2, 'itin-eta-late': this.itin.gap_status() == 3}">
         <ion-col col-sm-3>

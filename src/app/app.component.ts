@@ -104,7 +104,6 @@ export class MyApp {
   }
 
   notifyDriver(text) {
-    alert("notifying...");
     this.localNotifications.requestPermission().then((permission) => {
       this.localNotifications.schedule({
          id: 1,
@@ -264,7 +263,11 @@ export class MyApp {
   // load app data
   loadDriverRunData() {
     this.runProvider.loadDriverRunData()
-      .subscribe(() => this.events.publish("manifest:check_change")); 
+      .subscribe(() => {
+        if(!this.manifestChangeChecker) {
+          this.events.publish("manifest:check_change");
+        }
+      }); 
   }
 
   startGpsTracking() {

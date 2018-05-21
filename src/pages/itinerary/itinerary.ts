@@ -263,17 +263,17 @@ export class ItineraryPage {
 
   // Show Undo once departed but not arrived
   showNavigateButton() {
-    return this.itin.address && this.itin.departed() && !this.itin.arrived();
+    return this.itin && this.itin.address && this.itin.departed() && !this.itin.arrived();
   }
 
   // Show proceed to next stop button when finished
   showProceedButton() {
-    return this.active && this.itin.finished() && this.itin.hasTrip();
+    return this.itin && this.active && this.itin.finished() && this.itin.hasTrip();
   }
 
   // Show skip donation button
   showSkipDonationButton() {
-    return this.itin.fare && this.itin.fare.isDonation() && !this.itin.fare.collected();
+    return this.itin && this.itin.fare && this.itin.fare.isDonation() && !this.itin.fare.collected();
   }
 
   // status action buttons
@@ -408,10 +408,14 @@ export class ItineraryPage {
   }
 
   filterNoShowItin() {
-    if(this.itin.hasTrip() && this.itin.finished() && !this.itin.completed()) {
-      // Other status (No show), need to remove the dropoff leg
-      let trip_id: Number = this.itin.trip_id;
-      this.itins = this.itins.filter(r => !(r.dropoff() && r.trip_id == trip_id));
+    let no_show_trip_ids = [];
+    this.itins.forEach(r => {
+      if(r.pickup() && r.finished() && !r.completed()) {
+        no_show_trip_ids.push(r.trip_id);
+      }
+    });
+    if(no_show_trip_ids.length > 0) {
+      this.itins = this.itins.filter(r => !(r.dropoff() && no_show_trip_ids.indexOf(r.trip_id) >= 0));
     }
   }
 
