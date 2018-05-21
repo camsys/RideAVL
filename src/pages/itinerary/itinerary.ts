@@ -15,8 +15,9 @@ import { Fare } from '../../models/fare';
 
 // Providers
 import { GlobalProvider } from '../../providers/global/global';
-import { ItineraryProvider } from '../../providers/itinerary/itinerary';
 import { RunProvider } from '../../providers/run/run';
+import { ManifestProvider } from '../../providers/manifest/manifest';
+import { ItineraryProvider } from '../../providers/itinerary/itinerary';
 import { GeocodingProvider } from '../../providers/geocoding/geocoding';
 
 // Page
@@ -48,8 +49,9 @@ export class ItineraryPage {
               public global: GlobalProvider,
               private geocoder: GeocodingProvider,
               private geolocation: Geolocation,
-              private itinProvider: ItineraryProvider,
               private runProvider: RunProvider,
+              private manifestProvider: ManifestProvider,
+              private itinProvider: ItineraryProvider,
               private navigator: LaunchNavigator) {
 
               if(this.navParams.data.itin) {
@@ -91,6 +93,10 @@ export class ItineraryPage {
                 }
                 global.nextItin = nextItin;
                 global.activeItinEtaDiff = 0;
+                let activeRunChanged = !(global.activeRun) || global.activeRun.id != this.run.id;
+                if(activeRunChanged) {
+                  this.events.publish("manifest:check_change");
+                }
                 global.activeRun = this.run;
               }
 
@@ -109,6 +115,57 @@ export class ItineraryPage {
     if(this.itin.beginRun() && !this.inspectionLoaded) {
       this.requestInspections();
     }
+  }
+
+  ionViewWillLoad() {
+    this.events.subscribe("itinerary:reload", () => this.reloadData());
+  }
+
+  reloadData() {
+      // reload run
+      this.runProvider.getRun(this.run.id)
+        .subscribe((run) => {
+          this.run = run;
+          if(!this.run.id) {
+            this.events.publish("app:notification", "Run was removed by dispatcher.");
+
+            this.navCtrl.setRoot(RunsPage);
+          } else {
+            this.driver_notes = this.run.driver_notes;
+            this.run_start_odometer = this.run.start_odometer;
+            this.run_end_odometer = this.run.end_odometer;
+
+            this.reloadItineraries();
+          }
+        });
+  }
+
+  reloadItineraries() {
+    // reload itins
+    this.manifestProvider.getItineraries(this.run.id)
+                    .subscribe((itins) => {
+                      this.itins = itins || [];
+                      this.itin = this.itins.find(r => r.id == this.itin.id);
+                      let activeItin = this.itins.find(r => !r.finished());
+                      if(!this.itin) {
+                        this.events.publish("app:notification", "Trip was removed by dispatcher.");
+                        // itin deleted, go back to manifest
+                        this.loadManifest();
+                      } else {
+                        let wasActive = this.active;
+                        this.active = this.itin == activeItin;
+                        if(wasActive && !this.active) {
+                          this.events.publish("app:notification", "Current destination changed. Please pull over and re-route.");
+                          this.loadManifest();
+                        } else if (!wasActive && this.active) {
+                          this.events.publish("app:notification", "Current destination changed. Please pull over and re-route.");
+                        }
+                      }
+                    });
+  }
+
+  ionViewWillUnload() {
+    this.events.unsubscribe("itinerary:reload");
   }
 
   // apply calculated eta_diff in all incomplete itins
@@ -206,17 +263,17 @@ export class ItineraryPage {
 
   // Show Undo once departed but not arrived
   showNavigateButton() {
-    return this.itin.address && this.itin.departed() && !this.itin.arrived();
+    return this.itin && this.itin.address && this.itin.departed() && !this.itin.arrived();
   }
 
   // Show proceed to next stop button when finished
   showProceedButton() {
-    return this.active && this.itin.finished() && this.itin.hasTrip();
+    return this.itin && this.active && this.itin.finished() && this.itin.hasTrip();
   }
 
   // Show skip donation button
   showSkipDonationButton() {
-    return this.itin.fare && this.itin.fare.isDonation() && !this.itin.fare.collected();
+    return this.itin && this.itin.fare && this.itin.fare.isDonation() && !this.itin.fare.collected();
   }
 
   // status action buttons
@@ -351,10 +408,14 @@ export class ItineraryPage {
   }
 
   filterNoShowItin() {
-    if(this.itin.hasTrip() && this.itin.finished() && !this.itin.completed()) {
-      // Other status (No show), need to remove the dropoff leg
-      let trip_id: Number = this.itin.trip_id;
-      this.itins = this.itins.filter(r => !(r.dropoff() && r.trip_id == trip_id));
+    let no_show_trip_ids = [];
+    this.itins.forEach(r => {
+      if(r.pickup() && r.finished() && !r.completed()) {
+        no_show_trip_ids.push(r.trip_id);
+      }
+    });
+    if(no_show_trip_ids.length > 0) {
+      this.itins = this.itins.filter(r => !(r.dropoff() && no_show_trip_ids.indexOf(r.trip_id) >= 0));
     }
   }
 

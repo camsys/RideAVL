@@ -1,9 +1,13 @@
 import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
 import {Observable} from 'rxjs/Rx';
-import { Nav, Platform, Events, ToastController } from 'ionic-angular';
+import { Nav, Platform, Events, AlertController, ToastController } from 'ionic-angular';
+
+// NATIVE
+import { Network } from '@ionic-native/network';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Insomnia } from '@ionic-native/insomnia';
+import { LocalNotifications } from '@ionic-native/local-notifications';
 
 // PAGES
 import { SignInPage } from '../pages/sign-in/sign-in';
@@ -21,8 +25,6 @@ import { AuthProvider } from '../providers/auth/auth';
 import { RunProvider } from '../providers/run/run';
 import { GpsProvider } from '../providers/gps/gps';
 
-// NATIVE
-import { Network } from '@ionic-native/network';
 
 @Component({
   templateUrl: 'app.html'
@@ -40,6 +42,8 @@ export class MyApp {
   signInPage: PageModel;
   user: User;
 
+  private manifestChangeChecker:any;
+
   constructor(public platform: Platform,
               public statusBar: StatusBar,
               public splashScreen: SplashScreen,
@@ -50,8 +54,10 @@ export class MyApp {
               private runProvider: RunProvider,
               private changeDetector: ChangeDetectorRef,
               private network: Network,
+              private localNotifications: LocalNotifications,
               public events: Events,
-              private toastCtrl: ToastController) {
+              private toastCtrl: ToastController,
+              private alertCtrl: AlertController) {
 
     this.initializeApp();
 
@@ -71,6 +77,11 @@ export class MyApp {
       this.loadDriverRunData();
     });
 
+    // start checking manifest change periodically
+    this.events.subscribe("manifest:check_change", () => {
+      this.startManifestChangeCheck();
+    });
+
     // listen to gps ping request
     this.events.subscribe("gps:start", () => {
       this.startGpsTracking();
@@ -81,8 +92,35 @@ export class MyApp {
       this.stopGpsTracking();
     });
 
+    // notificatio nevents
+    this.events.subscribe('app:notification', (text) => {
+      this.notifyDriver(text);
+
+      this.presentAlert(text);
+    });
+
     // network connect/disconnect
     this.registerNetworkEvents();
+  }
+
+  notifyDriver(text) {
+    this.localNotifications.requestPermission().then((permission) => {
+      this.localNotifications.schedule({
+         id: 1,
+         text: text,
+         vibrate: true,
+         launch: true
+      });
+    });
+  }
+
+  presentAlert(text) {
+    let alert = this.alertCtrl.create({
+      title: 'Alert',
+      subTitle: text,
+      buttons: ['Dismiss']
+    });
+    alert.present();
   }
 
   // Handles errors based on their status code
@@ -225,7 +263,11 @@ export class MyApp {
   // load app data
   loadDriverRunData() {
     this.runProvider.loadDriverRunData()
-      .subscribe(); 
+      .subscribe(() => {
+        if(!this.manifestChangeChecker) {
+          this.events.publish("manifest:check_change");
+        }
+      }); 
   }
 
   startGpsTracking() {
@@ -234,6 +276,36 @@ export class MyApp {
 
   stopGpsTracking() {
     this.gps.stopTracking();
+  }
+
+  startManifestChangeCheck() {
+    if(this.manifestChangeChecker) {
+      this.manifestChangeChecker.unsubscribe();
+    }
+
+    setTimeout(() => {
+      this.manifestChangeChecker = this.runProvider.checkActiveRunManifestChange()
+        .subscribe((changed) => this.fireManifestChangeEvents(changed));
+    }, this.global.manifestCheckInterval * 1000);
+  }
+
+  fireManifestChangeEvents(changed) {
+    console.log(changed);
+    if(changed) {
+      this.loadDriverRunData();
+
+      let activePageName = this.nav.getActive().name;
+
+      if(activePageName == "RunsPage") {
+        this.events.publish("runs:reload");
+      } else if(activePageName == "ManifestPage") {
+        this.events.publish("manifest:reload");
+      } else if(activePageName == "ItineraryPage") {
+        this.events.publish("itinerary:reload");
+      } 
+    }
+
+    this.startManifestChangeCheck();
   }
 
   // Subscribe to spinner:show and spinner:hide events that can be published by child pages
