@@ -8,6 +8,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Insomnia } from '@ionic-native/insomnia';
 import { LocalNotifications } from '@ionic-native/local-notifications';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 // PAGES
 import { SignInPage } from '../pages/sign-in/sign-in';
@@ -55,6 +56,7 @@ export class MyApp {
               private changeDetector: ChangeDetectorRef,
               private network: Network,
               private localNotifications: LocalNotifications,
+              private backgroundMode: BackgroundMode,
               public events: Events,
               private toastCtrl: ToastController,
               private alertCtrl: AlertController) {
@@ -94,7 +96,9 @@ export class MyApp {
 
     // notificatio nevents
     this.events.subscribe('app:notification', (text) => {
-      this.notifyDriver(text);
+      if(this.platform.is('cordova')) {
+        this.notifyDriver(text);
+      }
 
       this.presentAlert(text);
     });
@@ -109,7 +113,8 @@ export class MyApp {
          id: 1,
          text: text,
          vibrate: true,
-         launch: true
+         launch: true,
+         autoClear: true
       });
     });
   }
@@ -180,6 +185,9 @@ export class MyApp {
 
     // Set up the spinner div
     this.setupSpinner();
+
+    // enable background mode
+    this.backgroundMode.enable();
 
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
