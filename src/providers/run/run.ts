@@ -214,6 +214,8 @@ export class RunProvider {
       }
 
       this.global.activeRun = run;
+    } else {
+      this.global.activeRun = null;
     }
 
     if(json_resp.active_itin) {
@@ -242,6 +244,8 @@ export class RunProvider {
       this.global.activeItin = itin;
 
       this.events.publish('gps:start');
+    } else {
+      this.global.activeItin = null;
     }
 
     if(json_resp.next_itin) {
@@ -269,7 +273,10 @@ export class RunProvider {
 
       this.global.nextItin = nextItin;
 
+    } else {
+      this.global.nextItin = null;
     }
+    
     return response;
   }
 

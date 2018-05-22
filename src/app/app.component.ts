@@ -270,10 +270,17 @@ export class MyApp {
 
   // load app data
   loadDriverRunData() {
+    let prevActiveItin = this.global.activeItin;
+
     this.runProvider.loadDriverRunData()
       .subscribe(() => {
         if(!this.manifestChangeChecker) {
           this.events.publish("manifest:check_change");
+        } else {
+          // active itin changed
+          if((prevActiveItin && !this.global.activeItin) || (!prevActiveItin && this.global.activeItin) || prevActiveItin.id != this.global.activeItin.id) {
+            this.events.publish("app:notification", "You have a new destination.");
+          }
         }
       }); 
   }
