@@ -25,7 +25,7 @@ import { GlobalProvider} from '../providers/global/global';
 import { AuthProvider } from '../providers/auth/auth';
 import { RunProvider } from '../providers/run/run';
 import { GpsProvider } from '../providers/gps/gps';
-
+import { EmergencyProvider } from '../providers/emergency/emergency';
 
 @Component({
   templateUrl: 'app.html'
@@ -53,6 +53,7 @@ export class MyApp {
               private auth: AuthProvider,
               private gps: GpsProvider,
               private runProvider: RunProvider,
+              private emergencyProvider: EmergencyProvider,
               private changeDetector: ChangeDetectorRef,
               private network: Network,
               private localNotifications: LocalNotifications,
@@ -76,7 +77,8 @@ export class MyApp {
     // init app data
     this.events.subscribe("app:init", () => {
       console.log('init app data...');
-      this.loadDriverRunData();
+      this.loadDriverRunData(true);
+      this.events.publish('gps:start');   
     });
 
     // start checking manifest change periodically
@@ -94,13 +96,28 @@ export class MyApp {
       this.stopGpsTracking();
     });
 
-    // notificatio nevents
+    // turn on emergency alert
+    this.events.subscribe("emergency:on", () => {
+      this.turnOnEmergency();
+    });
+
+    // turn off emergency alert
+    this.events.subscribe("emergency:off", () => {
+      this.turnOffEmergency();
+    });
+
+    // notification events
     this.events.subscribe('app:notification', (text) => {
       if(this.platform.is('cordova')) {
         this.notifyDriver(text);
       }
 
       this.presentAlert(text);
+    });
+
+    // toast events
+    this.events.subscribe('app:toast', (text) => {
+      this.showToast(text);
     });
 
     // network connect/disconnect
@@ -150,16 +167,16 @@ export class MyApp {
     this.events.publish('spinner:hide'); // stop the spinner once we're back on the home page
   }
 
-  // Shows an error toast at the top of the screen for 3 sec, with the given message
+  // Shows a toast at the top of the screen for 3 sec, with the given message
   showToast(message: string) {
-    let errorToast = this.toastCtrl.create({
+    let toast = this.toastCtrl.create({
       message: message,
       position: 'top',
       duration: 3000
     });
-    errorToast.present();
+    toast.present();
 
-    return errorToast;
+    return toast;
   }
 
   registerNetworkEvents() {
@@ -217,6 +234,7 @@ export class MyApp {
     this.signedInPages = [
       //{ title: 'Runs for Today', component: RunsPage},
       { title: 'Sign Out', component: "sign_out"},
+      { title: 'Emergeny', component: "emergency"},
       { title: 'About This App', component: AboutPage }
     ] as PageModel[];
 
@@ -228,6 +246,9 @@ export class MyApp {
     switch(page.component) {
       case "sign_out":
         this.signOut();
+        break;
+      case "emergency":
+        this.sendEmergencyAlert();
         break;
       default:
         // Reset the content nav to have just this page
@@ -243,7 +264,6 @@ export class MyApp {
         this.nav.setRoot(RunsPage); 
       }
       this.events.publish('app:init');
-      this.events.publish('gps:start');
     } else {
       this.nav.setRoot(SignInPage);
     }
@@ -265,20 +285,24 @@ export class MyApp {
   onSignOut() {
     this.nav.setRoot(SignInPage);
     this.setMenu();
-    this.events.publish('gps:stop');
   }
 
   // load app data
-  loadDriverRunData() {
+  loadDriverRunData(init_emergency) {
+    console.log('loading app data');
     let prevActiveItin = this.global.activeItin;
 
     this.runProvider.loadDriverRunData()
       .subscribe(() => {
+        if(init_emergency) {
+          this.events.publish('emergency:on');
+        }
+
         if(!this.manifestChangeChecker) {
           this.events.publish("manifest:check_change");
         } else {
           // active itin changed
-          if((prevActiveItin && !this.global.activeItin) || (!prevActiveItin && this.global.activeItin) || prevActiveItin.id != this.global.activeItin.id) {
+          if((prevActiveItin && !this.global.activeItin) || (!prevActiveItin && this.global.activeItin) || ( prevActiveItin && this.global.activeItin && prevActiveItin.id != this.global.activeItin.id)) {
             this.events.publish("app:notification", "You have a new destination.");
           }
         }
@@ -291,6 +315,18 @@ export class MyApp {
 
   stopGpsTracking() {
     this.gps.stopTracking();
+  }
+
+  turnOnEmergency() {
+    this.emergencyProvider.connect();
+  }
+
+  turnOffEmergency() {
+    this.emergencyProvider.disconnect();
+  }
+
+  sendEmergencyAlert() {
+    this.emergencyProvider.trigger().subscribe();
   }
 
   startManifestChangeCheck() {
@@ -307,7 +343,7 @@ export class MyApp {
   fireManifestChangeEvents(changed) {
     console.log(changed);
     if(changed) {
-      this.loadDriverRunData();
+      this.loadDriverRunData(false);
 
       let activePageName = this.nav.getActive().name;
 

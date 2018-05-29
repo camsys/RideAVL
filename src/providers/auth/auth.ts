@@ -89,7 +89,6 @@ export class AuthProvider {
           }
 
           this.events.publish('app:init');
-          this.events.publish('gps:start');
 
           return response;
         })
@@ -119,6 +118,8 @@ export class AuthProvider {
       return this.http
           .delete(uri, options)
           .map((response: Response) => {
+            this.events.publish('gps:stop');
+            this.events.publish('emergency:off');
             return response;
           })
           .catch((error: Response) =>  this.handleError(error));

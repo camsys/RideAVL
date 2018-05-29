@@ -55,6 +55,7 @@ export class RunsPage {
 
   ionViewDidLoad() {
     if(!this.dataLoaded) {
+      console.log('loading runs...');
       this.runProvider.getRuns()
                       .subscribe((runs) => this.loadRuns(runs));
     }

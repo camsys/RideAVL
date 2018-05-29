@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 //import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { Http, HttpModule } from '@angular/http';
+import { Ng2CableModule } from 'ng2-cable';
 
 // Native imports
 import { LaunchNavigator } from '@ionic-native/launch-navigator';
@@ -50,6 +51,7 @@ import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
 import { TitleCasePipe } from '../pipes/title-case/title-case';
 import { GpsProvider } from '../providers/gps/gps';
 import { GeocodingProvider } from '../providers/geocoding/geocoding';
+import { EmergencyProvider } from '../providers/emergency/emergency';
 
 @NgModule({
   declarations: [
@@ -70,6 +72,7 @@ import { GeocodingProvider } from '../providers/geocoding/geocoding';
     BrowserModule,
     HttpModule,
     MomentModule,
+    Ng2CableModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
@@ -99,7 +102,8 @@ import { GeocodingProvider } from '../providers/geocoding/geocoding';
     Network,
     LocalNotifications,
     Insomnia,
-    BackgroundMode
+    BackgroundMode,
+    EmergencyProvider
   ]
 })
 export class AppModule {}

@@ -51,6 +51,8 @@
     "cordova-plugin-whitelist": "^1.3.3",
     "ionic-angular": "3.9.2",
     "ionicons": "3.0.0",
+    "ng2-cable": "^2.0.7",
+    "ngx-cable": "^1.2.4",
     "rxjs": "5.5.2",
     "sw-toolbox": "3.6.0",
     "uk.co.workingedge.phonegap.plugin.launchnavigator": "^4.1.5",
