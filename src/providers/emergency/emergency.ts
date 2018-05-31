@@ -23,6 +23,8 @@ export class EmergencyProvider {
   public baseActionCableUrl = environment.ACTION_CABLE_HOST;
   public connected:boolean = false;
 
+  private receiveAlertEvent:any;
+
   constructor(public http: Http,
               private auth: AuthProvider,
               private global: GlobalProvider,
@@ -48,7 +50,7 @@ export class EmergencyProvider {
     });
     this.connected = true;
 
-    this.broadcaster.on<string>('ReceiveAlert').subscribe(
+    this.receiveAlertEvent = this.broadcaster.on<string>('ReceiveAlert').subscribe(
       (data:any) => {
         //show alert saying which dispatcher has received the alert
         this.events.publish("app:notification", data.message);
@@ -59,6 +61,10 @@ export class EmergencyProvider {
   disconnect() {
     this.ngcable.unsubscribe();
     this.connected = false;
+    if(this.receiveAlertEvent) {
+      this.receiveAlertEvent.unsubscribe();
+      this.receiveAlertEvent = null;
+    }
   }
 
   trigger(): Observable<Response> {

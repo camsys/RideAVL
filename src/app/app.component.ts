@@ -74,47 +74,6 @@ export class MyApp {
       this.handleError(error);
     });
 
-    // init app data
-    this.events.subscribe("app:init", () => {
-      console.log('init app data...');
-      this.loadDriverRunData(true);
-      this.events.publish('gps:start');   
-    });
-
-    // start checking manifest change periodically
-    this.events.subscribe("manifest:check_change", () => {
-      this.startManifestChangeCheck();
-    });
-
-    // listen to gps ping request
-    this.events.subscribe("gps:start", () => {
-      this.startGpsTracking();
-    });
-
-    // listen to stopping gps ping request
-    this.events.subscribe("gps:stop", () => {
-      this.stopGpsTracking();
-    });
-
-    // turn on emergency alert
-    this.events.subscribe("emergency:on", () => {
-      this.turnOnEmergency();
-    });
-
-    // turn off emergency alert
-    this.events.subscribe("emergency:off", () => {
-      this.turnOffEmergency();
-    });
-
-    // notification events
-    this.events.subscribe('app:notification', (text) => {
-      if(this.platform.is('cordova')) {
-        this.notifyDriver(text);
-      }
-
-      this.presentAlert(text);
-    });
-
     // toast events
     this.events.subscribe('app:toast', (text) => {
       this.showToast(text);
@@ -122,6 +81,14 @@ export class MyApp {
 
     // network connect/disconnect
     this.registerNetworkEvents();
+
+    // init app data
+    this.events.subscribe("app:init", () => {
+      // events after signed in
+      this.registerDriverEvents();  
+
+      this.loadDriverRunData(true); 
+    });
   }
 
   notifyDriver(text) {
@@ -193,6 +160,53 @@ export class MyApp {
         this.showToast("Network connected.");
       }
     });
+  }
+
+  registerDriverEvents() {
+    console.log('registering driver events');
+
+    // start checking manifest change periodically
+    this.events.subscribe("manifest:check_change", () => {
+      this.startManifestChangeCheck();
+    });
+
+    // listen to gps ping request
+    this.events.subscribe("gps:start", () => {
+      this.startGpsTracking();
+    });
+
+    // listen to stopping gps ping request
+    this.events.subscribe("gps:stop", () => {
+      this.stopGpsTracking();
+    });
+
+    // turn on emergency alert
+    this.events.subscribe("emergency:on", () => {
+      this.turnOnEmergency();
+    });
+
+    // turn off emergency alert
+    this.events.subscribe("emergency:off", () => {
+      this.turnOffEmergency();
+    });
+
+    // notification events
+    this.events.subscribe('app:notification', (text) => {
+      if(this.platform.is('cordova')) {
+        this.notifyDriver(text);
+      }
+
+      this.presentAlert(text);
+    });
+  }
+
+  unregisterDriverEvents() {
+    this.events.unsubscribe("manifest:check_change");
+    this.events.unsubscribe("gps:start");
+    this.events.unsubscribe("gps:stop");
+    this.events.unsubscribe("emergency:on");
+    this.events.unsubscribe("emergency:off");
+    this.events.unsubscribe("app:notification");
   }
 
   initializeApp() {
@@ -283,6 +297,13 @@ export class MyApp {
   }
 
   onSignOut() {
+    if(this.manifestChangeChecker) {
+      this.manifestChangeChecker.unsubscribe();
+      this.manifestChangeChecker = null;
+    }
+
+    this.unregisterDriverEvents();
+
     this.nav.setRoot(SignInPage);
     this.setMenu();
   }
@@ -303,7 +324,7 @@ export class MyApp {
         } else {
           // active itin changed
           if((prevActiveItin && !this.global.activeItin) || (!prevActiveItin && this.global.activeItin) || ( prevActiveItin && this.global.activeItin && prevActiveItin.id != this.global.activeItin.id)) {
-            this.events.publish("app:notification", "You have a new destination.");
+            this.events.publish("app:notification", "Your current destination has changed. Please re-route.");
           }
         }
       }); 
@@ -335,8 +356,10 @@ export class MyApp {
     }
 
     setTimeout(() => {
-      this.manifestChangeChecker = this.runProvider.checkActiveRunManifestChange()
-        .subscribe((changed) => this.fireManifestChangeEvents(changed));
+      if(this.auth.isSignedIn()) {
+        this.manifestChangeChecker = this.runProvider.checkActiveRunManifestChange()
+          .subscribe((changed) => this.fireManifestChangeEvents(changed));
+      }
     }, this.global.manifestCheckInterval * 1000);
   }
 
