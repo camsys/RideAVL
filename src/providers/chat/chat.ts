@@ -16,9 +16,9 @@ import { environment } from '../../app/environment'
 import { AuthProvider } from '../../providers/auth/auth';
 import { GlobalProvider } from '../../providers/global/global';
 
-// EmergencyProvider handles emergency alerts via websockets using actioncable
+// ChatProvider handles chats to dispatcher via websockets using actioncable
 @Injectable()
-export class EmergencyProvider {
+export class ChatProvider {
   public baseAvlUrl = environment.BASE_RIDEPILOT_AVL_URL;
   public baseActionCableUrl = environment.ACTION_CABLE_HOST;
   public connected:boolean = false;
@@ -42,16 +42,16 @@ export class EmergencyProvider {
 
   connect() {
     let url = this.getActionCableUrl();
-    this.ngcable.subscribe(url, 'DriverAlertChannel', {
+    this.ngcable.subscribe(url, 'ChatChannel', {
       provider_id: this.global.user.provider_id,
       driver_id: this.global.user.driver_id
     });
     this.connected = true;
 
-    this.broadcaster.on<string>('ReceiveAlert').subscribe(
-      (data:any) => {
-        //show alert saying which dispatcher has received the alert
-        this.events.publish("app:notification", data.message);
+    this.broadcaster.on<string>('CreateMessage').subscribe(
+      (data) => {
+        //TODO: show message 
+        console.log(data);
       }
     );
   }
@@ -61,14 +61,13 @@ export class EmergencyProvider {
     this.connected = false;
   }
 
-  trigger(): Observable<Response> {
-    let uri: string = encodeURI(this.baseAvlUrl + '/send_emergency_alert');
+  create(): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + '/send_routine_message');
     let body = JSON.stringify({});
 
     return this.http
         .post(uri, body, this.requestOptions())
         .map((response) => {
-          this.events.publish('app:toast', "Emergency Alert Sent.");
           return response;
         })
         .catch((error: Response) =>  this.handleError(error));

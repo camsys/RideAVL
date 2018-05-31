@@ -52,6 +52,7 @@ import { TitleCasePipe } from '../pipes/title-case/title-case';
 import { GpsProvider } from '../providers/gps/gps';
 import { GeocodingProvider } from '../providers/geocoding/geocoding';
 import { EmergencyProvider } from '../providers/emergency/emergency';
+import { ChatProvider } from '../providers/chat/chat';
 
 @NgModule({
   declarations: [
@@ -103,7 +104,8 @@ import { EmergencyProvider } from '../providers/emergency/emergency';
     LocalNotifications,
     Insomnia,
     BackgroundMode,
-    EmergencyProvider
+    EmergencyProvider,
+    ChatProvider
   ]
 })
 export class AppModule {}
