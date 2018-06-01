@@ -49,6 +49,22 @@
     </ion-col>
   </ion-row>
 
+  <!-- Pickup Mobility Notes -->
+  <ion-row *ngIf="this.showMobilityNotes()">
+    <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2>
+      <ion-card id="mobility-notes-card" class="notes-card">
+        <ion-card-header>
+          Mobility Notes
+        </ion-card-header>
+        
+        <ion-card-content>
+          {{this.itin.mobility_notes}}
+        </ion-card-content>
+      </ion-card>
+
+    </ion-col>
+  </ion-row>
+
   <!-- Customer Notes -->
   <ion-row *ngIf="this.itin && this.itin.customer_notes">
     <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2>

@@ -16,6 +16,7 @@ export class Itinerary {
   processing_time_seconds: number;
   early_pickup_not_allowed: boolean;
   leg_flag: number;
+  mobility_notes: string;
   trip_notes: string;
   customer_notes: string;
   trip_address_notes: string;

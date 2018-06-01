@@ -201,6 +201,14 @@ export class ItineraryPage {
     return true;
   }
 
+  showMobilityNotes() {
+    if(!this.itin || !this.itin.pickup() || !this.itin.mobility_notes) {
+      return false;
+    }
+
+    return true;
+  }
+
   // only a Pending itin should see Depart button
   showDepartButton() {
     if (!this.active || !this.itin.id || this.itin.beginRun() || this.itin.departed() || !this.itin.pending()) {
