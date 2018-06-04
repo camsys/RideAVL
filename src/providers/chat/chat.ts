@@ -11,6 +11,9 @@ import { Ng2Cable, Broadcaster } from 'ng2-cable';
 import { environment } from '../../app/environment'
 
 // Models
+import { ChatMessage } from '../../models/chat-message';
+
+// Models
 
 // Providers
 import { AuthProvider } from '../../providers/auth/auth';
@@ -22,6 +25,7 @@ export class ChatProvider {
   public baseAvlUrl = environment.BASE_RIDEPILOT_AVL_URL;
   public baseActionCableUrl = environment.ACTION_CABLE_HOST;
   public connected:boolean = false;
+  private messageCreateEvent:any;
 
   constructor(public http: Http,
               private auth: AuthProvider,
@@ -48,22 +52,34 @@ export class ChatProvider {
     });
     this.connected = true;
 
-    this.broadcaster.on<string>('CreateMessage').subscribe(
-      (data) => {
-        //TODO: show message 
-        console.log(data);
+    this.messageCreateEvent = this.broadcaster.on<string>('CreateMessage').subscribe(
+      (data: any) => {
+        if(this.global.user.id != data.sender_id) {
+          let newMsg = new ChatMessage();
+          Object.assign(newMsg, data);
+          newMsg.status = 'success';
+          this.events.publish("chat:new", newMsg);
+        }
       }
     );
   }
 
   disconnect() {
+    if(this.messageCreateEvent) {
+      this.messageCreateEvent.unsubscribe();
+    }
     this.ngcable.unsubscribe();
     this.connected = false;
   }
 
-  create(): Observable<Response> {
-    let uri: string = encodeURI(this.baseAvlUrl + '/send_routine_message');
-    let body = JSON.stringify({});
+  create(msg: ChatMessage): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + '/send_message');
+    let body = JSON.stringify({
+      sender_id: msg.sender_id,
+      driver_id: msg.driver_id,
+      provider_id: msg.provider_id,
+      body: msg.body
+    });
 
     return this.http
         .post(uri, body, this.requestOptions())
@@ -71,6 +87,29 @@ export class ChatProvider {
           return response;
         })
         .catch((error: Response) =>  this.handleError(error));
+  }
+
+  getMsgList(): Observable<ChatMessage[]> {
+    return this.http
+               .get(this.baseAvlUrl + 'chats', this.requestOptions())
+               .map( response => this.unpackChatResponse(response))
+               .catch((error: Response) =>  this.handleError(error));
+  }
+
+  // Parse chats response
+  private unpackChatResponse(response): ChatMessage[] {
+    let json_resp = response.json();
+    let chats_data = json_resp.data || [];
+    let chats: ChatMessage[] = chats_data.map(chat => this.parseChat(chat));
+    return  chats;
+  }
+
+  // Parse individual chat
+  private parseChat(chat_data): ChatMessage {
+    let chat: ChatMessage = new ChatMessage();
+    Object.assign(chat, chat_data.attributes);
+
+    return chat;
   }
 
   // Handle errors by console logging the error, and publishing an error event

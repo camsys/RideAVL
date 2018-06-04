@@ -32,14 +32,8 @@ import { ResetPasswordPage } from '../pages/reset-password/reset-password';
 import { RunsPage } from '../pages/runs/runs';
 import { ManifestPage } from '../pages/manifest/manifest';
 import { ItineraryPage } from '../pages/itinerary/itinerary';
+import { ChatPage } from '../pages/chat/chat';
 import { AboutPage } from '../pages/about/about';
-
-// Providers
-import { AuthProvider } from '../providers/auth/auth';
-import { GlobalProvider } from '../providers/global/global';
-import { RunProvider } from '../providers/run/run';
-import { ManifestProvider } from '../providers/manifest/manifest';
-import { ItineraryProvider } from '../providers/itinerary/itinerary';
 
 // Components
 import { RunInfoComponent } from '../components/run-info/run-info';
@@ -49,6 +43,14 @@ import { ItineraryInfoComponent } from '../components/itinerary-info/itinerary-i
 import { PrettyTimeFromSecondsPipe } from '../pipes/pretty-time-from-seconds/pretty-time-from-seconds';
 import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
 import { TitleCasePipe } from '../pipes/title-case/title-case';
+import {TimeAgoPipe} from 'time-ago-pipe';
+
+// Providers
+import { AuthProvider } from '../providers/auth/auth';
+import { GlobalProvider } from '../providers/global/global';
+import { RunProvider } from '../providers/run/run';
+import { ManifestProvider } from '../providers/manifest/manifest';
+import { ItineraryProvider } from '../providers/itinerary/itinerary';
 import { GpsProvider } from '../providers/gps/gps';
 import { GeocodingProvider } from '../providers/geocoding/geocoding';
 import { EmergencyProvider } from '../providers/emergency/emergency';
@@ -62,12 +64,14 @@ import { ChatProvider } from '../providers/chat/chat';
     ManifestPage,
     ItineraryPage,
     ResetPasswordPage,
+    ChatPage,
     AboutPage,
     RunInfoComponent,
     ItineraryInfoComponent,
     PrettyTimeFromSecondsPipe,
     PhoneNumberPipe,
-    TitleCasePipe
+    TitleCasePipe,
+    TimeAgoPipe
   ],
   imports: [
     BrowserModule,
@@ -84,6 +88,7 @@ import { ChatProvider } from '../providers/chat/chat';
     ManifestPage,
     ItineraryPage,
     ResetPasswordPage,
+    ChatPage,
     AboutPage
   ],
   providers: [

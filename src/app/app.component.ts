@@ -13,7 +13,7 @@ import { BackgroundMode } from '@ionic-native/background-mode';
 // PAGES
 import { SignInPage } from '../pages/sign-in/sign-in';
 import { RunsPage } from '../pages/runs/runs';
-import { ManifestPage } from '../pages/manifest/manifest';
+import { ChatPage } from '../pages/chat/chat';
 import { AboutPage } from '../pages/about/about';
 
 // MODELS
@@ -246,10 +246,10 @@ export class MyApp {
   setMenu(){
     // Pages to display if user is signed in
     this.signedInPages = [
-      //{ title: 'Runs for Today', component: RunsPage},
-      { title: 'Sign Out', component: "sign_out"},
+      { title: 'Chat', component: ChatPage},
       { title: 'Emergeny', component: "emergency"},
-      { title: 'About This App', component: AboutPage }
+      { title: 'About This App', component: AboutPage },
+      { title: 'Sign Out', component: "sign_out"}
     ] as PageModel[];
 
     this.signInPage = { title: 'Sign In', component: SignInPage} as PageModel;

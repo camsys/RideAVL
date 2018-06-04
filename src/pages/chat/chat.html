@@ -1,0 +1,57 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Chat with dispatcher(s)</ion-title>
+    <button ion-button menuToggle end>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+  <div class="message-wrap">
+
+    <div *ngFor="let msg of msgList"
+         class="message"
+         [class.left]=" msg.sender_id != user.id "
+         [class.right]=" msg.sender_id === user.id ">
+      <ion-spinner name="dots" *ngIf="msg.status === 'pending'"></ion-spinner>
+      <div class="msg-detail">
+        <div class="msg-info">
+          <p>
+            <b>{{msg.sender_name}}</b>&nbsp;&nbsp;&nbsp;{{msg.created_at | timeAgo}}</p>
+        </div>
+        <div class="msg-content">
+          <span class="triangle"></span>
+          <p class="line-breaker ">{{msg.body}}</p>
+        </div>
+      </div>
+    </div>
+
+    <ion-select #quickResponseList [selectOptions]="selectOptions" hidden>
+      
+    </ion-select>
+
+  </div>
+
+</ion-content>
+
+<ion-footer no-border style.height="55px'">
+  <div class="input-wrap">
+    <textarea #chat_input
+              placeholder="Text Input"
+              [(ngModel)]="editorMsg"
+              (keyup.enter)="sendMsg()"
+              (focusin)="onFocus()">
+    </textarea>
+    <button ion-button clear icon-only item-right (click)="sendMsg()">
+      <ion-icon name="ios-send" ios="ios-send" md="md-send"></ion-icon>
+    </button>
+    <button ion-button clear icon-only item-right (click)="showQuickResponse()">
+      <ion-icon name="ios-list" ios="ios-list" md="md-list"></ion-icon>
+    </button>
+
+  </div>
+</ion-footer>
