@@ -12,6 +12,7 @@ import { environment } from '../../app/environment'
 
 // Models
 import { ChatMessage } from '../../models/chat-message';
+import { QuickResponse } from '../../models/quick-response';
 
 // Models
 
@@ -73,7 +74,7 @@ export class ChatProvider {
   }
 
   create(msg: ChatMessage): Observable<Response> {
-    let uri: string = encodeURI(this.baseAvlUrl + '/send_message');
+    let uri: string = encodeURI(this.baseAvlUrl + 'messages/send_message');
     let body = JSON.stringify({
       sender_id: msg.sender_id,
       driver_id: msg.driver_id,
@@ -91,7 +92,7 @@ export class ChatProvider {
 
   getMsgList(): Observable<ChatMessage[]> {
     return this.http
-               .get(this.baseAvlUrl + 'chats', this.requestOptions())
+               .get(this.baseAvlUrl + 'messages/chats', this.requestOptions())
                .map( response => this.unpackChatResponse(response))
                .catch((error: Response) =>  this.handleError(error));
   }
@@ -110,6 +111,30 @@ export class ChatProvider {
     Object.assign(chat, chat_data.attributes);
 
     return chat;
+  }
+
+  getMessageTemplates(): Observable<QuickResponse[]> {
+    return this.http
+               .get(this.baseAvlUrl + 'messages/driver_message_templates', this.requestOptions())
+               .map( response => this.unpackQuickResponses(response))
+               .catch((error: Response) =>  this.handleError(error));
+  }
+
+
+  // Parse quick response
+  private unpackQuickResponses(response): QuickResponse[] {
+    let json_resp = response.json();
+    let data = json_resp.data || [];
+    let templates: QuickResponse[] = data.map(resp => this.parseTemplate(resp));
+    return  templates;
+  }
+
+  // Parse individual template
+  private parseTemplate(temp_data): QuickResponse {
+    let temp: QuickResponse = new QuickResponse();
+    Object.assign(temp, temp_data.attributes);
+
+    return temp;
   }
 
   // Handle errors by console logging the error, and publishing an error event

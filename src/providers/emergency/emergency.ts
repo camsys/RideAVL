@@ -68,7 +68,7 @@ export class EmergencyProvider {
   }
 
   trigger(): Observable<Response> {
-    let uri: string = encodeURI(this.baseAvlUrl + '/send_emergency_alert');
+    let uri: string = encodeURI(this.baseAvlUrl + 'messages/send_emergency_alert');
     let body = JSON.stringify({});
 
     return this.http

@@ -1,10 +1,11 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
-import { Events, Content } from 'ionic-angular';
+import { Events, Content, Select } from 'ionic-angular';
 
 // Models
 import { User } from '../../models/user';
 import { ChatMessage } from '../../models/chat-message';
+import { QuickResponse } from '../../models/quick-response';
 
 // Providers
 import { GlobalProvider } from '../../providers/global/global';
@@ -26,6 +27,7 @@ export class ChatPage {
   editorMsg = '';
 
   selectOptions: any;
+  quickResponses: QuickResponse[] = [];
   
 
   constructor(navParams: NavParams,
@@ -37,12 +39,11 @@ export class ChatPage {
               this.selectOptions = {
                 title: 'Quick Response',
                 subTitle: 'Select a response to send',
+                okText: 'Send',
                 mode: 'md'
               };
-  }
 
-  showQuickResponse(){
-    this.quickResponseList.open();
+              this.getQuickResponses();
   }
 
   ionViewWillLeave() {
@@ -62,16 +63,28 @@ export class ChatPage {
     this.getMsgs();
   }
 
+  showQuickResponse(){
+    this.quickResponseList.open();
+  }
+  
+  getQuickResponses() {
+    this.chatService.getMessageTemplates()
+                      .subscribe((templates) => {
+                        this.quickResponses = templates;
+                      });
+  }
+
+  sendQuickResponse() {
+    this.sendNewMessage(this.quickResponseList.text);
+    this.quickResponseList.value = null; //reset selection
+  }
+
   onFocus() {
     this.scrollToBottom();
   }
 
-  /**
-   * @name getMsg
-   * @returns {Promise<ChatMessage[]>}
-   */
+  // get history messages
   getMsgs() {
-    // Get mock message list
     return this.chatService
     .getMsgList()
     .subscribe(res => {
@@ -80,11 +93,13 @@ export class ChatPage {
     });
   }
 
-  /**
-   * @name sendMsg
-   */
-  sendMsg() {
-    if (!this.editorMsg.trim()) return;
+  sendTypedMessage() {
+    this.sendNewMessage(this.editorMsg);
+    this.editorMsg = '';
+  }
+
+  sendNewMessage(message: string) {
+    if (!message.trim()) return;
 
     // Mock message
     let created_at = Date.now();
@@ -95,21 +110,20 @@ export class ChatPage {
       sender_name: this.user.name,
       driver_id: this.user.driver_id,
       provider_id: this.user.provider_id,
-      body: this.editorMsg,
+      body: message,
       created_at: created_at,
       status: 'pending'
     };
 
     this.pushNewMsg(newMsg);
-    this.editorMsg = '';
-
+    
     this.chatService.create(newMsg)
-    .subscribe(() => {
-      let index = this.getMsgIndexById(id);
-      if (index !== -1) {
-        this.msgList[index].status = 'success';
-      }
-    })
+      .subscribe(() => {
+        let index = this.getMsgIndexById(id);
+        if (index !== -1) {
+          this.msgList[index].status = 'success';
+        }
+      });
   }
 
   pushNewMsg(msg: ChatMessage) {
