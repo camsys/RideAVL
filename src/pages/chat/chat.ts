@@ -75,7 +75,7 @@ export class ChatPage {
   }
 
   sendQuickResponse() {
-    this.sendNewMessage(this.quickResponseList.text);
+    this.sendNewMessage(this.quickResponseList.text as string);
     this.quickResponseList.value = null; //reset selection
   }
 
