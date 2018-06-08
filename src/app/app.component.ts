@@ -26,6 +26,7 @@ import { AuthProvider } from '../providers/auth/auth';
 import { RunProvider } from '../providers/run/run';
 import { GpsProvider } from '../providers/gps/gps';
 import { EmergencyProvider } from '../providers/emergency/emergency';
+import { ManifestChangeProvider } from '../providers/manifest-change/manifest-change';
 
 @Component({
   templateUrl: 'app.html'
@@ -43,8 +44,6 @@ export class MyApp {
   signInPage: PageModel;
   user: User;
 
-  private manifestChangeChecker:any;
-
   constructor(public platform: Platform,
               public statusBar: StatusBar,
               public splashScreen: SplashScreen,
@@ -54,6 +53,7 @@ export class MyApp {
               private gps: GpsProvider,
               private runProvider: RunProvider,
               private emergencyProvider: EmergencyProvider,
+              private manifestChangeProvider: ManifestChangeProvider,
               private changeDetector: ChangeDetectorRef,
               private network: Network,
               private localNotifications: LocalNotifications,
@@ -87,7 +87,7 @@ export class MyApp {
       // events after signed in
       this.registerDriverEvents();  
 
-      this.loadDriverRunData(true); 
+      this.loadDriverRunData(true, false); 
     });
   }
 
@@ -163,11 +163,10 @@ export class MyApp {
   }
 
   registerDriverEvents() {
-    console.log('registering driver events');
 
     // start checking manifest change periodically
-    this.events.subscribe("manifest:check_change", () => {
-      this.startManifestChangeCheck();
+    this.events.subscribe("manifest:change", (run_id) => {
+      this.fireManifestChangeEvents(run_id);
     });
 
     // listen to gps ping request
@@ -201,7 +200,7 @@ export class MyApp {
   }
 
   unregisterDriverEvents() {
-    this.events.unsubscribe("manifest:check_change");
+    this.events.unsubscribe("manifest:change");
     this.events.unsubscribe("gps:start");
     this.events.unsubscribe("gps:stop");
     this.events.unsubscribe("emergency:on");
@@ -297,11 +296,7 @@ export class MyApp {
   }
 
   onSignOut() {
-    if(this.manifestChangeChecker) {
-      this.manifestChangeChecker.unsubscribe();
-      this.manifestChangeChecker = null;
-    }
-
+    this.manifestChangeProvider.disconnect();
     this.unregisterDriverEvents();
 
     this.nav.setRoot(SignInPage);
@@ -309,8 +304,7 @@ export class MyApp {
   }
 
   // load app data
-  loadDriverRunData(init_emergency) {
-    console.log('loading app data');
+  loadDriverRunData(init_emergency, check_current_dest_change) {
     let prevActiveItin = this.global.activeItin;
 
     this.runProvider.loadDriverRunData()
@@ -319,10 +313,8 @@ export class MyApp {
           this.events.publish('emergency:on');
         }
 
-        if(!this.manifestChangeChecker) {
-          this.events.publish("manifest:check_change");
-        } else {
-          // active itin changed
+        // active itin changed
+        if(check_current_dest_change) {
           if((prevActiveItin && !this.global.activeItin) || (!prevActiveItin && this.global.activeItin) || ( prevActiveItin && this.global.activeItin && prevActiveItin.id != this.global.activeItin.id)) {
             this.events.publish("app:notification", "Your current destination has changed. Please re-route.");
           }
@@ -350,36 +342,22 @@ export class MyApp {
     this.emergencyProvider.trigger().subscribe();
   }
 
-  startManifestChangeCheck() {
-    if(this.manifestChangeChecker) {
-      this.manifestChangeChecker.unsubscribe();
+  fireManifestChangeEvents(run_id) {
+    if(!this.global.activeRun || this.global.activeRun.id != run_id) {
+      return;
     }
 
-    setTimeout(() => {
-      if(this.auth.isSignedIn()) {
-        this.manifestChangeChecker = this.runProvider.checkActiveRunManifestChange()
-          .subscribe((changed) => this.fireManifestChangeEvents(changed));
-      }
-    }, this.global.manifestCheckInterval * 1000);
-  }
+    this.loadDriverRunData(false, true);
 
-  fireManifestChangeEvents(changed) {
-    console.log(changed);
-    if(changed) {
-      this.loadDriverRunData(false);
+    let activePageName = this.nav.getActive().name;
 
-      let activePageName = this.nav.getActive().name;
-
-      if(activePageName == "RunsPage") {
-        this.events.publish("runs:reload");
-      } else if(activePageName == "ManifestPage") {
-        this.events.publish("manifest:reload");
-      } else if(activePageName == "ItineraryPage") {
-        this.events.publish("itinerary:reload");
-      } 
-    }
-
-    this.startManifestChangeCheck();
+    if(activePageName == "RunsPage") {
+      this.events.publish("runs:reload");
+    } else if(activePageName == "ManifestPage") {
+      this.events.publish("manifest:reload");
+    } else if(activePageName == "ItineraryPage") {
+      this.events.publish("itinerary:reload");
+    } 
   }
 
   // Subscribe to spinner:show and spinner:hide events that can be published by child pages
