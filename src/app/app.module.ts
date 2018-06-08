@@ -55,6 +55,7 @@ import { GpsProvider } from '../providers/gps/gps';
 import { GeocodingProvider } from '../providers/geocoding/geocoding';
 import { EmergencyProvider } from '../providers/emergency/emergency';
 import { ChatProvider } from '../providers/chat/chat';
+import { ManifestChangeProvider } from '../providers/manifest-change/manifest-change';
 
 @NgModule({
   declarations: [
@@ -110,7 +111,8 @@ import { ChatProvider } from '../providers/chat/chat';
     Insomnia,
     BackgroundMode,
     EmergencyProvider,
-    ChatProvider
+    ChatProvider,
+    ManifestChangeProvider
   ]
 })
 export class AppModule {}

@@ -18,6 +18,7 @@ import { Inspection } from '../../models/inspection';
 // Providers
 import { AuthProvider } from '../../providers/auth/auth';
 import { GlobalProvider } from '../../providers/global/global';
+import { ManifestChangeProvider } from '../../providers/manifest-change/manifest-change';
 
 // Runs Provider handles API Calls to the RidePilot back-end 
 // to load and update Runs data
@@ -30,6 +31,7 @@ export class RunProvider {
   constructor(public http: Http,
               private auth: AuthProvider,
               private global: GlobalProvider,
+              private manifestChangeProvider: ManifestChangeProvider,
               public events: Events) {}
               
   // Constructs a request options hash with auth headers
@@ -214,8 +216,11 @@ export class RunProvider {
       }
 
       this.global.activeRun = run;
+
+      this.manifestChangeProvider.connect();
     } else {
       this.global.activeRun = null;
+      this.manifestChangeProvider.disconnect();
     }
 
     if(json_resp.active_itin) {
