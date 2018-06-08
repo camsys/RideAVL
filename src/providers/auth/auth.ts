@@ -88,6 +88,8 @@ export class AuthProvider {
             this.setSession(session);
           }
 
+          this.events.publish('app:init');
+
           return response;
         })
         .catch((error: Response) =>  this.handleError(error));
@@ -116,6 +118,8 @@ export class AuthProvider {
       return this.http
           .delete(uri, options)
           .map((response: Response) => {
+            this.events.publish('gps:stop');
+            this.events.publish('emergency:off');
             return response;
           })
           .catch((error: Response) =>  this.handleError(error));

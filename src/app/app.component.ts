@@ -1,12 +1,19 @@
 import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { Nav, Platform, Events, ToastController } from 'ionic-angular';
+import {Observable} from 'rxjs/Rx';
+import { Nav, Platform, Events, AlertController, ToastController } from 'ionic-angular';
+
+// NATIVE
+import { Network } from '@ionic-native/network';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { Insomnia } from '@ionic-native/insomnia';
+import { LocalNotifications } from '@ionic-native/local-notifications';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 // PAGES
 import { SignInPage } from '../pages/sign-in/sign-in';
 import { RunsPage } from '../pages/runs/runs';
-import { ManifestPage } from '../pages/manifest/manifest';
+import { ChatPage } from '../pages/chat/chat';
 import { AboutPage } from '../pages/about/about';
 
 // MODELS
@@ -16,6 +23,9 @@ import { PageModel } from '../models/page';
 // PROVIDERS
 import { GlobalProvider} from '../providers/global/global';
 import { AuthProvider } from '../providers/auth/auth';
+import { RunProvider } from '../providers/run/run';
+import { GpsProvider } from '../providers/gps/gps';
+import { EmergencyProvider } from '../providers/emergency/emergency';
 
 @Component({
   templateUrl: 'app.html'
@@ -26,27 +36,80 @@ export class MyApp {
 
   rootPage: any = SignInPage;
   showSpinner: Boolean = false;
+  wasOffline: Boolean = false;
 
   signedInPages: PageModel[];
   universalPages: PageModel[]; //Pages for both signed in and signed out users
   signInPage: PageModel;
   user: User;
 
+  private manifestChangeChecker:any;
+
   constructor(public platform: Platform,
               public statusBar: StatusBar,
               public splashScreen: SplashScreen,
+              public insomnia: Insomnia,
               public global: GlobalProvider,
               private auth: AuthProvider,
+              private gps: GpsProvider,
+              private runProvider: RunProvider,
+              private emergencyProvider: EmergencyProvider,
               private changeDetector: ChangeDetectorRef,
+              private network: Network,
+              private localNotifications: LocalNotifications,
+              private backgroundMode: BackgroundMode,
               public events: Events,
-              private toastCtrl: ToastController) {
+              private toastCtrl: ToastController,
+              private alertCtrl: AlertController) {
 
     this.initializeApp();
 
+    this.initializeEvents();
+  }
+
+  // define global events
+  initializeEvents() {
     // When a server error occurs, show an error message and return to the home page.
     this.events.subscribe("error:http", (error) => {
       this.handleError(error);
     });
+
+    // toast events
+    this.events.subscribe('app:toast', (text) => {
+      this.showToast(text);
+    });
+
+    // network connect/disconnect
+    this.registerNetworkEvents();
+
+    // init app data
+    this.events.subscribe("app:init", () => {
+      // events after signed in
+      this.registerDriverEvents();  
+
+      this.loadDriverRunData(true); 
+    });
+  }
+
+  notifyDriver(text) {
+    this.localNotifications.requestPermission().then((permission) => {
+      this.localNotifications.schedule({
+         id: 1,
+         text: text,
+         vibrate: true,
+         launch: true,
+         autoClear: true
+      });
+    });
+  }
+
+  presentAlert(text) {
+    let alert = this.alertCtrl.create({
+      title: 'Alert',
+      subTitle: text,
+      buttons: ['Dismiss']
+    });
+    alert.present();
   }
 
   // Handles errors based on their status code
@@ -57,36 +120,96 @@ export class MyApp {
         console.error("USER TOKEN EXPIRED");
         this.signOut();
         this.nav.setRoot(SignInPage);
-        this.showErrorToast('Please sign in again.');
+        this.showToast('Please sign in again.');
         break;
       case 503:
-        this.showErrorToast('Sorry. Service unavailable. Please check your internet connection.');
+        this.showToast('Sorry. Service unavailable. Please check your internet connection.');
         break;
       default:
         this.goHome();
-        this.showErrorToast('Sorry. An error happened.');
+        this.showToast('Sorry. An error happened.');
         break;
     }
 
     this.events.publish('spinner:hide'); // stop the spinner once we're back on the home page
   }
 
-  // Shows an error toast at the top of the screen for 3 sec, with the given message
-  showErrorToast(message: string) {
-    let errorToast = this.toastCtrl.create({
+  // Shows a toast at the top of the screen for 3 sec, with the given message
+  showToast(message: string) {
+    let toast = this.toastCtrl.create({
       message: message,
       position: 'top',
       duration: 3000
     });
-    errorToast.present();
+    toast.present();
 
-    return errorToast;
+    return toast;
+  }
+
+  registerNetworkEvents() {
+    // watch network for a disconnect
+    this.network.onDisconnect().subscribe(() => {
+      this.wasOffline = true;
+      this.showToast("Network disconnected.");
+    });
+
+    // watch network for a connection
+    this.network.onConnect().subscribe(() => {
+      if(this.wasOffline) {
+        this.wasOffline = false;
+        this.showToast("Network connected.");
+      }
+    });
+  }
+
+  registerDriverEvents() {
+    console.log('registering driver events');
+
+    // start checking manifest change periodically
+    this.events.subscribe("manifest:check_change", () => {
+      this.startManifestChangeCheck();
+    });
+
+    // listen to gps ping request
+    this.events.subscribe("gps:start", () => {
+      this.startGpsTracking();
+    });
+
+    // listen to stopping gps ping request
+    this.events.subscribe("gps:stop", () => {
+      this.stopGpsTracking();
+    });
+
+    // turn on emergency alert
+    this.events.subscribe("emergency:on", () => {
+      this.turnOnEmergency();
+    });
+
+    // turn off emergency alert
+    this.events.subscribe("emergency:off", () => {
+      this.turnOffEmergency();
+    });
+
+    // notification events
+    this.events.subscribe('app:notification', (text) => {
+      if(this.platform.is('cordova')) {
+        this.notifyDriver(text);
+      }
+
+      this.presentAlert(text);
+    });
+  }
+
+  unregisterDriverEvents() {
+    this.events.unsubscribe("manifest:check_change");
+    this.events.unsubscribe("gps:start");
+    this.events.unsubscribe("gps:stop");
+    this.events.unsubscribe("emergency:on");
+    this.events.unsubscribe("emergency:off");
+    this.events.unsubscribe("app:notification");
   }
 
   initializeApp() {
-
-    this.statusBar.styleDefault();
-    this.splashScreen.hide();
 
     // Set up the page links for the sidebar menu
     this.setMenu();
@@ -94,9 +217,28 @@ export class MyApp {
     // Set up the spinner div
     this.setupSpinner();
 
+    // enable background mode
+    this.backgroundMode.enable();
+
     this.platform.ready().then(() => {
+      this.statusBar.styleDefault();
+      this.splashScreen.hide();
+
+      this.insomnia.keepAwake()
+        .then(
+          () => console.log("keep awake"),
+          () => console.log("failed to keep awake")
+        );
+
       // go to home screen
       this.goHome();
+
+      // check app network state
+      setTimeout(() => {
+        if (this.network.type === 'none') {
+          this.showToast("No network access.");
+        }
+      }, 3000);
     });
   }
 
@@ -104,9 +246,10 @@ export class MyApp {
   setMenu(){
     // Pages to display if user is signed in
     this.signedInPages = [
-      //{ title: 'Runs for Today', component: RunsPage},
-      { title: 'Sign Out', component: "sign_out"},
-      { title: 'About This App', component: AboutPage }
+      { title: 'Chat', component: ChatPage},
+      { title: 'Emergeny', component: "emergency"},
+      { title: 'About This App', component: AboutPage },
+      { title: 'Sign Out', component: "sign_out"}
     ] as PageModel[];
 
     this.signInPage = { title: 'Sign In', component: SignInPage} as PageModel;
@@ -117,6 +260,9 @@ export class MyApp {
     switch(page.component) {
       case "sign_out":
         this.signOut();
+        break;
+      case "emergency":
+        this.sendEmergencyAlert();
         break;
       default:
         // Reset the content nav to have just this page
@@ -131,6 +277,7 @@ export class MyApp {
       if((this.nav.getActive() && this.nav.getActive().name) !== "RunsPage") {
         this.nav.setRoot(RunsPage); 
       }
+      this.events.publish('app:init');
     } else {
       this.nav.setRoot(SignInPage);
     }
@@ -150,8 +297,89 @@ export class MyApp {
   }
 
   onSignOut() {
+    if(this.manifestChangeChecker) {
+      this.manifestChangeChecker.unsubscribe();
+      this.manifestChangeChecker = null;
+    }
+
+    this.unregisterDriverEvents();
+
     this.nav.setRoot(SignInPage);
     this.setMenu();
+  }
+
+  // load app data
+  loadDriverRunData(init_emergency) {
+    console.log('loading app data');
+    let prevActiveItin = this.global.activeItin;
+
+    this.runProvider.loadDriverRunData()
+      .subscribe(() => {
+        if(init_emergency) {
+          this.events.publish('emergency:on');
+        }
+
+        if(!this.manifestChangeChecker) {
+          this.events.publish("manifest:check_change");
+        } else {
+          // active itin changed
+          if((prevActiveItin && !this.global.activeItin) || (!prevActiveItin && this.global.activeItin) || ( prevActiveItin && this.global.activeItin && prevActiveItin.id != this.global.activeItin.id)) {
+            this.events.publish("app:notification", "Your current destination has changed. Please re-route.");
+          }
+        }
+      }); 
+  }
+
+  startGpsTracking() {
+    this.gps.startTracking();
+  }
+
+  stopGpsTracking() {
+    this.gps.stopTracking();
+  }
+
+  turnOnEmergency() {
+    this.emergencyProvider.connect();
+  }
+
+  turnOffEmergency() {
+    this.emergencyProvider.disconnect();
+  }
+
+  sendEmergencyAlert() {
+    this.emergencyProvider.trigger().subscribe();
+  }
+
+  startManifestChangeCheck() {
+    if(this.manifestChangeChecker) {
+      this.manifestChangeChecker.unsubscribe();
+    }
+
+    setTimeout(() => {
+      if(this.auth.isSignedIn()) {
+        this.manifestChangeChecker = this.runProvider.checkActiveRunManifestChange()
+          .subscribe((changed) => this.fireManifestChangeEvents(changed));
+      }
+    }, this.global.manifestCheckInterval * 1000);
+  }
+
+  fireManifestChangeEvents(changed) {
+    console.log(changed);
+    if(changed) {
+      this.loadDriverRunData(false);
+
+      let activePageName = this.nav.getActive().name;
+
+      if(activePageName == "RunsPage") {
+        this.events.publish("runs:reload");
+      } else if(activePageName == "ManifestPage") {
+        this.events.publish("manifest:reload");
+      } else if(activePageName == "ItineraryPage") {
+        this.events.publish("itinerary:reload");
+      } 
+    }
+
+    this.startManifestChangeCheck();
   }
 
   // Subscribe to spinner:show and spinner:hide events that can be published by child pages

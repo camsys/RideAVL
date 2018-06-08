@@ -33,13 +33,14 @@ page-itinerary {
 
   .action-info {
     button {
-      background: $appRed;
       font-size: $font-size-md;
     }
     .action-label {
       color: $appBlue;
       font-size: $font-size-lg;
+      vertical-align: text-top;
     }
+
   }
 
   .notes-card {
@@ -50,5 +51,37 @@ page-itinerary {
 
   .action-buttons {
     margin-top: size(3);
+  }
+
+  ion-list-header.run-list-header {
+    border-top: none;
+    color: $primary;
+    font-weight: 500;
+    font-size: $font-size-md;
+    margin-bottom: 0;
+  }
+
+  .inspection-responded {
+    color: $appWhite !important;
+  }
+
+  .inspection-responded.inspection-pass {
+    background-color: $appGrenn;
+  }
+
+  .inspection-responded.inspection-fail {
+    background-color: $appRed;
+  }
+
+  .inspection-pass {
+    color: $appGrenn;
+  }
+
+  .inspection-fail {
+    color: $appRed;
+  }
+
+  .inspection-item {
+    font-size: $font-size-lg;
   }
 }

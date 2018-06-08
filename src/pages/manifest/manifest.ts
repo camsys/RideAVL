@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
 
 /**
  * Generated class for the ManifestPage page.
@@ -18,6 +18,7 @@ import { ItineraryPage } from '../itinerary/itinerary';
 
 // Providers
 import { GlobalProvider } from '../../providers/global/global';
+import { RunProvider } from '../../providers/run/run';
 import { ManifestProvider } from '../../providers/manifest/manifest';
 
 @IonicPage()
@@ -32,19 +33,16 @@ export class ManifestPage {
   nextItin: Itinerary = new Itinerary();
   currentTime: Date = new Date();
   run: Run = {} as Run;
-  runs: Run[] = [];
   
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
+              public events: Events,
               public global: GlobalProvider,
+              public runProvider: RunProvider,
               private manifestProvider: ManifestProvider) {
 
               if(this.navParams.data.run) {
                 this.run = this.navParams.data.run;
-              }
-
-              if(this.navParams.data.runs) {
-                this.runs = this.navParams.data.runs;
               }
 
               if(this.navParams.data.itineraries) {
@@ -55,16 +53,59 @@ export class ManifestPage {
               }
               
               setInterval(() => this.currentTime = new Date(), 500);
+              setInterval(() => this.updateETA(), global.gpsInterval * 1000);
   }
 
   ionViewDidLoad() {
-    console.log('loading manifest...');
     this.requestManifest();
   }
 
+  ionViewWillLoad() {
+    this.events.subscribe("manifest:reload", () => {
+      // reload run
+      this.runProvider.getRun(this.run.id)
+                      .subscribe((run) => {
+                        this.run = run;
+                        if(!this.run.id) {
+                          this.events.publish("app:notification", "Run was removed by dispatcher.");
+                          this.loadRunList();
+                        }
+                      });
+
+      // reload itins
+      this.manifestProvider.getItineraries(this.run.id)
+                      .subscribe((itins) => {
+                        this.loadItins(itins);
+                        this.setActiveItin();
+                      });
+    });
+  }
+
+  ionViewWillUnload() {
+    this.events.unsubscribe("manifest:reload");
+  }
+
   ionViewWillEnter() {
-    console.log('entering manifest screen...');
-    this.activeItin = this.itineraries.find(r => (r.pending() || r.in_progress())) || (new Itinerary());
+    this.setActiveItin();
+  }
+
+  doRefresh(refresher) {
+    this.manifestProvider.getItineraries(this.run.id)
+                      .subscribe((itins) => {
+                        this.loadItins(itins);
+                        this.setActiveItin();
+                        refresher.complete();
+                      });
+  }
+
+
+  // apply calculated eta_diff in all incomplete itins
+  updateETA() {
+    if(!this.itineraries) {
+      return;
+    }
+
+    this.global.updateManifestETA(this.itineraries);
   }
 
   requestManifest() {
@@ -77,7 +118,11 @@ export class ManifestPage {
   loadItins(itins: Itinerary[]) {
     this.dataLoaded = true;
     this.itineraries = itins || [];
-    this.activeItin = this.itineraries.find(r => (r.pending() || r.in_progress())) || (new Itinerary());
+    this.activeItin = this.itineraries.find(r => !r.finished()) || (new Itinerary());
+  }
+
+  setActiveItin() {
+    this.activeItin = this.itineraries.find(r => !r.finished()) || (new Itinerary());
   }
 
   loadRunList() {

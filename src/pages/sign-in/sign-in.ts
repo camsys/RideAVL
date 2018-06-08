@@ -3,7 +3,8 @@ import {  IonicPage,
           NavController,
           NavParams,
           ToastController,
-          Toast} from 'ionic-angular';
+          Toast,
+          Events} from 'ionic-angular';
 
 // Pages
 import { RunsPage } from '../runs/runs';
@@ -29,6 +30,7 @@ export class SignInPage {
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
+              public events: Events,
               private authProvider: AuthProvider,
               private toastCtrl: ToastController) {
     this.errorToast = this.toastCtrl.create({});

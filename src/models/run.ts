@@ -18,6 +18,8 @@ export class Run {
   end_odometer: number;
   actual_start_time: string;
   actual_end_time: string;
+  driver_notes: string;
+  manifest_published_at: string;
 
   completed() {
     return this.status_code == 2;
@@ -37,6 +39,11 @@ export class Run {
     }
 
     return status_label;
+  }
+
+  // check if run is active
+  inProgress() {
+    return this.status_code == this.STATUS_IN_PROGRESS;
   }
 
   // Update status

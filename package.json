@@ -1,6 +1,6 @@
 {
-  "name": "ridepilotDriverApp",
-  "version": "0.0.1",
+  "name": "RideAVL",
+  "version": "0.0.2",
   "author": "Xudong Liu",
   "homepage": "",
   "private": true,
@@ -20,26 +20,42 @@
     "@angular/http": "5.0.3",
     "@angular/platform-browser": "5.0.3",
     "@angular/platform-browser-dynamic": "5.0.3",
+    "@ionic-native/background-geolocation": "^4.6.0",
+    "@ionic-native/background-mode": "^4.7.0",
     "@ionic-native/core": "4.4.0",
+    "@ionic-native/geolocation": "^4.6.0",
+    "@ionic-native/insomnia": "^4.7.0",
     "@ionic-native/launch-navigator": "^4.5.3",
-    "@ionic-native/splash-screen": "4.4.0",
+    "@ionic-native/local-notifications": "^4.7.0",
+    "@ionic-native/network": "^4.7.0",
+    "@ionic-native/splash-screen": "^4.4.0",
     "@ionic-native/status-bar": "4.4.0",
     "@ionic/pro": "1.0.19",
     "@ionic/storage": "2.1.3",
     "angular2-moment": "^1.8.0",
-    "cordova-android": "7.0.0",
+    "cordova-android": "^7.1.0",
     "cordova-browser": "5.0.3",
     "cordova-plugin-actionsheet": "^2.3.3",
+    "cordova-plugin-background-mode": "^0.7.2",
+    "cordova-plugin-badge": "^0.8.7",
     "cordova-plugin-device": "^2.0.1",
     "cordova-plugin-dialogs": "^2.0.1",
+    "cordova-plugin-geolocation": "^4.0.1",
+    "cordova-plugin-insomnia": "~4.3.0",
     "cordova-plugin-ionic-keyboard": "^2.0.5",
     "cordova-plugin-ionic-webview": "^1.1.16",
+    "cordova-plugin-local-notification": "^0.9.0-beta.2",
+    "cordova-plugin-mauron85-background-geolocation": "^2.3.5",
+    "cordova-plugin-network-information": "^2.0.1",
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-whitelist": "^1.3.3",
     "ionic-angular": "3.9.2",
     "ionicons": "3.0.0",
+    "ng2-cable": "^2.0.7",
+    "ngx-cable": "^1.2.4",
     "rxjs": "5.5.2",
     "sw-toolbox": "3.6.0",
+    "time-ago-pipe": "^1.3.2",
     "uk.co.workingedge.phonegap.plugin.launchnavigator": "^4.1.5",
     "zone.js": "0.8.18"
   },
@@ -55,11 +71,28 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-ionic-keyboard": {},
-      "uk.co.workingedge.phonegap.plugin.launchnavigator": {}
+      "uk.co.workingedge.phonegap.plugin.launchnavigator": {},
+      "cordova-plugin-mauron85-background-geolocation": {
+        "GOOGLE_PLAY_SERVICES_VERSION": "11+",
+        "ANDROID_SUPPORT_LIBRARY_VERSION": "23+",
+        "ICON": "@mipmap/icon",
+        "SMALL_ICON": "@mipmap/icon",
+        "ACCOUNT_NAME": "@string/app_name",
+        "ACCOUNT_LABEL": "@string/app_name",
+        "ACCOUNT_TYPE": "$PACKAGE_NAME.account",
+        "CONTENT_AUTHORITY": "$PACKAGE_NAME"
+      },
+      "cordova-plugin-geolocation": {
+        "GEOLOCATION_USAGE_DESCRIPTION": "track vehicle location"
+      },
+      "cordova-plugin-network-information": {},
+      "cordova-plugin-insomnia": {},
+      "cordova-plugin-local-notification": {},
+      "cordova-plugin-background-mode": {}
     },
     "platforms": [
-      "android",
-      "browser"
+      "browser",
+      "android"
     ]
   }
 }

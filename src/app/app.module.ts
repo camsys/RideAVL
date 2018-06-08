@@ -3,9 +3,16 @@ import { BrowserModule } from '@angular/platform-browser';
 //import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { Http, HttpModule } from '@angular/http';
+import { Ng2CableModule } from 'ng2-cable';
 
 // Native imports
 import { LaunchNavigator } from '@ionic-native/launch-navigator';
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
+import { Geolocation } from '@ionic-native/geolocation';
+import { Network } from '@ionic-native/network';
+import { Insomnia } from '@ionic-native/insomnia';
+import { LocalNotifications } from '@ionic-native/local-notifications';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 // Environment
 import { environment } from './environment';
@@ -25,14 +32,8 @@ import { ResetPasswordPage } from '../pages/reset-password/reset-password';
 import { RunsPage } from '../pages/runs/runs';
 import { ManifestPage } from '../pages/manifest/manifest';
 import { ItineraryPage } from '../pages/itinerary/itinerary';
+import { ChatPage } from '../pages/chat/chat';
 import { AboutPage } from '../pages/about/about';
-
-// Providers
-import { AuthProvider } from '../providers/auth/auth';
-import { GlobalProvider } from '../providers/global/global';
-import { RunProvider } from '../providers/run/run';
-import { ManifestProvider } from '../providers/manifest/manifest';
-import { ItineraryProvider } from '../providers/itinerary/itinerary';
 
 // Components
 import { RunInfoComponent } from '../components/run-info/run-info';
@@ -41,6 +42,19 @@ import { ItineraryInfoComponent } from '../components/itinerary-info/itinerary-i
 // Pipes
 import { PrettyTimeFromSecondsPipe } from '../pipes/pretty-time-from-seconds/pretty-time-from-seconds';
 import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
+import { TitleCasePipe } from '../pipes/title-case/title-case';
+import {TimeAgoPipe} from 'time-ago-pipe';
+
+// Providers
+import { AuthProvider } from '../providers/auth/auth';
+import { GlobalProvider } from '../providers/global/global';
+import { RunProvider } from '../providers/run/run';
+import { ManifestProvider } from '../providers/manifest/manifest';
+import { ItineraryProvider } from '../providers/itinerary/itinerary';
+import { GpsProvider } from '../providers/gps/gps';
+import { GeocodingProvider } from '../providers/geocoding/geocoding';
+import { EmergencyProvider } from '../providers/emergency/emergency';
+import { ChatProvider } from '../providers/chat/chat';
 
 @NgModule({
   declarations: [
@@ -50,16 +64,20 @@ import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
     ManifestPage,
     ItineraryPage,
     ResetPasswordPage,
+    ChatPage,
     AboutPage,
     RunInfoComponent,
     ItineraryInfoComponent,
     PrettyTimeFromSecondsPipe,
-    PhoneNumberPipe
+    PhoneNumberPipe,
+    TitleCasePipe,
+    TimeAgoPipe
   ],
   imports: [
     BrowserModule,
     HttpModule,
     MomentModule,
+    Ng2CableModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
@@ -70,6 +88,7 @@ import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
     ManifestPage,
     ItineraryPage,
     ResetPasswordPage,
+    ChatPage,
     AboutPage
   ],
   providers: [
@@ -81,7 +100,17 @@ import { PhoneNumberPipe } from '../pipes/phone-number/phone-number';
     RunProvider,
     ManifestProvider,
     ItineraryProvider,
-    LaunchNavigator
+    GpsProvider,
+    GeocodingProvider,
+    LaunchNavigator,
+    Geolocation,
+    BackgroundGeolocation,
+    Network,
+    LocalNotifications,
+    Insomnia,
+    BackgroundMode,
+    EmergencyProvider,
+    ChatProvider
   ]
 })
 export class AppModule {}
