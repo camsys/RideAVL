@@ -7,7 +7,6 @@ import { Ng2CableModule } from 'ng2-cable';
 
 // Native imports
 import { LaunchNavigator } from '@ionic-native/launch-navigator';
-import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { Geolocation } from '@ionic-native/geolocation';
 import { Network } from '@ionic-native/network';
 import { Insomnia } from '@ionic-native/insomnia';
@@ -105,7 +104,6 @@ import { ManifestChangeProvider } from '../providers/manifest-change/manifest-ch
     GeocodingProvider,
     LaunchNavigator,
     Geolocation,
-    BackgroundGeolocation,
     Network,
     LocalNotifications,
     Insomnia,
