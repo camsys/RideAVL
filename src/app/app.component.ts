@@ -246,7 +246,7 @@ export class MyApp {
     // Pages to display if user is signed in
     this.signedInPages = [
       { title: 'Chat', component: ChatPage},
-      { title: 'Emergeny', component: "emergency"},
+      { title: 'Emergency', component: "emergency"},
       { title: 'About This App', component: AboutPage },
       { title: 'Sign Out', component: "sign_out"}
     ] as PageModel[];
