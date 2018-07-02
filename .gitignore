@@ -40,3 +40,5 @@ deploy/device/*
 deploy/emulate/*
 deploy/docs
 apks/*
+src/environments/environment.uat.ts
+src/environments/environment.prod.ts
