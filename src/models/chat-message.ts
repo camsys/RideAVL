@@ -1,5 +1,5 @@
 export class ChatMessage {
-  messageId: string;
+  id: string;
   sender_id: number;
   driver_id: number;
   provider_id: number;

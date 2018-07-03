@@ -14,9 +14,12 @@
         </button>
     </ion-buttons>
     <ion-title text-center>{{run.name || 'Empty'}} Manifest{{run && run.completed() ? ' (Completed)' : ''}}</ion-title>
-    <ion-buttons right>
-      <button ion-button menuToggle icon-only><ion-icon name="menu"></ion-icon></button>
+    <ion-buttons end transparent>
+      <chat-alert-button></chat-alert-button>
     </ion-buttons>
+    <button ion-button menuToggle end>
+      <ion-icon icon-start name="menu"></ion-icon>
+    </button>
   </ion-navbar>
 
 </ion-header>

@@ -17,6 +17,8 @@ export class GlobalProvider {
   public manifestCheckInterval: number = 5; //5 seconds as default
   public timeZoneDiffSeconds: number = 0;
 
+  public showChatAlert:boolean = false;
+
   constructor(public http: Http) {
   }
 
@@ -66,6 +68,12 @@ export class GlobalProvider {
       }
     }
     this.activeItinEtaDiff = 0;
+  }
+
+  getRunId() {
+    if(this.activeRun) {
+      return this.activeRun.id;
+    }
   }
 
 }
