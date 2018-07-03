@@ -37,6 +37,7 @@ import { AboutPage } from '../pages/about/about';
 // Components
 import { RunInfoComponent } from '../components/run-info/run-info';
 import { ItineraryInfoComponent } from '../components/itinerary-info/itinerary-info';
+import { ChatAlertButtonComponent } from '../components/chat-alert-button/chat-alert-button';
 
 // Pipes
 import { PrettyTimeFromSecondsPipe } from '../pipes/pretty-time-from-seconds/pretty-time-from-seconds';
@@ -55,6 +56,7 @@ import { GeocodingProvider } from '../providers/geocoding/geocoding';
 import { EmergencyProvider } from '../providers/emergency/emergency';
 import { ChatProvider } from '../providers/chat/chat';
 import { ManifestChangeProvider } from '../providers/manifest-change/manifest-change';
+import { ChatAlertProvider } from '../providers/chat-alert/chat-alert';
 
 @NgModule({
   declarations: [
@@ -67,6 +69,7 @@ import { ManifestChangeProvider } from '../providers/manifest-change/manifest-ch
     ChatPage,
     AboutPage,
     RunInfoComponent,
+    ChatAlertButtonComponent,
     ItineraryInfoComponent,
     PrettyTimeFromSecondsPipe,
     PhoneNumberPipe,
@@ -110,7 +113,8 @@ import { ManifestChangeProvider } from '../providers/manifest-change/manifest-ch
     BackgroundMode,
     EmergencyProvider,
     ChatProvider,
-    ManifestChangeProvider
+    ManifestChangeProvider,
+    ChatAlertProvider
   ]
 })
 export class AppModule {}

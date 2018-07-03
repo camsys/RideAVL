@@ -19,6 +19,7 @@ import { Inspection } from '../../models/inspection';
 import { AuthProvider } from '../../providers/auth/auth';
 import { GlobalProvider } from '../../providers/global/global';
 import { ManifestChangeProvider } from '../../providers/manifest-change/manifest-change';
+import { ChatAlertProvider } from '../../providers/chat-alert/chat-alert';
 
 // Runs Provider handles API Calls to the RidePilot back-end 
 // to load and update Runs data
@@ -32,6 +33,7 @@ export class RunProvider {
               private auth: AuthProvider,
               private global: GlobalProvider,
               private manifestChangeProvider: ManifestChangeProvider,
+              private chatAlertProvider: ChatAlertProvider,
               public events: Events) {}
               
   // Constructs a request options hash with auth headers
@@ -201,6 +203,9 @@ export class RunProvider {
     // application level time intervals
     this.global.gpsInterval = json_resp.gps_interval_seconds;
     this.global.manifestCheckInterval = json_resp.manifest_change_check_interval_seconds;
+
+    // whether driver has new message
+    this.global.showChatAlert = json_resp.has_unread_chat;
     
     if(json_resp.active_run) {
       let run_data = json_resp.active_run.data;
@@ -218,9 +223,11 @@ export class RunProvider {
       this.global.activeRun = run;
 
       this.manifestChangeProvider.connect();
+      this.chatAlertProvider.connect();
     } else {
       this.global.activeRun = null;
       this.manifestChangeProvider.disconnect();
+      this.chatAlertProvider.disconnect();
     }
 
     if(json_resp.active_itin) {

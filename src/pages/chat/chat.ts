@@ -10,6 +10,7 @@ import { QuickResponse } from '../../models/quick-response';
 // Providers
 import { GlobalProvider } from '../../providers/global/global';
 import { ChatProvider } from '../../providers/chat/chat';
+import { ChatAlertProvider } from '../../providers/chat-alert/chat-alert';
 
 @IonicPage()
 @Component({
@@ -32,6 +33,7 @@ export class ChatPage {
 
   constructor(navParams: NavParams,
               private chatService: ChatProvider,
+              private chatAlertService: ChatAlertProvider,
               private global: GlobalProvider,
               private events: Events) {
               this.user = this.global.user;
@@ -63,6 +65,19 @@ export class ChatPage {
     this.getMsgs();
   }
 
+  getLastMessageFromOther() {
+    let lastMessage:any;
+    let idx = this.msgList.length - 1;
+    for ( ; idx >= 0; idx--) {
+        if (this.msgList[idx].sender_id != this.user.id) {
+            lastMessage = this.msgList[idx];
+            break;
+        }
+    }
+
+    return lastMessage;
+  }
+
   showQuickResponse(){
     this.quickResponseList.open();
   }
@@ -90,6 +105,14 @@ export class ChatPage {
     .subscribe(res => {
       this.msgList = res;
       this.scrollToBottom();
+
+      if(this.global.showChatAlert) {
+        // dismiss chat alert
+        let unread_message = this.getLastMessageFromOther();
+        if(unread_message) {
+          this.chatAlertService.dismiss(unread_message.id).subscribe();
+        }
+      }
     });
   }
 
@@ -105,7 +128,7 @@ export class ChatPage {
     let created_at = Date.now();
     const id = created_at.toString();
     const newMsg: ChatMessage = {
-      messageId: id,
+      id: id,
       sender_id: this.user.id,
       sender_name: this.user.name,
       driver_id: this.user.driver_id,
@@ -132,7 +155,7 @@ export class ChatPage {
   }
 
   getMsgIndexById(id: string) {
-    return this.msgList.findIndex(e => e.messageId === id)
+    return this.msgList.findIndex(e => e.id === id)
   }
 
   scrollToBottom() {
