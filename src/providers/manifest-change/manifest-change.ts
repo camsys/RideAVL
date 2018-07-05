@@ -22,6 +22,7 @@ export class ManifestChangeProvider {
   public baseAvlUrl = environment.BASE_RIDEPILOT_AVL_URL;
   public baseActionCableUrl = environment.ACTION_CABLE_HOST;
   public connected:boolean = false;
+  private runId:number;
 
   private receiveNotificationEvent:any;
 
@@ -43,17 +44,26 @@ export class ManifestChangeProvider {
   }
 
   connect() {
-    this.disconnect(); //disconnect previous just in case
-
     if(!this.global.activeRun) {
+      this.disconnect(); //disconnect previous just in case
       return;
     }
 
+    let runId = this.global.getRunId();
+    if(this.runId == runId) {
+      return;
+    } else {
+      this.disconnect(); //disconnect previous just in case
+    }
+
     let url = this.getActionCableUrl();
+    
     this.ngcable.subscribe(url, 'ManifestChannel', {
-      run_id: this.global.activeRun.id
+      run_id: runId
     });
+    
     this.connected = true;
+    this.runId = runId;
 
     this.receiveNotificationEvent = this.broadcaster.on<string>('ManifestChange').subscribe(
       (data:any) => {
