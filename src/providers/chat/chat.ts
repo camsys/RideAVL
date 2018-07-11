@@ -14,8 +14,6 @@ import { environment } from '../../app/environment'
 import { ChatMessage } from '../../models/chat-message';
 import { QuickResponse } from '../../models/quick-response';
 
-// Models
-
 // Providers
 import { AuthProvider } from '../../providers/auth/auth';
 import { GlobalProvider } from '../../providers/global/global';
@@ -76,6 +74,7 @@ export class ChatProvider {
   create(msg: ChatMessage): Observable<Response> {
     let uri: string = encodeURI(this.baseAvlUrl + 'messages/send_message');
     let body = JSON.stringify({
+      run_id: this.global.getRunId(),
       sender_id: msg.sender_id,
       driver_id: msg.driver_id,
       provider_id: msg.provider_id,

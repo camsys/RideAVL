@@ -27,6 +27,7 @@ import { RunProvider } from '../providers/run/run';
 import { GpsProvider } from '../providers/gps/gps';
 import { EmergencyProvider } from '../providers/emergency/emergency';
 import { ManifestChangeProvider } from '../providers/manifest-change/manifest-change';
+import { ChatAlertProvider } from '../providers/chat-alert/chat-alert';
 
 @Component({
   templateUrl: 'app.html'
@@ -54,6 +55,7 @@ export class MyApp {
               private runProvider: RunProvider,
               private emergencyProvider: EmergencyProvider,
               private manifestChangeProvider: ManifestChangeProvider,
+              private chatAlertProvider: ChatAlertProvider,
               private changeDetector: ChangeDetectorRef,
               private network: Network,
               private localNotifications: LocalNotifications,
@@ -169,6 +171,20 @@ export class MyApp {
       this.fireManifestChangeEvents(run_id);
     });
 
+    // chat alert
+    this.events.subscribe("chat:alert", () => {
+      //this.presentAlert('new message');
+      this.global.showChatAlert = true;
+      if(this.platform.is('cordova')) {
+        this.notifyDriver('New message from dispatcher.');
+      }
+    });
+
+    // dismiss chat alert
+    this.events.subscribe("chat:dismiss_alert", () => {
+      this.global.showChatAlert = false;
+    });
+
     // listen to gps ping request
     this.events.subscribe("gps:start", () => {
       this.startGpsTracking();
@@ -201,6 +217,8 @@ export class MyApp {
 
   unregisterDriverEvents() {
     this.events.unsubscribe("manifest:change");
+    this.events.unsubscribe("chat:alert");
+    this.events.unsubscribe("chat:dismiss_alert");
     this.events.unsubscribe("gps:start");
     this.events.unsubscribe("gps:stop");
     this.events.unsubscribe("emergency:on");
@@ -245,13 +263,13 @@ export class MyApp {
   setMenu(){
     // Pages to display if user is signed in
     this.signedInPages = [
-      { title: 'Chat', component: ChatPage},
-      { title: 'Emergency', component: "emergency"},
-      { title: 'About This App', component: AboutPage },
-      { title: 'Sign Out', component: "sign_out"}
+      { title: 'Chat', component: ChatPage, icon: 'chatbubbles'},
+      { title: 'Emergency', component: "emergency", icon: 'alert'},
+      { title: 'About This App', component: AboutPage, icon: 'help-circle' },
+      { title: 'Sign Out', component: "sign_out", icon: 'log-out'}
     ] as PageModel[];
 
-    this.signInPage = { title: 'Sign In', component: SignInPage} as PageModel;
+    this.signInPage = { title: 'Sign In', component: SignInPage, icon: 'log-in'} as PageModel;
   }
 
   // Open the appropriate page, or do something special for certain pages
@@ -297,6 +315,7 @@ export class MyApp {
 
   onSignOut() {
     this.manifestChangeProvider.disconnect();
+    this.chatAlertProvider.disconnect();
     this.unregisterDriverEvents();
 
     this.nav.setRoot(SignInPage);

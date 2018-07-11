@@ -20,6 +20,7 @@ import { ManifestProvider } from '../../providers/manifest/manifest';
 import { ItineraryProvider } from '../../providers/itinerary/itinerary';
 import { GeocodingProvider } from '../../providers/geocoding/geocoding';
 import { ManifestChangeProvider } from '../../providers/manifest-change/manifest-change';
+import { ChatAlertProvider } from '../../providers/chat-alert/chat-alert';
 
 // Page
 import {RunsPage} from '../runs/runs';
@@ -54,6 +55,7 @@ export class ItineraryPage {
               private manifestProvider: ManifestProvider,
               private itinProvider: ItineraryProvider,
               private manifestChangeProvider: ManifestChangeProvider,
+              private chatAlertProvider: ChatAlertProvider,
               private navigator: LaunchNavigator) {
 
               if(this.navParams.data.itin) {
@@ -103,6 +105,9 @@ export class ItineraryPage {
 
                 //check manifest change
                 this.manifestChangeProvider.connect();
+
+                //track chat alert
+                this.chatAlertProvider.connect();
               }
 
               if(this.itin.endRun()) {
@@ -343,6 +348,8 @@ export class ItineraryPage {
           this.global.activeRun = null;
           //disconnect manifest change
           this.manifestChangeProvider.disconnect();
+          //disconnect chat_alert
+          this.chatAlertProvider.disconnect();
           this.events.publish("gps:stop");
           this.navCtrl.setRoot(RunsPage);
         });

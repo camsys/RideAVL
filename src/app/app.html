@@ -14,7 +14,7 @@
                   class="item-heading"
                   *ngFor="let p of signedInPages"
                   (click)="openPage(p)">
-            {{ p.title }}
+            <ion-icon item-left name="{{p.icon}}"></ion-icon> {{ p.title }}
           </button>
       </div>
 
@@ -25,7 +25,7 @@
                 class="item-heading"
                 *ngFor="let p of signedOutPages"
                 (click)="openPage(p)">
-          {{ p.title }}
+          <ion-icon item-left name="{{p.icon}}"></ion-icon> {{ p.title }}
         </button>
       </ng-template>
       

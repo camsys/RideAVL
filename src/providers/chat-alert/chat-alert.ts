@@ -10,21 +10,18 @@ import { Ng2Cable, Broadcaster } from 'ng2-cable';
 
 import { environment } from '../../app/environment'
 
-// Models
-
 // Providers
 import { AuthProvider } from '../../providers/auth/auth';
 import { GlobalProvider } from '../../providers/global/global';
 
-// ManifestChangeProvider handles receiving manifest change notification via websockets using actioncable
+// ChatAlertProvider notifies new chat message via web socket
 @Injectable()
-export class ManifestChangeProvider {
+export class ChatAlertProvider {
   public baseAvlUrl = environment.BASE_RIDEPILOT_AVL_URL;
   public baseActionCableUrl = environment.ACTION_CABLE_HOST;
   public connected:boolean = false;
-  private runId:number;
-
-  private receiveNotificationEvent:any;
+  private newMessageEvent:any;
+  private dismissMessageEvent:any;
 
   constructor(public http: Http,
               private auth: AuthProvider,
@@ -44,60 +41,59 @@ export class ManifestChangeProvider {
   }
 
   connect() {
-    if(!this.global.activeRun) {
-      this.disconnect(); //disconnect previous just in case
-      return;
-    }
-
-    let runId = this.global.getRunId();
-    if(this.runId == runId) {
-      return;
-    } else {
-      this.disconnect(); //disconnect previous just in case
-    }
-
     let url = this.getActionCableUrl();
-    
-    this.ngcable.subscribe(url, 'ManifestChannel', {
-      run_id: runId
+    this.ngcable.subscribe(url, 'ChatAlertChannel', {
+      run_id: this.global.getRunId(),
     });
-    
     this.connected = true;
-    this.runId = runId;
 
-    this.receiveNotificationEvent = this.broadcaster.on<string>('ManifestChange').subscribe(
-      (data:any) => {
-        //trigger change events
-        this.events.publish("manifest:change", data.id);
+    this.newMessageEvent = this.broadcaster.on<string>('NewChat').subscribe(
+      (data: any) => {
+        if(this.global.user.id != data.sender_id) {
+          this.events.publish("chat:alert");
+        }
+      }
+    );
+
+    this.dismissMessageEvent = this.broadcaster.on<string>('DismissChatAlert').subscribe(
+      (data: any) => {
+        if(this.global.user.id == data.read_by_id) {
+          this.events.publish("chat:dismiss_alert");
+        }
       }
     );
   }
 
   disconnect() {
-    if(!this.connected) {
-      return;
+    if(this.newMessageEvent) {
+      this.newMessageEvent.unsubscribe();
     }
-    
-    this.ngcable.unsubscribe();
-    this.connected = false;
-    if(this.receiveNotificationEvent) {
-      this.receiveNotificationEvent.unsubscribe();
-      this.receiveNotificationEvent = null;
+
+    if(this.dismissMessageEvent) {
+      this.dismissMessageEvent.unsubscribe();
+    }
+    if(this.connected) {
+      this.ngcable.unsubscribe();
+      this.connected = false;
     }
   }
 
-  trigger(): Observable<Response> {
-    let uri: string = encodeURI(this.baseAvlUrl + 'messages/send_emergency_alert');
-    let body = JSON.stringify({});
+  dismiss(message_id): Observable<Response> {
+    let uri: string = encodeURI(this.baseAvlUrl + 'messages/read_message');
+    let body = JSON.stringify({
+      read_by_id: this.global.user.id,
+      run_id: this.global.getRunId(),
+      message_id: message_id
+    });
 
     return this.http
         .post(uri, body, this.requestOptions())
         .map((response) => {
-          this.events.publish('app:toast', "Emergency Alert Sent.");
           return response;
         })
         .catch((error: Response) =>  this.handleError(error));
   }
+
 
   // Handle errors by console logging the error, and publishing an error event
   // for consumption by the app's home page.
