@@ -202,7 +202,6 @@ export class RunProvider {
 
     // application level time intervals
     this.global.gpsInterval = json_resp.gps_interval_seconds;
-    this.global.manifestCheckInterval = json_resp.manifest_change_check_interval_seconds;
 
     // whether driver has new message
     this.global.showChatAlert = json_resp.has_unread_chat;

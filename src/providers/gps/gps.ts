@@ -26,12 +26,16 @@ export class GpsProvider {
   private foregroundGeolocationWatch: any;
   private backgroundGeolocation: any;
   private is_tracking:boolean = false;
+  private bgGeolocationConfigured: boolean = false;
 
   public baseUrl = environment.BASE_RIDEPILOT_URL;
   public baseAvlUrl = environment.BASE_RIDEPILOT_AVL_URL;
   public etaUrl = "https://maps.googleapis.com/maps/api/distancematrix/json?key=" + environment.GOOGLE_MAPS_KEY;
 
   public lastGpsLogTime: Date;
+
+  private lastLocation: GpsLocation;
+  private etaTracker: any;
 
   constructor(public platform: Platform,
               public http: Http,
@@ -66,57 +70,39 @@ export class GpsProvider {
         this.startForegroundTracking();
       }
     }
+
+    // enable eta update
+    let _scope = this;
+    this.etaTracker = Observable.interval(this.global.gpsInterval * 1000).subscribe(() => {
+      this.getETA(this.lastLocation).subscribe();
+    });
   }
 
   // both background and foreground tracking
   startMotionTracking() {
-    this.backgroundGeolocation.ready({
-      desiredAccuracy: 0,
-      distanceFilter: 10,
-      stationaryRadius: 10,
-      startOnBoot: true
-    }, (state) => {
-      if (!state.enabled) {
-        this.backgroundGeolocation.start();
-        this.is_tracking = true;
-      }
-    });
-
-    //This callback will be executed every time a geolocation is recorded in the background.
-    let _scope = this;
-    let callbackFn = function(position, taskId) {
-      let newLogTime = new Date(position.timestamp);
-      // ignore too frequent updates
-      //if(_scope.lastGpsLogTime && newLogTime && (+newLogTime - +_scope.lastGpsLogTime) < interval) {
-      //  return Observable.empty();
-      //}
-
-      //_scope.lastGpsLogTime = newLogTime;
-
-      let loc_data = position.coords;
-      let location = new GpsLocation();
-      location.latitude = loc_data.latitude;
-      location.longitude = loc_data.longitude;
-      location.speed = loc_data.speed;
-      location.accuracy = loc_data.accuracy;
-      location.bearing = loc_data.heading;
-      location.log_time = newLogTime.toUTCString();
-      _scope.send(location).subscribe();
-      _scope.getETA(location).subscribe();   
-
-      _scope.backgroundGeolocation.finish(taskId);   
-    };
-
-    // This callback will be executed if a location-error occurs.
-    let failureFn = function(errorCode) {
-      console.log('- BackgroundGeoLocation error: '+  errorCode);
+    if(!this.bgGeolocationConfigured) {
+      this.backgroundGeolocation.ready({
+        desiredAccuracy: 0,
+        distanceFilter: 0,
+        stationaryRadius: 0,
+        locationUpdateInterval: 1000,
+        startOnBoot: true
+      }, (state) => {
+        if (!state.enabled) {
+          this.backgroundGeolocation.start();
+          this.bgGeolocationConfigured = true;
+        }
+      });
+    } else {
+      this.backgroundGeolocation.start();
     }
 
-    // Listen to location events & errors.
-    this.backgroundGeolocation.on('location', callbackFn, failureFn);
+    this.is_tracking = true;
+    this.toggleBackgroundGeolocation(true);
   }
 
   startForegroundTracking() {
+    this.is_tracking = true;
     let interval: number = (this.global.gpsInterval) * 1000;
 
     let posOptions = {
@@ -127,7 +113,6 @@ export class GpsProvider {
     this.foregroundGeolocationWatch = this.geolocation.watchPosition(posOptions)
       .filter((p: any) => p.code === undefined)
       .subscribe((position: Geoposition) => {
-        console.log(position);
 
         let newLogTime = new Date(position.timestamp);
         // ignore too frequent updates
@@ -145,26 +130,78 @@ export class GpsProvider {
         location.accuracy = loc_data.accuracy;
         location.bearing = loc_data.heading;
         location.log_time = newLogTime.toUTCString();
+        this.lastLocation = location;
         this.send(location).subscribe();
-        this.getETA(location).subscribe();
       });
   }
+
+  toggleBackgroundGeolocation(is_on: boolean) {
+    //This callback will be executed every time a geolocation is recorded in the background.
+    let _scope = this;
+    let callbackFn = function(position, taskId) {
+      let newLogTime = new Date(position.timestamp);
+      // ignore too frequent updates
+      //if(_scope.lastGpsLogTime && newLogTime && (+newLogTime - +_scope.lastGpsLogTime) < interval) {
+      //  return Observable.empty();
+      //}
+    
+      if(_scope.lastGpsLogTime && (+_scope.lastGpsLogTime - +newLogTime) == 0) {
+        // ignore same location
+        console.log('same location');
+      } else {
+        let loc_data = position.coords;
+        _scope.lastGpsLogTime = newLogTime;
+        let location = new GpsLocation();
+        location.latitude = loc_data.latitude;
+        location.longitude = loc_data.longitude;
+        location.speed = loc_data.speed;
+        location.accuracy = loc_data.accuracy;
+        location.bearing = loc_data.heading;
+        location.log_time = newLogTime.toUTCString();
+        _scope.lastLocation = location;
+        _scope.send(location).subscribe();
+      }
+
+      _scope.backgroundGeolocation.finish(taskId);   
+    };
+
+    // This callback will be executed if a location-error occurs.
+    let failureFn = function(errorCode) {
+      console.log('- BackgroundGeoLocation error: '+  errorCode);
+    }
+
+    if(is_on) {
+      this.backgroundGeolocation.on('location', callbackFn, failureFn);
+    } else {
+      this.backgroundGeolocation.un('location', callbackFn);
+      this.backgroundGeolocation.stop();
+    }
+  }
+
 
   // stop gps tracking
   stopTracking() {
     if(this.backgroundGeolocation) {
-      this.backgroundGeolocation.stop();
+      this.toggleBackgroundGeolocation(false);
     } else {
       if(this.foregroundGeolocationWatch) {
         this.foregroundGeolocationWatch.unsubscribe();
       }
     }
 
+    if(this.etaTracker) {
+      this.etaTracker.unsubscribe();
+    }
+
     this.is_tracking = false;
   }
 
   // calculate ETA based on location
-  getETA(location: GpsLocation): Observable<Response>{
+  getETA(location: GpsLocation): Observable<Response> {
+    if(!location) {
+      return Observable.empty();
+    }
+
     let itin;
     if(this.global.activeItin && !this.global.activeItin.arrived()) {
       itin = this.global.activeItin;
@@ -173,7 +210,7 @@ export class GpsProvider {
     }
 
     if(!itin) {
-      return Observable.empty();;
+      return Observable.empty();
     }
 
     let dest = itin.address;
