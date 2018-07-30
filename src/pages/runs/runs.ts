@@ -46,6 +46,7 @@ export class RunsPage {
   }
 
   doRefresh(refresher) {
+    this.runProvider.loadDriverRunData().subscribe();
     this.runProvider.getRuns()
                       .subscribe((runs) => {
                         this.loadRuns(runs);
