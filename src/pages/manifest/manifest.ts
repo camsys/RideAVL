@@ -61,6 +61,7 @@ export class ManifestPage {
   }
 
   ionViewWillLoad() {
+    this.events.unsubscribe("manifest:reload");
     this.events.subscribe("manifest:reload", () => {
       // reload run
       this.runProvider.getRun(this.run.id)
@@ -81,7 +82,7 @@ export class ManifestPage {
     });
   }
 
-  ionViewWillUnload() {
+  ionViewDidUnload() {
     this.events.unsubscribe("manifest:reload");
   }
 

@@ -63,6 +63,7 @@ export class RunsPage {
   }
 
   ionViewWillLoad() {
+    this.events.unsubscribe("runs:reload");
     this.events.subscribe("runs:reload", () => {
       this.runProvider.getRuns()
                       .subscribe((runs) => {
@@ -71,7 +72,7 @@ export class RunsPage {
     });
   }
 
-  ionViewWillUnload() {
+  ionViewDidUnload() {
     this.events.unsubscribe("runs:reload");
   }
 
