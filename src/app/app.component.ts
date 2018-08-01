@@ -342,6 +342,7 @@ export class MyApp {
   }
 
   startGpsTracking() {
+    this.gps.stopTracking();
     this.gps.startTracking();
   }
 

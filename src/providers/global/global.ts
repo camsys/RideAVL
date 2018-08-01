@@ -14,7 +14,6 @@ export class GlobalProvider {
   public activeRun: Run;
   public activeItinEtaDiff: number = 0; // ETA difference in seconds for current leg (new_eta - old_eta)
   public gpsInterval: number = 30; //30 seconds as default
-  public manifestCheckInterval: number = 5; //5 seconds as default
   public timeZoneDiffSeconds: number = 0;
 
   public showChatAlert:boolean = false;

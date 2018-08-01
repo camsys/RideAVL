@@ -128,6 +128,7 @@ export class ItineraryPage {
   }
 
   ionViewWillLoad() {
+    this.events.unsubscribe("itinerary:reload");
     this.events.subscribe("itinerary:reload", () => this.reloadData());
   }
 
@@ -168,7 +169,7 @@ export class ItineraryPage {
                     });
   }
 
-  ionViewWillUnload() {
+  ionViewDidUnload() {
     this.events.unsubscribe("itinerary:reload");
   }
 
