@@ -21,6 +21,7 @@ export class Itinerary {
   customer_notes: string;
   trip_address_notes: string;
   trip_result: string;
+  funding_source: string;
   customer_name: string;
   phone: string;
   status_code: number;

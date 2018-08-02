@@ -100,6 +100,22 @@
     </ion-col>
   </ion-row>
 
+  <!-- Funding Source Notes -->
+  <ion-row *ngIf="this.showFundingSource()">
+    <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2>
+      <ion-card id="funding-source-card" class="notes-card">
+        <ion-card-header>
+          Funding Source
+        </ion-card-header>
+        
+        <ion-card-content>
+          {{this.itin.funding_source}}
+        </ion-card-content>
+      </ion-card>
+
+    </ion-col>
+  </ion-row>
+
   <!-- Feedback info from last action -->
   <ion-row *ngIf="this.itin && this.itin.hasTrip()" class="action-info">
     <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2 text-center>
