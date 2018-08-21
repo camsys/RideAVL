@@ -139,7 +139,7 @@
 
   <!-- Begin & end Run -->
   <ion-row>
-    <ion-col *ngIf="this.itin && this.itin.beginRun()" col-md-6 offset-md-3>
+    <ion-col *ngIf="this.itin && this.itin.beginRun()" col-md-12>
         <ion-grid>
           <form (ngSubmit)="startRun()" #startRunForm="ngForm">
 
@@ -208,19 +208,23 @@
         </ion-grid>
       </ion-col>
 
-      <ion-col text-center *ngIf="this.itin && this.itin.endRun()" col-sm-4 offset-sm-4>
-        <button ion-button round large
-                id="depart-button"
-                *ngIf="this.showDepartButton()"
-                (click)="this.depart()">
-          Depart
-        </button>
-        <button ion-button round large
-                id="arrive-button"
-                *ngIf="this.showArriveButton()"
-                (click)="this.arrive()">
-          Arrived
-        </button>
+      <ion-col text-center *ngIf="this.itin && this.itin.endRun()" col-md-12>
+        <ion-row>
+          <ion-col text-center>
+            <button ion-button round large
+                    id="depart-button"
+                    *ngIf="this.showDepartButton()"
+                    (click)="this.depart()">
+              Depart
+            </button>
+            <button ion-button round large
+                    id="arrive-button"
+                    *ngIf="this.showArriveButton()"
+                    (click)="this.arrive()">
+              Arrived
+            </button>
+          </ion-col>
+        </ion-row>
 
         <ion-grid>  
           <form [formGroup]="endRunFormGroup" *ngIf="this.itin && this.itin.arrived()" (ngSubmit)="endRun()" #endRunForm="ngForm">
