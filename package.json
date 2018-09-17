@@ -80,7 +80,7 @@
       "cordova-plugin-local-notification": {},
       "cordova-plugin-background-mode": {},
       "cordova-background-geolocation": {
-        "LICENSE": "a9a305992367090bf540e31bd39a1bedbc188f3e8ed9c72e3810e4be7e6c0593",
+        "LICENSE": "19b0df889e3056f06b169321aea59bb8b5aef91c03125db40740ae976f8817e0",
         "GOOGLE_API_VERSION": "11.8.0",
         "APPCOMPAT_VERSION": "27.0.0"
       },
