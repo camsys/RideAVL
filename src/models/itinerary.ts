@@ -28,6 +28,7 @@ export class Itinerary {
   departure_time: string;
   arrival_time: string;
   finish_time: string;
+  return_trip_time: string;
 
   address: Address;
   fare: Fare;
@@ -265,6 +266,12 @@ export class Itinerary {
 
 
     return actions;
+  }
+
+  formatReturnTripTime() {
+    if(this.return_trip_time) {
+      return "Return trip scheduled at " + this.formatTime(this.return_trip_time);
+    }
   }
 
   // Undo last action

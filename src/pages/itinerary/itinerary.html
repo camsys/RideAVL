@@ -116,6 +116,22 @@
     </ion-col>
   </ion-row>
 
+  <!-- Return Trip Notes (when customer is dropped off at a outbound trip) -->
+  <ion-row *ngIf="this.itin && this.itin.dropoff() && this.itin.return_trip_time && this.showProceedButton()">
+    <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2>
+      <ion-card id="address-notes-card" class="notes-card">
+        <ion-card-header>
+          Return Trip
+        </ion-card-header>
+        
+        <ion-card-content>
+          {{this.itin.formatReturnTripTime()}}
+        </ion-card-content>
+      </ion-card>
+
+    </ion-col>
+  </ion-row>
+
   <!-- Feedback info from last action -->
   <ion-row *ngIf="this.itin && this.itin.hasTrip()" class="action-info">
     <ion-col no-padding padding-right col-sm-10 offset-sm-1 col-md-8 offset-md-2 text-center>
