@@ -13,8 +13,7 @@ import { Run } from '../../models/run';
 import { Itinerary } from '../../models/itinerary';
 
 // Pages
-import { RunsPage } from '../runs/runs';
-import { ManifestMapPage } from '../manifest-map/manifest-map';
+import { ManifestPage } from '../manifest/manifest';
 import { ItineraryPage } from '../itinerary/itinerary';
 
 // Providers
@@ -24,10 +23,10 @@ import { ManifestProvider } from '../../providers/manifest/manifest';
 
 @IonicPage()
 @Component({
-  selector: 'page-manifest',
-  templateUrl: 'manifest.html',
+  selector: 'page-manifest-map',
+  templateUrl: 'manifest-map.html',
 })
-export class ManifestPage {
+export class ManifestMapPage {
   dataLoaded: Boolean = false;
   itineraries: Itinerary[] = [];
   activeItin: Itinerary = new Itinerary();
@@ -127,12 +126,8 @@ export class ManifestPage {
     this.activeItin = this.itineraries.find(r => !r.finished()) || (new Itinerary());
   }
 
-  loadRunList() {
-    this.navCtrl.setRoot(RunsPage);
-  }
-
   loadItin(itin: Itinerary) {
-    this.navCtrl.setRoot(ItineraryPage, { itin: itin, run: this.run, active: (this.activeItin == itin), itins: this.itineraries, fromPage: 'manifest'});
+    this.navCtrl.setRoot(ItineraryPage, { itin: itin, run: this.run, active: (this.activeItin == itin), itins: this.itineraries, fromPage: 'manifest-map'});
   }
 
   // Show the info of next/in_progress itin
@@ -144,8 +139,8 @@ export class ManifestPage {
     } 
   }
 
-  loadMap() {
-    this.navCtrl.setRoot(ManifestMapPage, {run: this.run});
+  loadManifest() {
+    this.navCtrl.setRoot(ManifestPage, {run: this.run});
   }
 
 }

@@ -10,7 +10,7 @@
     <ion-buttons left>
         <button ion-button icon-only (click)="this.loadManifest()">
           <ion-icon name="arrow-back"></ion-icon>
-          Manifest
+          {{this.fromPage == 'manifest-map' ? "Manifest Map" : "Manifest"}}
         </button>
     </ion-buttons>
     <ion-title text-center>{{this.itin ? itin.label() : "(N/A)"}}</ion-title>

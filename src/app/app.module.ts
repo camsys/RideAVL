@@ -30,6 +30,7 @@ import { SignInPage } from '../pages/sign-in/sign-in';
 import { ResetPasswordPage } from '../pages/reset-password/reset-password';
 import { RunsPage } from '../pages/runs/runs';
 import { ManifestPage } from '../pages/manifest/manifest';
+import { ManifestMapPage } from '../pages/manifest-map/manifest-map';
 import { ItineraryPage } from '../pages/itinerary/itinerary';
 import { ChatPage } from '../pages/chat/chat';
 import { AboutPage } from '../pages/about/about';
@@ -64,6 +65,7 @@ import { ChatAlertProvider } from '../providers/chat-alert/chat-alert';
     SignInPage,
     RunsPage,
     ManifestPage,
+    ManifestMapPage,
     ItineraryPage,
     ResetPasswordPage,
     ChatPage,
@@ -89,6 +91,7 @@ import { ChatAlertProvider } from '../providers/chat-alert/chat-alert';
     SignInPage,
     RunsPage,
     ManifestPage,
+    ManifestMapPage,
     ItineraryPage,
     ResetPasswordPage,
     ChatPage,

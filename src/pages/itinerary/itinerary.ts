@@ -33,6 +33,7 @@ import {ManifestPage} from '../manifest/manifest';
 })
 export class ItineraryPage {
   run: Run = new Run();
+  fromPage: string = 'manifest';
   itin: Itinerary = new Itinerary();
   itins: Itinerary[] = [];
   inspections: Inspection[] = [];
@@ -60,6 +61,10 @@ export class ItineraryPage {
 
               if(this.navParams.data.itin) {
                 this.itin = this.navParams.data.itin;
+              }
+
+              if(this.navParams.data.fromPage) {
+                this.fromPage = this.navParams.data.fromPage;
               }
 
               if(this.navParams.data.itins) {

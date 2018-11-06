@@ -1,5 +1,5 @@
 <!--
-  Generated template for the ManifestPage page.
+  Generated template for the ManifestMapPage page.
 
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
@@ -8,20 +8,14 @@
 
   <ion-navbar color="primary">
     <ion-buttons left>
-      <button ion-button icon-only (click)="this.loadRunList()">
+      <button ion-button icon-only (click)="this.loadManifest()">
         <ion-icon name="arrow-back"></ion-icon>
-        Runs
+        Manifest
       </button>
     </ion-buttons>
-    <ion-title text-center>{{run.name || 'Empty'}} Manifest{{run && run.completed() ? ' (Completed)' : ''}}</ion-title>
+    <ion-title text-center>{{run.name || 'Empty'}} Manifest Map{{run && run.completed() ? ' (Completed)' : ''}}</ion-title>
     <ion-buttons end transparent>
       <chat-alert-button></chat-alert-button>
-    </ion-buttons>
-    <ion-buttons end transparent>
-      <button ion-button icon-only (click)="this.loadMap()">
-        Map
-        <ion-icon name="map"></ion-icon>
-      </button>
     </ion-buttons>
     <button ion-button menuToggle end>
       <ion-icon icon-start name="menu"></ion-icon>
@@ -36,30 +30,6 @@
   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  
-  <ion-grid no-padding>
-    <ion-row>
-      <ion-col col-sm-10 offset-sm-1 col-md-8 offset-md-2>
-        <h2 *ngIf="!this.dataLoaded">
-          Loading...
-        </h2>
-        <ion-list class="app-list">
-
-          <!-- ITIN DETAILS -->
-          <div class="itin-list" text-wrap *ngFor="let itin of itineraries">
-
-            <!-- Itin info -->
-            <itinerary-info [itin]="itin" [ngClass]="{'itin-info-highlighted': this.activeItin == itin}" (click)="loadItin(itin)"></itinerary-info>
-
-          </div>
-        </ion-list>
-        <h2 *ngIf="this.dataLoaded && itineraries.length == 0">
-          No Itinerary
-        </h2>
-
-      </ion-col>
-    </ion-row>
-  </ion-grid>
 
 </ion-content>
 
