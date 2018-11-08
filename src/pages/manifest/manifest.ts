@@ -78,7 +78,6 @@ export class ManifestPage {
       this.manifestProvider.getItineraries(this.run.id)
                       .subscribe((itins) => {
                         this.loadItins(itins);
-                        this.setActiveItin();
                       });
     });
   }
@@ -95,7 +94,6 @@ export class ManifestPage {
     this.manifestProvider.getItineraries(this.run.id)
                       .subscribe((itins) => {
                         this.loadItins(itins);
-                        this.setActiveItin();
                         refresher.complete();
                       });
   }
@@ -120,7 +118,7 @@ export class ManifestPage {
   loadItins(itins: Itinerary[]) {
     this.dataLoaded = true;
     this.itineraries = itins || [];
-    this.activeItin = this.itineraries.find(r => !r.finished()) || (new Itinerary());
+    this.setActiveItin();
   }
 
   setActiveItin() {

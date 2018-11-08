@@ -200,6 +200,16 @@ export class RunProvider {
       this.global.timeZoneDiffSeconds = local_timezone_offset - server_timezone_offset * 3600;
     }
 
+    if(json_resp.map_center_lat != null) {
+      this.global.mapCenterLat = json_resp.map_center_lat;
+    }
+    if(json_resp.map_center_lng != null) {
+      this.global.mapCenterLng = json_resp.map_center_lng;
+    }
+    if(json_resp.map_zoom != null) {
+      this.global.mapZoom = json_resp.map_zoom;
+    }
+
     // application level time intervals
     this.global.gpsInterval = json_resp.gps_interval_seconds;
 

@@ -16,6 +16,12 @@ export class GlobalProvider {
   public gpsInterval: number = 30; //30 seconds as default
   public timeZoneDiffSeconds: number = 0;
 
+  // map
+  public mapCenterLat = 0;  
+  public mapCenterLng = 0;  
+  public mapZoom = 18;
+  public mapTilt = 30;
+
   public showChatAlert:boolean = false;
 
   constructor(public http: Http) {

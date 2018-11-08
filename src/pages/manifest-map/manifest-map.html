@@ -25,12 +25,16 @@
 </ion-header>
 
 
-<ion-content padding fullscreen>
-  
-  <ion-refresher (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
+<ion-content no-padding fullscreen>
+  <div id="map_canvas" style="height: 100%;">
+    <button ion-button icon-only (click)="resetBounds($event)">
+      <ion-icon name="home"></ion-icon>
+    </button>
+    <button ion-button icon-only (click)="locateVehicle($event)">
+      <ion-icon name="locate"></ion-icon>
+    </button>
+  </div>
+  <canvas id="hidden_canvas" width="24" height="38"></canvas>
 </ion-content>
 
 <ion-footer no-border>

@@ -342,6 +342,27 @@ export class Itinerary {
     return showFare;
   }
 
+  // get map label
+  mapSnippetInfo() {
+    if(this.finished()) {
+      return " (completed at " + this.formatTime(this.finish_time) + ")";
+    } else {
+      return " (scheduled at " + this.formatTime(this.time) + ")";
+    }
+  }
+
+  mapIconColor() {
+    if(this.beginRun()) {
+      return "gray";
+    } else if (this.endRun()) {
+      return "red";
+    } else if (this.pickup()) {
+      return "blue";
+    } else if (this.dropoff()) {
+      return "black";
+    }
+  }
+
   // Comparison
   sameAs(itin: Itinerary) {
     if(!itin) {

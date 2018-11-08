@@ -104,6 +104,12 @@
         <variable name="APPCOMPAT_VERSION" value="27.0.0" />
     </plugin>
     <allow-navigation href="http://192.168.1.70:8100" />
+    <plugin name="cordova-plugin-googlemaps" spec="^2.4.6">
+        <variable name="API_KEY_FOR_ANDROID" value="AIzaSyDd5ZDK1P4P8JlDiqNcCSAsuWcZJFX1cJc" />
+        <variable name="API_KEY_FOR_IOS" value="AIzaSyDd5ZDK1P4P8JlDiqNcCSAsuWcZJFX1cJc" />
+        <variable name="PLAY_SERVICES_VERSION" value="15.0.1" />
+        <variable name="ANDROID_SUPPORT_V4_VERSION" value="27.+" />
+    </plugin>
     <engine name="browser" spec="5.0.3" />
     <engine name="android" spec="^7.0.0" />
 </widget>
