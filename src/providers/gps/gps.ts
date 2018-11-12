@@ -73,7 +73,7 @@ export class GpsProvider {
 
     // enable eta update
     let _scope = this;
-    this.etaTracker = Observable.interval(this.global.gpsInterval * 1000).subscribe(() => {
+    this.etaTracker = Observable.interval(this.global.etaInterval * 1000).subscribe(() => {
       this.getETA(this.lastLocation).subscribe();
     });
   }

@@ -53,7 +53,7 @@ export class ManifestPage {
               }
               
               setInterval(() => this.currentTime = new Date(), 500);
-              setInterval(() => this.updateETA(), global.gpsInterval * 1000);
+              setInterval(() => this.updateETA(), global.etaInterval * 1000);
   }
 
   ionViewDidLoad() {
