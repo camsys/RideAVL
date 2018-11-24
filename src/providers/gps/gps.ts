@@ -181,16 +181,16 @@ export class GpsProvider {
 
   // stop gps tracking
   stopTracking() {
+    if(this.etaTracker) {
+      this.etaTracker.unsubscribe();
+    }
+    
     if(this.backgroundGeolocation) {
       this.toggleBackgroundGeolocation(false);
     } else {
       if(this.foregroundGeolocationWatch) {
         this.foregroundGeolocationWatch.unsubscribe();
       }
-    }
-
-    if(this.etaTracker) {
-      this.etaTracker.unsubscribe();
     }
 
     this.is_tracking = false;
