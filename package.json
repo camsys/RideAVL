@@ -32,9 +32,9 @@
     "@ionic/pro": "1.0.19",
     "@ionic/storage": "^2.1.3",
     "angular2-moment": "^1.8.0",
-    "cordova-android": "^7.1.2",
-    "cordova-background-geolocation": "git+https://github.com/transistorsoft/cordova-background-geolocation.git",
-    "cordova-browser": "5.0.3",
+    "cordova-android": "7.1.4",
+    "cordova-background-geolocation-lt": "^2.14.2",
+    "cordova-browser": "5.0.4",
     "cordova-plugin-actionsheet": "^2.3.3",
     "cordova-plugin-background-fetch": "^5.4.1",
     "cordova-plugin-background-mode": "^0.7.2",
@@ -80,13 +80,13 @@
       "cordova-plugin-insomnia": {},
       "cordova-plugin-local-notification": {},
       "cordova-plugin-background-mode": {},
-      "cordova-background-geolocation": {
-        "LICENSE": "b3c8baefd40dedf34887fe9084b9b528868f29345ae92401382ebd62de008447",
-        "GOOGLE_API_VERSION": "11.8.0",
-        "APPCOMPAT_VERSION": "27.0.0"
-      },
       "cordova-plugin-background-fetch": {},
-      "cordova-sqlite-storage": {}
+      "cordova-sqlite-storage": {},
+      "cordova-background-geolocation-lt": {
+        "LICENSE": "b3c8baefd40dedf34887fe9084b9b528868f29345ae92401382ebd62de008447",
+        "GOOGLE_API_VERSION": "16.0.0",
+        "APPCOMPAT_VERSION": "27.1.1"
+      }
     },
     "platforms": [
       "browser",
