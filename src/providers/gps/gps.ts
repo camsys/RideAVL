@@ -85,11 +85,7 @@ export class GpsProvider {
 
     // check offline data
     this.offlineDataTracker = Observable.interval(this.global.gpsOfflineDataCheckInterval * 1000).subscribe(() => {
-      this.storage.get(this._storage_key).then((locations) => {
-        this._locationsToSend = locations || [];
-        this.storage.set(this._storage_key, null);
-        this.batchSend(this._locationsToSend).subscribe(r => this._locationsToSend = []);
-      });
+      this.triggerBatchSync();
     });
   }
 
@@ -202,6 +198,11 @@ export class GpsProvider {
   stopTracking() {
     if(this.etaTracker) {
       this.etaTracker.unsubscribe();
+    }
+
+    if(this.offlineDataTracker) {
+      this.offlineDataTracker.unsubscribe();
+      this.triggerBatchSync();
     }
     
     if(this.backgroundGeolocation) {
@@ -344,6 +345,14 @@ export class GpsProvider {
 
           return this.handleError(error);
         });
+  }
+
+  triggerBatchSync() {
+    this.storage.get(this._storage_key).then((locations) => {
+      this._locationsToSend = locations || [];
+      this.storage.set(this._storage_key, null);
+      this.batchSend(this._locationsToSend).subscribe(r => this._locationsToSend = []);
+    });
   }
 
   addOfflineLocations(locations: Array<GpsLocation>) {
