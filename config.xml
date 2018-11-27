@@ -99,11 +99,12 @@
     <allow-navigation href="http://192.168.6.27:8100" />
     <plugin name="cordova-plugin-background-fetch" spec="https://github.com/transistorsoft/cordova-background-geolocation.git" />
     <allow-navigation href="http://192.168.1.70:8100" />
+    <engine name="browser" spec="5.0.3" />
+    <engine name="android" spec="^7.1.2" />
+    <plugin name="cordova-sqlite-storage" spec="2.5.2" />
     <plugin name="cordova-background-geolocation" spec="https://github.com/transistorsoft/cordova-background-geolocation.git">
         <variable name="LICENSE" value="b3c8baefd40dedf34887fe9084b9b528868f29345ae92401382ebd62de008447" />
         <variable name="GOOGLE_API_VERSION" value="11.8.0" />
         <variable name="APPCOMPAT_VERSION" value="27.0.0" />
     </plugin>
-    <engine name="browser" spec="5.0.3" />
-    <engine name="android" spec="^7.1.2" />
 </widget>

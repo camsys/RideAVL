@@ -18,6 +18,7 @@ import { GlobalProvider } from '../../providers/global/global';
 
 // Native providers
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
+import { Storage } from '@ionic/storage';
 
 // GpsProvider handles API Calls to the RidePilot Core back-end
 // to send GPS data
@@ -37,11 +38,16 @@ export class GpsProvider {
   private lastLocation: GpsLocation;
   private etaTracker: any;
 
+  private _locationsToSend = [];
+  private _storage_key = "gps_locations";
+  private offlineDataTracker: any;
+
   constructor(public platform: Platform,
               public http: Http,
               private auth: AuthProvider,
               private global: GlobalProvider,
               private geolocation: Geolocation,
+              private storage: Storage,
               public events: Events) {
                 this.platform.ready().then(() => {
                   this.backgroundGeolocation = (<any>window).BackgroundGeolocation;
@@ -75,6 +81,15 @@ export class GpsProvider {
     let _scope = this;
     this.etaTracker = Observable.interval(this.global.etaInterval * 1000).subscribe(() => {
       this.getETA(this.lastLocation).subscribe();
+    });
+
+    // check offline data
+    this.offlineDataTracker = Observable.interval(this.global.gpsOfflineDataCheckInterval * 1000).subscribe(() => {
+      this.storage.get(this._storage_key).then((locations) => {
+        this._locationsToSend = locations || [];
+        this.storage.set(this._storage_key, null);
+        this.batchSend(this._locationsToSend).subscribe(r => this._locationsToSend = []);
+      });
     });
   }
 
@@ -130,6 +145,8 @@ export class GpsProvider {
         location.accuracy = loc_data.accuracy;
         location.bearing = loc_data.heading;
         location.log_time = newLogTime.toUTCString();
+        location.itinerary_id = this.global.activeItin.id;
+        location.run_id = this.global.activeRun.id;
         this.lastLocation = location;
         this.send(location).subscribe();
       });
@@ -158,6 +175,8 @@ export class GpsProvider {
         location.accuracy = loc_data.accuracy;
         location.bearing = loc_data.heading;
         location.log_time = newLogTime.toUTCString();
+        location.itinerary_id = _scope.global.activeItin.id;
+        location.run_id = _scope.global.activeRun.id;
         _scope.lastLocation = location;
         _scope.send(location).subscribe();
       }
@@ -298,13 +317,41 @@ export class GpsProvider {
       return Observable.empty();
     }
 
-    let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + this.global.activeItin.id + '/track_location');
+    let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/' + location.itinerary_id + '/track_location');
     let body = JSON.stringify({gps_location: location});
 
     return this.http
         .put(uri, body, this.requestOptions())
         .map( response => response)
-        .catch((error: Response) =>  this.handleError(error));
+        .catch((error: Response) =>  {
+          // add to _locationsToSend
+          this.addOfflineLocations([location]);
+
+          return this.handleError(error);
+        });
+  }
+
+  batchSend(locations: Array<GpsLocation>): Observable<Response>{
+    let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/batch_sync_locations');
+    let body = JSON.stringify({gps_locations: locations});
+
+    return this.http
+        .put(uri, body, this.requestOptions())
+        .map( response => response)
+        .catch((error: Response) =>  {
+          // add to _locationsToSend
+          this.addOfflineLocations(locations);
+
+          return this.handleError(error);
+        });
+  }
+
+  addOfflineLocations(locations: Array<GpsLocation>) {
+    this.storage.get(this._storage_key).then((prev_locations) => {
+      let data = prev_locations || [];
+      data = data.concat(locations || []);
+      this.storage.set(this._storage_key, data);
+    });
   }
 
   // Handle errors by console logging the error, and publishing an error event

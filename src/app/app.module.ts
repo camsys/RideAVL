@@ -12,6 +12,7 @@ import { Network } from '@ionic-native/network';
 import { Insomnia } from '@ionic-native/insomnia';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { BackgroundMode } from '@ionic-native/background-mode';
+import { IonicStorageModule } from '@ionic/storage';
 
 // Environment
 import { environment } from './environment';
@@ -81,7 +82,8 @@ import { ChatAlertProvider } from '../providers/chat-alert/chat-alert';
     HttpModule,
     MomentModule,
     Ng2CableModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [

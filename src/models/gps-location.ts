@@ -4,6 +4,7 @@ export class GpsLocation {
   bearing: number;
   speed: number;
   accuracy: number;
-  itinerary_id: number;
   log_time: string;
+  itinerary_id: number;
+  run_id: number;
 }
