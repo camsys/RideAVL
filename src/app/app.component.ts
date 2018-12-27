@@ -71,6 +71,7 @@ export class MyApp {
 
   // define global events
   initializeEvents() {
+    console.log('init...');
     // When a server error occurs, show an error message and return to the home page.
     this.events.subscribe("error:http", (error) => {
       this.handleError(error);
@@ -173,6 +174,7 @@ export class MyApp {
 
     // chat alert
     this.events.subscribe("chat:alert", () => {
+      console.log('new message');
       //this.presentAlert('new message');
       this.global.showChatAlert = true;
       if(this.platform.is('cordova')) {
@@ -187,6 +189,7 @@ export class MyApp {
 
     // listen to gps ping request
     this.events.subscribe("gps:start", () => {
+      console.log('gps:start');
       this.startGpsTracking();
     });
 
@@ -207,6 +210,7 @@ export class MyApp {
 
     // notification events
     this.events.subscribe('app:notification', (text) => {
+      console.log('app:notification');
       if(this.platform.is('cordova')) {
         this.notifyDriver(text);
       }

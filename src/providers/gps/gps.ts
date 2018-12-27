@@ -333,6 +333,9 @@ export class GpsProvider {
   }
 
   batchSend(locations: Array<GpsLocation>): Observable<Response>{
+    if(!locations || locations.length == 0) {
+      return Observable.empty();
+    }
     let uri: string = encodeURI(this.baseAvlUrl + 'itineraries/batch_sync_locations');
     let body = JSON.stringify({gps_locations: locations});
 
