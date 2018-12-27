@@ -53,6 +53,7 @@ export class ChatProvider {
 
     this.messageCreateEvent = this.broadcaster.on<string>('CreateMessage').subscribe(
       (data: any) => {
+        console.log('create message');
         if(this.global.user.id != data.sender_id) {
           let newMsg = new ChatMessage();
           Object.assign(newMsg, data);

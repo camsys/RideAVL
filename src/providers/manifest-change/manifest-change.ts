@@ -67,6 +67,7 @@ export class ManifestChangeProvider {
 
     this.receiveNotificationEvent = this.broadcaster.on<string>('ManifestChange').subscribe(
       (data:any) => {
+        console.log('manifest change');
         //trigger change events
         this.events.publish("manifest:change", data.id);
       }
