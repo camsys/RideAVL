@@ -49,6 +49,7 @@ export class ChatAlertProvider {
 
     this.newMessageEvent = this.broadcaster.on<string>('NewChat').subscribe(
       (data: any) => {
+        console.log('new chat');
         if(this.global.user.id != data.sender_id) {
           this.events.publish("chat:alert");
         }
@@ -57,6 +58,7 @@ export class ChatAlertProvider {
 
     this.dismissMessageEvent = this.broadcaster.on<string>('DismissChatAlert').subscribe(
       (data: any) => {
+        console.log('dismiss chat');
         if(this.global.user.id == data.read_by_id) {
           this.events.publish("chat:dismiss_alert");
         }

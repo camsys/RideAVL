@@ -52,6 +52,7 @@ export class EmergencyProvider {
 
     this.receiveAlertEvent = this.broadcaster.on<string>('ReceiveAlert').subscribe(
       (data:any) => {
+        console.log('alert received');
         //show alert saying which dispatcher has received the alert
         this.events.publish("app:notification", data.message);
       }
