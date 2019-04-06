@@ -21,7 +21,7 @@
     "@angular/platform-browser": "5.0.3",
     "@angular/platform-browser-dynamic": "5.0.3",
     "@ionic-native/background-mode": "^4.7.0",
-    "@ionic-native/core": "4.4.0",
+    "@ionic-native/core": "^4.11.0",
     "@ionic-native/geolocation": "^4.6.0",
     "@ionic-native/insomnia": "^4.7.0",
     "@ionic-native/launch-navigator": "^4.5.3",
@@ -37,15 +37,15 @@
     "cordova-browser": "^5.0.4",
     "cordova-plugin-actionsheet": "^2.3.3",
     "cordova-plugin-background-fetch": "^5.4.1",
-    "cordova-plugin-background-mode": "^0.7.2",
-    "cordova-plugin-badge": "^0.8.7",
+    "cordova-plugin-background-mode": "git+https://github.com/katzer/cordova-plugin-background-mode.git",
+    "cordova-plugin-badge": "^0.8.8",
     "cordova-plugin-device": "^2.0.1",
     "cordova-plugin-dialogs": "^2.0.1",
     "cordova-plugin-geolocation": "^4.0.1",
     "cordova-plugin-insomnia": "~4.3.0",
     "cordova-plugin-ionic-keyboard": "^2.0.5",
-    "cordova-plugin-ionic-webview": "^1.1.16",
-    "cordova-plugin-local-notification": "^0.9.0-beta.2",
+    "cordova-plugin-ionic-webview": "^4.0.1",
+    "cordova-plugin-local-notification": "^0.9.0-beta.3",
     "cordova-plugin-network-information": "^2.0.1",
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-whitelist": "^1.3.3",
@@ -53,8 +53,8 @@
     "ionic-angular": "3.9.2",
     "ionicons": "3.0.0",
     "ng2-cable": "^2.0.7",
-    "ngx-cable": "^1.2.4",
-    "rxjs": "5.5.2",
+    "ngx-cable": "^1.2.7",
+    "rxjs": "^5.5.11",
     "sw-toolbox": "3.6.0",
     "time-ago-pipe": "^1.3.2",
     "uk.co.workingedge.phonegap.plugin.launchnavigator": "^4.1.5",
@@ -62,7 +62,8 @@
   },
   "devDependencies": {
     "@ionic/app-scripts": "3.1.8",
-    "typescript": "2.4.2"
+    "typescript": "2.4.2",
+    "cryptiles": ">=4.1.2"
   },
   "description": "An Ionic project",
   "cordova": {
@@ -70,7 +71,6 @@
       "cordova-plugin-whitelist": {},
       "cordova-plugin-device": {},
       "cordova-plugin-splashscreen": {},
-      "cordova-plugin-ionic-webview": {},
       "cordova-plugin-ionic-keyboard": {},
       "uk.co.workingedge.phonegap.plugin.launchnavigator": {},
       "cordova-plugin-geolocation": {
@@ -78,14 +78,17 @@
       },
       "cordova-plugin-network-information": {},
       "cordova-plugin-insomnia": {},
-      "cordova-plugin-local-notification": {},
-      "cordova-plugin-background-mode": {},
       "cordova-plugin-background-fetch": {},
       "cordova-sqlite-storage": {},
       "cordova-background-geolocation-lt": {
         "LICENSE": "a9a305992367090bf540e31bd39a1bedbc188f3e8ed9c72e3810e4be7e6c0593",
         "GOOGLE_API_VERSION": "16.0.0",
         "APPCOMPAT_VERSION": "27.1.1"
+      },
+      "cordova-plugin-background-mode": {},
+      "cordova-plugin-local-notification": {},
+      "cordova-plugin-ionic-webview": {
+        "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       }
     },
     "platforms": [
